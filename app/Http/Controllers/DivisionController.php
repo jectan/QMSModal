@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Office;
+use App\Models\Division;
 use Illuminate\Support\Facades\Validator;
 
-class OfficeController extends Controller
+class DivisionController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\response
      */
-    public function index()
+  /*   public function index()
     {
         if(request()->ajax()) {
             return datatables()->of(Office::select('*'))
@@ -31,8 +32,28 @@ class OfficeController extends Controller
             ->make(true);
         }
         return view('libraries.office');
-    }
+    } */
       
+    public function index()
+    {
+        if(request()->ajax()) {
+            return datatables()->of(Division::select('*'))
+            ->addColumn('action', 
+            '<div class="btn-group">
+                <button type="button" class="btn btn-sm btn-info" href="javascript:void(0)" onClick="editOffice({{ $divID }})" data-toggle="tooltip" data-original-title="Edit">
+                <span class="material-icons" style="font-size: 20px;">edit</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-info" href="javascript:void(0)" onclick="deleteOffice(this)" data-id="{{ $divID }}" data-toggle="tooltip" data-original-title="Delete">
+                <span class="material-icons" style="font-size: 20px;">delete</span>
+                </button>
+            </div>')
+            ->rawColumns(['action'])
+            ->addIndexColumn()
+            ->make(true);
+        }
+        return view('libraries.division');
+    }
+
       
     /**
      * Store a newly created resource in storage.

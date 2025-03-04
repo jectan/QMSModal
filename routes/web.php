@@ -5,7 +5,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CallerTypeController;
-use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\CallerController;
 use App\Http\Controllers\FeedbackController;
@@ -123,11 +123,11 @@ Route::post('/roles/store', [RoleController::class, 'store']);
 Route::post('/roles/edit', [RoleController::class, 'edit']);
 Route::delete('/roles/delete/{id}', [RoleController::class, 'destroy']);
 
-//Office
-Route::get('/offices', [OfficeController::class, 'index']);
-Route::post('/offices/store', [OfficeController::class, 'store']);
-Route::post('/offices/update', [OfficeController::class, 'edit']);
-Route::delete('/offices/delete/{id}', [OfficeController::class, 'destroy']);
+//Division
+Route::get('/divisions', [DivisionController::class, 'index']);
+Route::post('/divisions/store', [DivisionController::class, 'store']);
+Route::post('/divisions/update', [DivisionController::class, 'edit']);
+Route::delete('/divisions/delete/{id}', [DivisionController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'role:1,2'], function (){

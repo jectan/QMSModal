@@ -108,9 +108,9 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/offices" class="nav-link {{ $page == 'Office' ? 'active' : '' }}">
+                <a href="/divisions" class="nav-link {{ $page == 'Division' ? 'active' : '' }}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Offices</p>
+                  <p>Divisions</p>
                 </a>
               </li>
               <li class="nav-item">

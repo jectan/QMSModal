@@ -16,7 +16,6 @@ class AccountSeeder extends Seeder {
         DB::table('users')->delete();
         DB::table('staff')->delete();
         DB::table('offices')->delete();
-           DB::table('offices')->delete();
         $password = Hash::make('*1234#');
         $Role =  Role::create(array('name' => 'Administrator'));
         Role::create(array('name' => 'Call Agent'));

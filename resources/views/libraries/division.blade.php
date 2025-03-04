@@ -5,21 +5,21 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h4 class="h2" style="padding-left: 5px">List of Offices</h4>
+        <h4 class="h2" style="padding-left: 5px">List of Divisions</h4>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
                 <div class="container-login100-form-btn">
                     <div class="wrap-login100-form-btn">
                         <div class="login100-form-bgbtn"></div>
                         <button class="login100-form-btn" data-toggle="modal" data-target="#office-modal"><i
-                                class="fa fa-plus pr-2"></i>Office</button>
+                                class="fa fa-plus pr-2"></i>Division</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- DATATABLE -->
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body table-responsive">
@@ -40,7 +40,30 @@
                 </div>
             </div>
         </div>
+    </div> -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body table-responsive">
+                    <table class="table table-striped w-100" id="office-dt" style="font-size: 14px">
+                        <thead>
+                            <tr>
+                                {{-- <th style="width: 5%">divID</th> --}}
+                                <th style="width: 10%">No</th>
+                                <th style="width: 55%">Division</th>
+                                <th style="width: 10%">Status</th>
+
+                                {{-- <th style="width: 10%">divName</th> --}}
+                                {{-- <th style="width: 5%">Status</th> --}}
+                                <th style="width: 15%">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
+
 
     <!-- MODAL -->
     <div class="modal fade" id="office-modal" aria-hidden="true">
@@ -109,18 +132,18 @@
             $('#office-dt').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ url('/offices') }}",
+                ajax: "{{ url('/divisions') }}",
                 columns: [{
-                        data: 'code',
-                        name: 'code'
+                        data: 'divID',
+                        name: 'divID'
                     },
                     {
-                        data: 'name',
-                        name: 'name'
+                        data: 'divName',
+                        name: 'divName'
                     },
                     {
-                        data: 'head',
-                        name: 'head'
+                        data: 'status',
+                        name: 'status'
                     },
 
                     {
@@ -130,7 +153,7 @@
                     },
                 ],
                 order: [
-                    [0, 'desc']
+                    [0, 'asc']
                 ]
             });
 
