@@ -1,0 +1,174 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.backgroud-design{
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(318deg, #aec8eb, #3978c1);
+}
+
+.search {
+    width: 100%;
+    position: relative;
+    display: flex;
+  }
+  
+  .searchTerm {
+    width: 100%;
+    border: 3px solid #ff7bad;
+    border-right: none;
+    padding: 5px;
+    height: 35px;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+    color: #9DBFAF;
+  }
+  
+  .searchTerm:focus{
+    color: #ff7bad;
+  }
+  
+  .searchButton {
+    width: 40px;
+    height: 35px;
+    border: 1px solid #ff7bad;
+    background: #ff7bad;
+    text-align: center;
+    color: #fff;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  
+  /*Resize the wrap to see the search bar change!*/
+  .wrap{
+    width: 70%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .star-rating form {
+    display: none;
+}
+
+.star-rating input {
+    display: none;
+}
+.star-rating {
+    margin: 50px auto;
+    display: table;
+    width: 350px;
+}
+.star-rating label {
+    padding: 10px;
+    float: right;
+    font-size: 44px;
+    color: #eee;
+}
+.star-rating input:not(:checked) ~ label:hover,
+.star-rating input:not(:checked) ~ label:hover ~ label {
+    color: #fb6b90;
+}
+.star-rating input:checked ~ label {
+    color: #fb6b90;
+}
+.star-rating form .rating-reaction:before {
+    width: 100%;
+    float: left;
+    color: #fb6b90;
+}
+.star-rating #rating-1:checked ~ form .rating-reaction:before {
+    content: "Very Unsatisfied \f556";
+    font-family: "Font Awesome 5 Free";
+    display: inline-block;
+    font-weight: 800;
+}
+.star-rating #rating-2:checked ~ form .rating-reaction:before {
+    content: "Unsatisfied  \f119";
+    font-family: "Font Awesome 5 Free";
+    display: inline-block;
+    font-weight: 800;
+}
+.star-rating #rating-3:checked ~ form .rating-reaction:before {
+    content: "Ok \f11a";
+    font-family: "Font Awesome 5 Free";
+    display: inline-block;
+    font-weight: 800;
+}
+.star-rating #rating-4:checked ~ form .rating-reaction:before {
+    content: "Satisfied \f581";
+    font-family: "Font Awesome 5 Free";
+    display: inline-block;
+    font-weight: 800;
+}
+.star-rating #rating-5:checked ~ form .rating-reaction:before {
+    content: "Very Satisfied \f59a";
+    font-family: "Font Awesome 5 Free";
+    display: inline-block;
+    font-weight: 800;
+}
+.star-rating input:checked ~ form {
+    border-top: 1px solid #ddd;
+    width: 100%;
+    padding-top: 15px;
+    margin-top: 15px;
+    display: inline-block;
+}
+.star-rating .rating-reaction {
+    font-size: 24px;
+    float: left;
+    text-transform: capitalize;
+}
+.star-rating .submit-rating {
+    border: none;
+    outline: none;
+    background: #fb6b90;
+    color: #ffffff;
+    font-size: 18px;
+    border-radius: 4px;
+    padding: 5px 15px;
+    cursor: pointer;
+    float: right;
+}
+form .submit-rating:hover {
+    background-color: #bb516c;
+}
+.view{
+border: none;
+outline: none;
+background: #fb6b90;
+color: #ffffff;
+font-size: 18px;
+border-radius: 4px;
+padding: 5px 15px;
+cursor: pointer;
+float: center;
+}
+.view:hover {
+ background-color: #bb516c;
+}
+.margin {
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+@media (max-width: 460px) {
+    .star-rating {
+        margin: 50px auto;
+        display: table;
+        width: 100%;
+    }
+    .star-rating label {
+        padding: 0;
+        float: right;
+        left: 0;
+        font-size: 40px;
+        color: #eee;
+    }
+    
+}

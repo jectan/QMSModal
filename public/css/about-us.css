@@ -1,0 +1,30 @@
+.body-content {
+    width: 50%;
+    position: absolute;
+    text-align: center;
+    margin-top: 10%;
+    margin-left: 25%;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 60px;
+    padding: 20px;
+}
+
+.fonts {
+    font-family: Helvetica;
+    color: white
+}
+
+@media (max-width: 800px) {
+    .body-content {
+        width: 80%;
+        position: absolute;
+        text-align: center;
+        margin-top: 30%;
+        margin-left: 10%;
+}
+.fonts {
+    font-family: Helvetica;
+    color: white;
+    font-size: 20px;
+}
+}
