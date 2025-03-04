@@ -1,5 +1,5 @@
 @extends('layouts.app',[
-'page' => 'Office',
+'page' => 'Division',
 'title' => ''
 ])
 
@@ -11,7 +11,7 @@
                 <div class="container-login100-form-btn">
                     <div class="wrap-login100-form-btn">
                         <div class="login100-form-bgbtn"></div>
-                        <button class="login100-form-btn" data-toggle="modal" data-target="#office-modal"><i
+                        <button class="login100-form-btn" data-toggle="modal" data-target="#division-modal"><i
                                 class="fa fa-plus pr-2"></i>Division</button>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <table class="table table-striped w-100" id="office-dt" style="font-size: 14px">
+                    <table class="table table-striped w-100" id="division-dt" style="font-size: 14px">
                         <thead>
                             <tr>
                                 {{-- <th style="width: 5%">divID</th> --}}
@@ -66,46 +66,36 @@
 
 
     <!-- MODAL -->
-    <div class="modal fade" id="office-modal" aria-hidden="true">
+    <div class="modal fade" id="division-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
             <div class="modal-content">
-                <form action="javascript:void(0)" id="office-form" name="office-form" class="form-horizontal" method="POST">
+                <form action="javascript:void(0)" id="division-form" name="division-form" class="form-horizontal" method="POST">
                     @csrf
                     <div class="modal-header">
-                        <h4 class="modal-title" id="office-modal-title"></h4>
+                        <h4 class="modal-title" id="division-modal-title"></h4>
                     </div>
                     <div class="modal-body">
 
                         <!-- id -->
-                        <input type="hidden" name="office_id" id="office_id">
+                        <input type="hidden" name="divID" id="divID">
 
-                        <!-- Code -->
+                        <!-- Division Name -->
                         <div class="form-group">
-                            <label for="code" class="col-sm-4 control-label">Code<span
-                                    class="require">*</span></label>
-                            <div class="col-sm-12 ">
-                                <input type="text" class="form-control" id="code" name="code" placeholder="Enter code">
-                            </div>
-                        </div>
-
-                        <!-- Office Name -->
-                        <div class="form-group">
-                            <label for="Office name" class="col-sm-4 control-label">Office Name<span
+                            <label for="Division name" class="col-sm-4 control-label">Division Name<span
                                     class="require">*</span></label>
                             <div class="col-sm-12">
-                                <input type="text" class="form-control" id="name" name="name"
+                                <input type="text" class="form-control" id="divName" name="divName"
                                     placeholder="Enter Name">
                             </div>
                         </div>
 
-                        <!-- Office Name -->
+                        <!-- Status -->
                         <div class="form-group">
-                            <label for="Office name" class="col-sm-4 control-label">Head Name<span
-                                    class="require">*</span></label>
-                            <div class="col-sm-12">
-                                <input type="text" class="form-control" id="head" name="head"
-                                    placeholder="Enter Name">
-                            </div>
+                            <label for="inputcontent" class="form-label"><strong>Status</strong></label>
+                            <select name="status">
+                                <option value=1>Active</option>
+                                <option value=0>Inactive</option>
+                            </select>
                         </div>
 
 
@@ -129,7 +119,7 @@
         });
 
         $(document).ready(function() {
-            $('#office-dt').DataTable({
+            $('#division-dt').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ url('/divisions') }}",
@@ -161,13 +151,13 @@
         });
 
         // Submit button
-        $('#office-form').submit(function(e) {
+        $('#division-form').submit(function(e) {
             e.preventDefault();
             var formData = new FormData(this);
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('/offices/store') }}",
+                url: "{{ url('/divisions/store') }}",
                 data: formData,
                 cache: false,
                 contentType: false,
@@ -180,13 +170,13 @@
                             title: res.success
                         });
 
-                        $("#office-modal").modal('hide');
-                        var oTable = $('#office-dt').dataTable();
+                        $("#division-modal").modal('hide');
+                        var oTable = $('#division-dt').dataTable();
                         oTable.fnDraw(false);
 
                         $("#office-btn-save").html('Save Changes');
                         $("#office-btn-save").attr("disabled", false);
-                        $("#office-form")[0].reset();
+                        $("#division-form")[0].reset();
                     } else {
                         swal.fire({
                             icon: 'error',
@@ -201,24 +191,23 @@
         });
 
         //SHOW DATA TO UPDATE
-        function editoffice(id) {
+        function editDivision(divID) {
             // self.reset('Office'); //calling function reset() at index.blade
 
             $.ajax({
                 type: "POST",
-                url: "{{ url('/offices/update') }}",
+                url: "{{ url('/divisions/update') }}",
                 data: {
-                    id: id
+                    divID: divID
                 },
                 "token": "{{ csrf_token() }}",
                 dataType: 'json',
                 success: function(res) {
-                    $('#office-modal-title').html("Edit Office");
-                    $('#office-modal').modal('show');
-                    $('#office_id').val(res.id);
-                    $('#code').val(res.code);
-                    $('#name').val(res.name);
-                    $('#head').val(res.head);
+                    $('#division-modal-title').html("Edit Office");
+                    $('#division-modal').modal('show');
+                    $('#divID').val(res.divID);
+                    $('#divName').val(res.divName);
+                    $('#status').val(res.status);
                 },
 
                 error: function(data) {
@@ -228,7 +217,7 @@
         }
 
         //DELETE DATA
-        function deleteOffice(e) {
+        function deleteDivision(e) {
             let id = e.getAttribute('data-id');
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
@@ -260,7 +249,7 @@
 
                         $.ajax({
                             type: 'DELETE',
-                            url: '{{ url('/offices/delete') }}/' + id,
+                            url: '{{ url('/divisions/delete') }}/' + id,
                             data: {
                                 "_token": "{{ csrf_token() }}",
                             },
@@ -274,7 +263,7 @@
 
                                 }, 700);
 
-                                var oTable = $('#office-dt').dataTable();
+                                var oTable = $('#division-dt').dataTable();
                                 oTable.fnDraw(false);
                             }
                         });

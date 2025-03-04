@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ActionTicketController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CallerTypeController;
@@ -158,12 +159,12 @@ Route::get('/ticket/show-assign/{id}',[TicketController::class, 'getOffice']);
 
 
 //action ticket
-Route::post('/ticket/update/store', [ActionTicketController::class, 'store']);
-Route::post('/ticket/update/working', [TicketController::class, 'startWorking']);
-Route::post('/ticket/update/processed', [TicketController::class, 'ticketProcessed']);
-Route::get('/ticket/update/assigned/{id}', [TicketController::class, 'assigned']);
-Route::get('/ticket/update/action-status/{id}', [TicketController::class, 'actionStatus']);
-Route::delete('/ticket/update/remove/{id}', [TicketController::class, 'removeUserOffice']);
+//Route::post('/ticket/update/store', [ActionTicketController::class, 'store']);
+//Route::post('/ticket/update/working', [TicketController::class, 'startWorking']);
+//Route::post('/ticket/update/processed', [TicketController::class, 'ticketProcessed']);
+//Route::get('/ticket/update/assigned/{id}', [TicketController::class, 'assigned']);
+//Route::get('/ticket/update/action-status/{id}', [TicketController::class, 'actionStatus']);
+//Route::delete('/ticket/update/remove/{id}', [TicketController::class, 'removeUserOffice']);
 
        
 });

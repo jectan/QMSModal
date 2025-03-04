@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BarangaySeeder::class);
         $this->call(SeriesSeeder::class);
         $this->call(AccountSeeder::class);
+        $this->call(UnitDivSeeder::class);
       
     }
 }

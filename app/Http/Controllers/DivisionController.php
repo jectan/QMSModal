@@ -40,10 +40,10 @@ class DivisionController extends Controller
             return datatables()->of(Division::select('*'))
             ->addColumn('action', 
             '<div class="btn-group">
-                <button type="button" class="btn btn-sm btn-info" href="javascript:void(0)" onClick="editOffice({{ $divID }})" data-toggle="tooltip" data-original-title="Edit">
+                <button type="button" class="btn btn-sm btn-info" href="javascript:void(0)" onClick="editDivision({{ $divID }})" data-toggle="tooltip" data-original-title="Edit">
                 <span class="material-icons" style="font-size: 20px;">edit</span>
                 </button>
-                <button type="button" class="btn btn-sm btn-info" href="javascript:void(0)" onclick="deleteOffice(this)" data-id="{{ $divID }}" data-toggle="tooltip" data-original-title="Delete">
+                <button type="button" class="btn btn-sm btn-info" href="javascript:void(0)" onclick="deleteDivision(this)" data-id="{{ $divID }}" data-toggle="tooltip" data-original-title="Delete">
                 <span class="material-icons" style="font-size: 20px;">delete</span>
                 </button>
             </div>')
@@ -62,23 +62,20 @@ class DivisionController extends Controller
      * @return \Illuminate\Http\response
      */
     public function store(Request $request)
-    {  
+    { 
         $validator = Validator::make($request->all(), [
-            'code' => 'required|unique:offices,code,' . $request->id . ',id',
-            'name' => 'required|unique:offices,name,' . $request->id . ',id',
-            'head' => 'nullable',
+            'divName' => 'required|unique:division,divName,' . $request->id . ',divID',
         ]);
-        
         if ($validator->fails()){
 
             return response()->json(['errors'=>$validator->errors()->all()]);
             
         }else{
-            $office = Office::updateOrCreate(['id' => $request->office_id],
+            $office = Division::updateOrCreate(['divID' => $request->divID],
             [
-                'code' => $request->code,
-                'name' => $request->name,
-                'head' => $request->head,                    
+                'divID' => $request->divID,
+                'divName' => $request->divName,
+                'status' => $request->status,                    
             ]);    
                          
             return response()->json(['success'=> 'Successfully saved.', 'office' => $office]);
@@ -92,11 +89,11 @@ class DivisionController extends Controller
      * @return \Illuminate\Http\response
      */
     public function edit(Request $request)
-    {   
-        $where = array('id' => $request->id);
-        $Office  = Office::where($where)->first();
+    {
+        $where = array('divID' => $request->divID);
+        $Division  = Division::where($where)->first();
       
-        return response()->json($Office);
+        return response()->json($Division);
     }
       
     /**
@@ -106,15 +103,15 @@ class DivisionController extends Controller
      * @return \Illuminate\Http\response
      */
 
-    public function destroy(Office $office, Request $request, $id)
+    public function destroy(Division $division, Request $request, $id)
     {
-        $Office = Office::where('id',$request->id)->delete();
+        $Division = Division::where('divID',$request->id)->delete();
         return response()->json(array('success' => true));
     }
 
     public function getOffices()
     {
-        $empData['data'] = Office::orderby("name","asc")->get();
+        $empData['data'] = Division::orderby("name","asc")->get();
         return response()->json($empData);
     }
 }
