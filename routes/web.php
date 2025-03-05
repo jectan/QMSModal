@@ -8,7 +8,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CallerTypeController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\UnitController;
-use App\Http\Controllers\PositionController;
+use App\Http\Controllers\DocTypeController;
+use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\CallerController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FeedbacktrackController;
@@ -137,6 +138,18 @@ Route::get('/get-divisions', [UnitController::class, 'getDivisions']);
 Route::post('/units/store', [UnitController::class, 'store']);
 Route::post('/units/update', [UnitController::class, 'edit']);
 Route::delete('/units/delete/{id}', [UnitController::class, 'destroy']);
+
+//DocType
+Route::get('/docTypes', [DocTypeController::class, 'index']);
+Route::post('/docTypes/store', [DocTypeController::class, 'store']);
+Route::post('/docTypes/update', [DocTypeController::class, 'edit']);
+Route::delete('/docTypes/delete/{id}', [DocTypeController::class, 'destroy']);
+
+//RequestType
+Route::get('/requestTypes', [RequestTypeController::class, 'index']);
+Route::post('/requestTypes/store', [RequestTypeController::class, 'store']);
+Route::post('/requestTypes/update', [RequestTypeController::class, 'edit']);
+Route::delete('/requestTypes/delete/{id}', [RequestTypeController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'role:1,2'], function (){

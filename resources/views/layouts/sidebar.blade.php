@@ -108,15 +108,21 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/caller-type" class="nav-link {{ $page == 'Caller Type' ? 'active' : '' }}">
+                <a href="/docTypes" class="nav-link {{ $page == 'DocType' ? 'active' : '' }}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Caller Type</p>
+                  <p>Document Type</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/position" class="nav-link {{ $page == 'Position' ? 'active' : '' }}">
+                <a href="/requestTypes" class="nav-link {{ $page == 'RequestType' ? 'active' : '' }}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Position</p>
+                  <p>Request Type</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/roles" class="nav-link {{ $page == 'Role' ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Roles</p>
                 </a>
               </li>
             </ul>
