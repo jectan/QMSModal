@@ -15,5 +15,10 @@
         "lodash": "^4.17.19",
         "postcss": "^8.1.14",
         "sweetalert2": "^11.1.4"
+    },
+    "dependencies": {
+        "jquery": "^3.7.1",
+        "jquery-qrcode": "^1.0.0",
+        "jquery-validation": "^1.21.0"
     }
 }

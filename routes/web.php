@@ -7,6 +7,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CallerTypeController;
 use App\Http\Controllers\DivisionController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\CallerController;
 use App\Http\Controllers\FeedbackController;
@@ -129,6 +130,13 @@ Route::get('/divisions', [DivisionController::class, 'index']);
 Route::post('/divisions/store', [DivisionController::class, 'store']);
 Route::post('/divisions/update', [DivisionController::class, 'edit']);
 Route::delete('/divisions/delete/{id}', [DivisionController::class, 'destroy']);
+
+//Unit
+Route::get('/units', [UnitController::class, 'index']);
+Route::get('/get-divisions', [UnitController::class, 'getDivisions']);
+Route::post('/units/store', [UnitController::class, 'store']);
+Route::post('/units/update', [UnitController::class, 'edit']);
+Route::delete('/units/delete/{id}', [UnitController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'role:1,2'], function (){

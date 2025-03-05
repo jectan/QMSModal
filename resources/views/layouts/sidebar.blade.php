@@ -3,7 +3,7 @@
     <div class="sidebar sidebar-uppernav ">
       <a href="/" class="brand-link">
           <img src="/img/logo1.png" alt="AdminLTE Logo" class="brand-image" style="opacity: .8">
-          <span class="brand-text" style="font-size: 1.5rem;"><i>e</i>-Sumbong</span><br>
+          <span class="brand-text" style="font-size: 1.5rem;">DICT QMS</span><br>
           
       </a>
     </div>
@@ -96,21 +96,21 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/roles" class="nav-link {{ $page == 'Roles' ? 'active' : '' }}">
+                <a href="/divisions" class="nav-link {{ $page == 'Division' ? 'active' : '' }}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Roles</p>
+                  <p>Divisions</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/units" class="nav-link {{ $page == 'Unit' ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Units</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="/caller-type" class="nav-link {{ $page == 'Caller Type' ? 'active' : '' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Caller Type</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="/divisions" class="nav-link {{ $page == 'Division' ? 'active' : '' }}">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Divisions</p>
                 </a>
               </li>
               <li class="nav-item">
