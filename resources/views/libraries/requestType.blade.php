@@ -1,18 +1,18 @@
 @extends('layouts.app',[
-'page' => 'Division',
+'page' => 'RequestType',
 'title' => ''
 ])
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h4 class="h2" style="padding-left: 5px">List of Divisions</h4>
+        <h4 class="h2" style="padding-left: 5px">List of Request Types</h4>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
                 <div class="container-login100-form-btn">
                     <div class="wrap-login100-form-btn">
                         <div class="login100-form-bgbtn"></div>
-                        <button class="login100-form-btn" data-toggle="modal" data-target="#division-modal"><i
-                                class="fa fa-plus pr-2"></i>Division</button>
+                        <button class="login100-form-btn" data-toggle="modal" data-target="#requestType-modal"><i
+                                class="fa fa-plus pr-2"></i>RequestType</button>
                     </div>
                 </div>
             </div>
@@ -45,15 +45,15 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <table class="table table-striped w-100" id="division-dt" style="font-size: 14px">
+                    <table class="table table-striped w-100" id="requestType-dt" style="font-size: 14px">
                         <thead>
                             <tr>
-                                {{-- <th style="width: 5%">divID</th> --}}
+                                {{-- <th style="width: 5%">requestTypeID</th> --}}
                                 <th style="width: 10%">No</th>
-                                <th style="width: 55%">Division</th>
+                                <th style="width: 55%">Request Type</th>
                                 <th style="width: 10%">Status</th>
 
-                                {{-- <th style="width: 10%">divName</th> --}}
+                                {{-- <th style="width: 10%">requestTypeDesc</th> --}}
                                 {{-- <th style="width: 5%">Status</th> --}}
                                 <th style="width: 15%">Action</th>
                             </tr>
@@ -66,25 +66,25 @@
 
 
     <!-- MODAL -->
-    <div class="modal fade" id="division-modal" aria-hidden="true">
+    <div class="modal fade" id="requestType-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
             <div class="modal-content">
-                <form action="javascript:void(0)" id="division-form" name="division-form" class="form-horizontal" method="POST">
+                <form action="javascript:void(0)" id="requestType-form" name="requestType-form" class="form-horizontal" method="POST">
                     @csrf
                     <div class="modal-header">
-                        <h4 class="modal-title" id="division-modal-title"></h4>
+                        <h4 class="modal-title" id="requestType-modal-title"></h4>
                     </div>
                     <div class="modal-body">
 
                         <!-- id -->
-                        <input type="hidden" name="divID" id="divID">
+                        <input type="hidden" name="requestTypeID" id="requestTypeID">
 
-                        <!-- Division Name -->
+                        <!-- RequestType Name -->
                         <div class="form-group">
-                            <label for="Division name" class="col-sm-4 control-label">Division Name<span
+                            <label for="RequestType name" class="col-sm-4 control-label">Request Type<span
                                     class="require">*</span></label>
                             <div class="col-sm-12">
-                                <input type="text" class="form-control" id="divName" name="divName"
+                                <input type="text" class="form-control" id="requestTypeDesc" name="requestTypeDesc"
                                     placeholder="Enter Name">
                             </div>
                         </div>
@@ -102,7 +102,7 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="division-btn-save">Save</button>
+                            <button type="submit" class="btn btn-primary" id="requestType-btn-save">Save</button>
                         </div>
                     </div>
                 </form>
@@ -119,17 +119,17 @@
         });
 
         $(document).ready(function() {
-            $('#division-dt').DataTable({
+            $('#requestType-dt').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ url('/divisions') }}",
+                ajax: "{{ url('/requestTypes') }}",
                 columns: [{
-                        data: 'divID',
-                        name: 'divID'
+                        data: 'requestTypeID',
+                        name: 'requestTypeID'
                     },
                     {
-                        data: 'divName',
-                        name: 'divName'
+                        data: 'requestTypeDesc',
+                        name: 'requestTypeDesc'
                     },
                     {
                         data: 'status',
@@ -156,13 +156,13 @@
         });
 
         // Submit button
-        $('#division-form').submit(function(e) {
+        $('#requestType-form').submit(function(e) {
             e.preventDefault();
             var formData = new FormData(this);
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('/divisions/store') }}",
+                url: "{{ url('/requestTypes/store') }}",
                 data: formData,
                 cache: false,
                 contentType: false,
@@ -175,13 +175,13 @@
                             title: res.success
                         });
 
-                        $("#division-modal").modal('hide');
-                        var oTable = $('#division-dt').dataTable();
+                        $("#requestType-modal").modal('hide');
+                        var oTable = $('#requestType-dt').dataTable();
                         oTable.fnDraw(false);
 
-                        $("#division-btn-save").html('Save Changes');
-                        $("#division-btn-save").attr("disabled", false);
-                        $("#division-form")[0].reset();
+                        $("#requestType-btn-save").html('Save Changes');
+                        $("#requestType-btn-save").attr("disabled", false);
+                        $("#requestType-form")[0].reset();
                     } else {
                         swal.fire({
                             icon: 'error',
@@ -196,22 +196,22 @@
         });
 
         //SHOW DATA TO UPDATE
-        function editDivision(divID) {
+        function editRequestType(requestTypeID) {
             // self.reset('Office'); //calling function reset() at index.blade
 
             $.ajax({
                 type: "POST",
-                url: "{{ url('/divisions/update') }}",
+                url: "{{ url('/requestTypes/update') }}",
                 data: {
-                    divID: divID
+                    requestTypeID: requestTypeID
                 },
                 "token": "{{ csrf_token() }}",
                 dataType: 'json',
                 success: function(res) {
-                    $('#division-modal-title').html("Edit Division");
-                    $('#division-modal').modal('show');
-                    $('#divID').val(res.divID);
-                    $('#divName').val(res.divName);
+                    $('#requestType-modal-title').html("Edit RequestType");
+                    $('#requestType-modal').modal('show');
+                    $('#requestTypeID').val(res.requestTypeID);
+                    $('#requestTypeDesc').val(res.requestTypeDesc);
                     $('#status').val(res.status).change();
 
                 },
@@ -223,7 +223,7 @@
         }
 
         //DELETE DATA
-        function deleteDivision(e) {
+        function deleteRequestType(e) {
             let id = e.getAttribute('data-id');
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
@@ -255,7 +255,7 @@
 
                         $.ajax({
                             type: 'DELETE',
-                            url: '{{ url('/divisions/delete') }}/' + id,
+                            url: '{{ url('/requestTypes/delete') }}/' + id,
                             data: {
                                 "_token": "{{ csrf_token() }}",
                             },
@@ -269,7 +269,7 @@
 
                                 }, 700);
 
-                                var oTable = $('#division-dt').dataTable();
+                                var oTable = $('#requestType-dt').dataTable();
                                 oTable.fnDraw(false);
                             }
                         });

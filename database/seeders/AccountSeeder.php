@@ -18,9 +18,10 @@ class AccountSeeder extends Seeder {
         DB::table('offices')->delete();
         $password = Hash::make('jec');
         $Role =  Role::create(array('name' => 'Administrator'));
-        Role::create(array('name' => 'Call Agent'));
-        Role::create(array('name' => 'Admin Staff'));
-        Role::create(array('name' => 'Office Staff'));
+        Role::create(array('name' => 'Document Management Team'));
+        Role::create(array('name' => 'Regional Director'));
+        Role::create(array('name' => 'Quality Management Representative'));
+        Role::create(array('name' => 'Staff'));
 
         Office::create(array('name' => "City Accountant's Office"));
         Office::create(array('name' => "City Administrator's Office"));

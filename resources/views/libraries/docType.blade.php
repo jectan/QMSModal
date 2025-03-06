@@ -1,18 +1,18 @@
 @extends('layouts.app',[
-'page' => 'Division',
+'page' => 'DocType',
 'title' => ''
 ])
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h4 class="h2" style="padding-left: 5px">List of Divisions</h4>
+        <h4 class="h2" style="padding-left: 5px">List of Document Types</h4>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
                 <div class="container-login100-form-btn">
                     <div class="wrap-login100-form-btn">
                         <div class="login100-form-bgbtn"></div>
-                        <button class="login100-form-btn" data-toggle="modal" data-target="#division-modal"><i
-                                class="fa fa-plus pr-2"></i>Division</button>
+                        <button class="login100-form-btn" data-toggle="modal" data-target="#docType-modal"><i
+                                class="fa fa-plus pr-2"></i>DocType</button>
                     </div>
                 </div>
             </div>
@@ -45,15 +45,15 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <table class="table table-striped w-100" id="division-dt" style="font-size: 14px">
+                    <table class="table table-striped w-100" id="docType-dt" style="font-size: 14px">
                         <thead>
                             <tr>
-                                {{-- <th style="width: 5%">divID</th> --}}
+                                {{-- <th style="width: 5%">docTypeID</th> --}}
                                 <th style="width: 10%">No</th>
-                                <th style="width: 55%">Division</th>
+                                <th style="width: 55%">Document Type</th>
                                 <th style="width: 10%">Status</th>
 
-                                {{-- <th style="width: 10%">divName</th> --}}
+                                {{-- <th style="width: 10%">docTypeDesc</th> --}}
                                 {{-- <th style="width: 5%">Status</th> --}}
                                 <th style="width: 15%">Action</th>
                             </tr>
@@ -66,25 +66,25 @@
 
 
     <!-- MODAL -->
-    <div class="modal fade" id="division-modal" aria-hidden="true">
+    <div class="modal fade" id="docType-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
             <div class="modal-content">
-                <form action="javascript:void(0)" id="division-form" name="division-form" class="form-horizontal" method="POST">
+                <form action="javascript:void(0)" id="docType-form" name="docType-form" class="form-horizontal" method="POST">
                     @csrf
                     <div class="modal-header">
-                        <h4 class="modal-title" id="division-modal-title"></h4>
+                        <h4 class="modal-title" id="docType-modal-title"></h4>
                     </div>
                     <div class="modal-body">
 
                         <!-- id -->
-                        <input type="hidden" name="divID" id="divID">
+                        <input type="hidden" name="docTypeID" id="docTypeID">
 
-                        <!-- Division Name -->
+                        <!-- DocType Name -->
                         <div class="form-group">
-                            <label for="Division name" class="col-sm-4 control-label">Division Name<span
+                            <label for="DocType name" class="col-sm-4 control-label">Document Type<span
                                     class="require">*</span></label>
                             <div class="col-sm-12">
-                                <input type="text" class="form-control" id="divName" name="divName"
+                                <input type="text" class="form-control" id="docTypeDesc" name="docTypeDesc"
                                     placeholder="Enter Name">
                             </div>
                         </div>
@@ -102,7 +102,7 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="division-btn-save">Save</button>
+                            <button type="submit" class="btn btn-primary" id="docType-btn-save">Save</button>
                         </div>
                     </div>
                 </form>
@@ -119,17 +119,17 @@
         });
 
         $(document).ready(function() {
-            $('#division-dt').DataTable({
+            $('#docType-dt').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ url('/divisions') }}",
+                ajax: "{{ url('/docTypes') }}",
                 columns: [{
-                        data: 'divID',
-                        name: 'divID'
+                        data: 'docTypeID',
+                        name: 'docTypeID'
                     },
                     {
-                        data: 'divName',
-                        name: 'divName'
+                        data: 'docTypeDesc',
+                        name: 'docTypeDesc'
                     },
                     {
                         data: 'status',
@@ -156,13 +156,13 @@
         });
 
         // Submit button
-        $('#division-form').submit(function(e) {
+        $('#docType-form').submit(function(e) {
             e.preventDefault();
             var formData = new FormData(this);
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('/divisions/store') }}",
+                url: "{{ url('/docTypes/store') }}",
                 data: formData,
                 cache: false,
                 contentType: false,
@@ -175,13 +175,13 @@
                             title: res.success
                         });
 
-                        $("#division-modal").modal('hide');
-                        var oTable = $('#division-dt').dataTable();
+                        $("#docType-modal").modal('hide');
+                        var oTable = $('#docType-dt').dataTable();
                         oTable.fnDraw(false);
 
-                        $("#division-btn-save").html('Save Changes');
-                        $("#division-btn-save").attr("disabled", false);
-                        $("#division-form")[0].reset();
+                        $("#docType-btn-save").html('Save Changes');
+                        $("#docType-btn-save").attr("disabled", false);
+                        $("#docType-form")[0].reset();
                     } else {
                         swal.fire({
                             icon: 'error',
@@ -196,22 +196,22 @@
         });
 
         //SHOW DATA TO UPDATE
-        function editDivision(divID) {
+        function editDocType(docTypeID) {
             // self.reset('Office'); //calling function reset() at index.blade
 
             $.ajax({
                 type: "POST",
-                url: "{{ url('/divisions/update') }}",
+                url: "{{ url('/docTypes/update') }}",
                 data: {
-                    divID: divID
+                    docTypeID: docTypeID
                 },
                 "token": "{{ csrf_token() }}",
                 dataType: 'json',
                 success: function(res) {
-                    $('#division-modal-title').html("Edit Division");
-                    $('#division-modal').modal('show');
-                    $('#divID').val(res.divID);
-                    $('#divName').val(res.divName);
+                    $('#docType-modal-title').html("Edit DocType");
+                    $('#docType-modal').modal('show');
+                    $('#docTypeID').val(res.docTypeID);
+                    $('#docTypeDesc').val(res.docTypeDesc);
                     $('#status').val(res.status).change();
 
                 },
@@ -223,7 +223,7 @@
         }
 
         //DELETE DATA
-        function deleteDivision(e) {
+        function deleteDocType(e) {
             let id = e.getAttribute('data-id');
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
@@ -255,7 +255,7 @@
 
                         $.ajax({
                             type: 'DELETE',
-                            url: '{{ url('/divisions/delete') }}/' + id,
+                            url: '{{ url('/docTypes/delete') }}/' + id,
                             data: {
                                 "_token": "{{ csrf_token() }}",
                             },
@@ -269,7 +269,7 @@
 
                                 }, 700);
 
-                                var oTable = $('#division-dt').dataTable();
+                                var oTable = $('#docType-dt').dataTable();
                                 oTable.fnDraw(false);
                             }
                         });

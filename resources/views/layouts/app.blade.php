@@ -23,7 +23,7 @@
   <!-- Preloader -->
   <link rel="stylesheet" href="/css/preload.css">
   <!-- patient-->
-  <link rel="stylesheet" href="/css/patient.css">
+  <!-- <link rel="stylesheet" href="/css/patient.css"> -->
 
   <!-- button CSS -->
   <link rel="stylesheet" href="/css/button.css">
@@ -60,7 +60,9 @@
   <link rel="stylesheet" href="/bower_components/admin-lte/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
 
   <!-- JS-Validate -->
-  <script language="JavaScript" type="text/javascript" src="/js/jquery.validate.js"></script>
+  <!-- <script language="JavaScript" type="text/javascript" src="/js/jquery.validate.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+
 
    <!-- daterange picker -->
    <link rel="stylesheet" href="/bower_components/admin-lte/plugins/daterangepicker/daterangepicker.css">
@@ -174,10 +176,10 @@
 <!-- preloader -->
 <script src="/js/preloader.js"></script>
 <!-- drag and drop picture -->
-<script src="/js/patient-picture.js"></script>
+<!-- <script src="/js/patient-picture.js"></script> -->
 
-<script src="/js/sidebar.css"></script>
-<script src="/css/sidebar.js"></script>
+<script src="/js/sidebar.js" defer></script>
+<script src="/css/sidebar.css"></script>
 
 <!-- Datatables -->
 <script src="/bower_components/admin-lte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
@@ -194,7 +196,6 @@
 
 <!-- AdminLTE App -->
 <script src="/bower_components/admin-lte/dist/js/adminlte.min.js"></script>
-<script src="/bower_components/jquery/src/qrcode/dist/jquery-qrcode.js"></script>
 
  <!-- Summernote -->
  <script src="/bower_components/admin-lte/plugins/summernote/summernote-bs4.min.js"></script>

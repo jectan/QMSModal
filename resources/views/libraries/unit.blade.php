@@ -1,18 +1,18 @@
 @extends('layouts.app',[
-'page' => 'Division',
+'page' => 'Unit',
 'title' => ''
 ])
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h4 class="h2" style="padding-left: 5px">List of Divisions</h4>
+        <h4 class="h2" style="padding-left: 5px">List of Units</h4>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
                 <div class="container-login100-form-btn">
                     <div class="wrap-login100-form-btn">
                         <div class="login100-form-bgbtn"></div>
-                        <button class="login100-form-btn" data-toggle="modal" data-target="#division-modal"><i
-                                class="fa fa-plus pr-2"></i>Division</button>
+                        <button class="login100-form-btn" data-toggle="modal" data-target="#unit-modal"><i
+                                class="fa fa-plus pr-2"></i>Unit</button>
                     </div>
                 </div>
             </div>
@@ -45,14 +45,16 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body table-responsive">
-                    <table class="table table-striped w-100" id="division-dt" style="font-size: 14px">
+                    <table class="table table-striped w-100" id="unit-dt" style="font-size: 14px">
                         <thead>
                             <tr>
-                                {{-- <th style="width: 5%">divID</th> --}}
+                                {{-- <th style="width: 5%">unitID</th> --}}
                                 <th style="width: 10%">No</th>
-                                <th style="width: 55%">Division</th>
+                                <th style="width: 20%">Unit</th>
+                                <th style="width: 35%">Division</th>
                                 <th style="width: 10%">Status</th>
 
+                                {{-- <th style="width: 10%">unitName</th> --}}
                                 {{-- <th style="width: 10%">divName</th> --}}
                                 {{-- <th style="width: 5%">Status</th> --}}
                                 <th style="width: 15%">Action</th>
@@ -66,27 +68,35 @@
 
 
     <!-- MODAL -->
-    <div class="modal fade" id="division-modal" aria-hidden="true">
+    <div class="modal fade" id="unit-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
             <div class="modal-content">
-                <form action="javascript:void(0)" id="division-form" name="division-form" class="form-horizontal" method="POST">
+                <form action="javascript:void(0)" id="unit-form" name="unit-form" class="form-horizontal" method="POST">
                     @csrf
                     <div class="modal-header">
-                        <h4 class="modal-title" id="division-modal-title"></h4>
+                        <h4 class="modal-title" id="unit-modal-title"></h4>
                     </div>
                     <div class="modal-body">
 
                         <!-- id -->
-                        <input type="hidden" name="divID" id="divID">
+                        <input type="hidden" name="unitID" id="unitID">
 
-                        <!-- Division Name -->
+                        <!-- Unit Name -->
                         <div class="form-group">
-                            <label for="Division name" class="col-sm-4 control-label">Division Name<span
+                            <label for="Unit name" class="col-sm-4 control-label">Unit Name<span
                                     class="require">*</span></label>
                             <div class="col-sm-12">
-                                <input type="text" class="form-control" id="divName" name="divName"
+                                <input type="text" class="form-control" id="unitName" name="unitName"
                                     placeholder="Enter Name">
                             </div>
+                        </div>
+
+                        <!-- Division Dropdown -->
+                        <div class="form-group">
+                            <label for="division" class="form-label"><strong>Division</strong></label>
+                            <select name="divID" id="divID" class="form-control">
+                                <option value="">Select Division</option>
+                            </select>
                         </div>
 
                         <!-- Status -->
@@ -102,7 +112,7 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="division-btn-save">Save</button>
+                            <button type="submit" class="btn btn-primary" id="unit-btn-save">Save</button>
                         </div>
                     </div>
                 </form>
@@ -119,13 +129,17 @@
         });
 
         $(document).ready(function() {
-            $('#division-dt').DataTable({
+            $('#unit-dt').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ url('/divisions') }}",
+                ajax: "{{ url('/units') }}",
                 columns: [{
-                        data: 'divID',
-                        name: 'divID'
+                        data: 'unitID',
+                        name: 'unitID'
+                    },
+                    {
+                        data: 'unitName',
+                        name: 'unitName'
                     },
                     {
                         data: 'divName',
@@ -137,8 +151,6 @@
                         render: function(data, type, row) {
                             return data == 1 ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>';
                         }
-
-                        
                     },
 
                     {
@@ -151,18 +163,16 @@
                     [0, 'asc']
                 ]
             });
-
-
         });
 
         // Submit button
-        $('#division-form').submit(function(e) {
+        $('#unit-form').submit(function(e) {
             e.preventDefault();
             var formData = new FormData(this);
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('/divisions/store') }}",
+                url: "{{ url('/units/store') }}",
                 data: formData,
                 cache: false,
                 contentType: false,
@@ -175,13 +185,13 @@
                             title: res.success
                         });
 
-                        $("#division-modal").modal('hide');
-                        var oTable = $('#division-dt').dataTable();
+                        $("#unit-modal").modal('hide');
+                        var oTable = $('#unit-dt').dataTable();
                         oTable.fnDraw(false);
 
-                        $("#division-btn-save").html('Save Changes');
-                        $("#division-btn-save").attr("disabled", false);
-                        $("#division-form")[0].reset();
+                        $("#unit-btn-save").html('Save Changes');
+                        $("#unit-btn-save").attr("disabled", false);
+                        $("#unit-form")[0].reset();
                     } else {
                         swal.fire({
                             icon: 'error',
@@ -195,27 +205,63 @@
             });
         });
 
-        //SHOW DATA TO UPDATE
-        function editDivision(divID) {
-            // self.reset('Office'); //calling function reset() at index.blade
+        // Define loadDivisions before using it
+        function loadDivisions(selectedDivID = null, callback = null) {
+            $.ajax({
+                url: "/get-divisions",
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    console.log("Response received:", response);
 
+                    if (response.data && response.data.length > 0) {
+                        let options = '';
+
+                        response.data.forEach(function (division) {
+                            options += `<option value="${division.divID}">${division.divName}</option>`;
+                        });
+
+                        $("#divID").html(options);
+
+                        // Execute callback after setting dropdown options
+                        if (callback) {
+                            callback();
+                        }
+                    } else {
+                        $("#divID").html('<option value="">No Divisions Available</option>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", xhr.responseText);
+                }
+            });
+        }
+
+        // Call loadDivisions when modal opens
+        $("#unit-modal").on("show.bs.modal", function () {
+            loadDivisions();
+        });
+
+        // editUnit function
+        function editUnit(unitID) {
             $.ajax({
                 type: "POST",
-                url: "{{ url('/divisions/update') }}",
-                data: {
-                    divID: divID
-                },
+                url: "{{ url('/units/update') }}",
+                data: { unitID: unitID },
                 "token": "{{ csrf_token() }}",
                 dataType: 'json',
                 success: function(res) {
-                    $('#division-modal-title').html("Edit Division");
-                    $('#division-modal').modal('show');
-                    $('#divID').val(res.divID);
-                    $('#divName').val(res.divName);
+                    $('#unit-modal-title').html("Edit Unit");
+                    $('#unit-modal').modal('show');
+                    $('#unitID').val(res.unitID);
+                    $('#unitName').val(res.unitName);
                     $('#status').val(res.status).change();
 
+                    // Load divisions first, then set the selected value in a callback
+                    loadDivisions(res.divID, function () {
+                        $("#divID").val(res.divID).change(); // Ensure the correct selection
+                    });
                 },
-
                 error: function(data) {
                     console.log(data);
                 }
@@ -223,7 +269,7 @@
         }
 
         //DELETE DATA
-        function deleteDivision(e) {
+        function deleteUnit(e) {
             let id = e.getAttribute('data-id');
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
@@ -255,7 +301,7 @@
 
                         $.ajax({
                             type: 'DELETE',
-                            url: '{{ url('/divisions/delete') }}/' + id,
+                            url: '{{ url('/units/delete') }}/' + id,
                             data: {
                                 "_token": "{{ csrf_token() }}",
                             },
@@ -269,7 +315,7 @@
 
                                 }, 700);
 
-                                var oTable = $('#division-dt').dataTable();
+                                var oTable = $('#unit-dt').dataTable();
                                 oTable.fnDraw(false);
                             }
                         });
