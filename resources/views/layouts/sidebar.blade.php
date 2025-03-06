@@ -1,9 +1,9 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-body-nav" style="z-index: 1">
+<aside class="main-sidebar sidebar-dark-primary elevation-4" style="z-index: 1">
     <!-- Brand Logo -->
-    <div class="sidebar sidebar-uppernav ">
+    <div class="sidebar sidebar ">
       <a href="/" class="brand-link">
           <img src="/img/logo1.png" alt="AdminLTE Logo" class="brand-image" style="opacity: .8">
-          <span class="brand-text" style="font-size: 1.5rem;"><i>e</i>-Sumbong</span><br>
+          <span class="brand-text" style="font-size: 10px;word-wrap: break-word; ">Document Management System</span><br>
           
       </a>
     </div>

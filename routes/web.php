@@ -14,6 +14,8 @@ use App\Http\Controllers\FeedbacktrackController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardV2Controller;
+
 
     Route::any('slug', function()
     {
@@ -63,6 +65,8 @@ Route::post('/setpassword', [AuthController::class, 'storePassword']);
 //dashboard
 Route::get('/dashboard/computeTotal',[DashboardController::class, 'compute']);
 Route::get('/dashboard',[DashboardController::class, 'index']);
+Route::get('/dashboardv2', [DashboardV2Controller::class, 'index']);
+
 Route::get('/dashboard/topTenHighOffices', [DashboardController::class, 'topTenHighOffices']);
 Route::get('/dashboard/topTenLowOffices', [DashboardController::class, 'topTenLowOffices']);
 Route::get('/dashboard/topFiveUnresolved', [DashboardController::class, 'topFiveUnresolved']);

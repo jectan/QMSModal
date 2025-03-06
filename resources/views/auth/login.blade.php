@@ -6,7 +6,6 @@
 			<a href="/" class="nav-link text-center" data-toggle="dropdown" style="padding: 0;">
 				<img src="/img/login2.png" class="user-image float-center" alt="User Image" style="width:100%; margin-top: -4%">
 			</a>
-			<br>
 			<div style="text-align: center">
 				<h2 class="header">Login</h2>
 			</div>
