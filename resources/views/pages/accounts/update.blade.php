@@ -48,29 +48,22 @@
                             <div class="col-md-8">
                                 <input id="lastname" name="lastname" type="text" class="form-control" value="{{$user->staff->lastname}}" required >
                             </div>
-                        </div>          
-                        
-                        <!-- Job Title -->
-                        <div class="form-group row">
-                            <label for="job_title" class="col-md-4">Job Title</label>
-                            <div class="col-md-8">
-                                <input id="job_title" name="job_title" type="text" class="form-control" value="{{$user->staff->job_title}}" >
-                            </div>
                         </div>
 
-                        <!-- Office -->
+                        <!-- Unit -->
                         <div class="form-group row">
-                            <label for="office" class="col-md-4">Office<span class="require">*</span></label>
+                            <label for="unit" class="col-md-4">Unit<span class="require">*</span></label>
                             <div class="input-group col-md-8">
-                                <select name="office_id" id="office_id" class="form-control @error('office_id') is-invalid @enderror">
+                                <select name="unitID" id="unitID" class="form-control @error('unitID') is-invalid @enderror">
                                     <option value="" disabled selected></option>
-                                    @foreach ($offices as $office)
-                                        <option {{ $user->staff->office_id == $office->id ? 'selected' : '' }} value="{{$office->id}}">{{$office->name}}</option> 
+                                    @foreach ($unit as $unit)
+                                        <option {{ $user->staff->unitID == $unit->unitID ? 'selected' : '' }} value="{{$unit->unitID}}">{{$unit->unitName}}</option> 
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                    </div></div>
+                    </div>
+                </div>
 
                     <div class="col-md-6">
                         <div class="card-body">
@@ -88,24 +81,6 @@
                                 @enderror
                             </div>
                         </div>
-
-                        <!-- Role -->
-                        {{-- <div class="form-group row">       
-                            <label for="role" class="col-md-4">User Role<span class="require">*</span></label>
-                            <div class="input-group col-md-8">
-                           
-                            <select  name="role_id" id="role_id">
-                                <option value="" disabled selected></option>
-                                @foreach ($user->roles as $role)    
-            
-                                <option {{ $role->id == $role->id ? 'selected' : '' }} value="{{$role->id}}">{{$role->name}}</option> 
-                                @endforeach
-                                @foreach ($roles as $role)
-                                <option {{ $role->id == $role->id}} </option>
-                                @endforeach
-                              </select>   
-                            </div>                     
-                        </div> --}}
                          <!-- Role -->
                          <div class="form-group row" id="user_roles">
                             <label for="name" class="col-md-4">User Role<span class="require">*</span></label>
@@ -113,35 +88,15 @@
                                 <select name="role_id" id="role_id" class="form-control">
                                     <option value="" disabled selected></option>
                                     @foreach ($roles as $role)
-                                        {{-- @if (($role_id) == $role->id) --}}
-                                            {{-- <option value="{{ $role->id }}" selected>{{ $role->name }}</option> --}}
-                                        <option {{ $role->id  ? 'selected' : '' }} value="{{$role->id}}">{{$role->name}}</option> 
-
-                                        {{-- @else --}}
-                                            {{-- <option value="{{ $role->id }}">{{ $role->name }}</option> --}}
-                                        {{-- @endif --}}
+                                        <option {{ $user->role_id == $role->id ? 'selected' : '' }} value="{{$role->id}}">{{$role->name}}</option>
                                     @endforeach
                                 </select>
-        
-                                {{-- <div class="input-group-append">
-                                    <button type="button" onclick="addUserRole()" id="addbtn" class="btn btn-default btn-flat" ><i class="fa fa-plus pr-2"></i></button>
-                                </div> --}}
-
-                                {{-- <div class="col-md-12 userrolestbl">
-                                    <table class="table table-sm" id="user-roles" style="font-size: 14px">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 80%">Name</th>
-                                                <th style="width: 10%">Action</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                </div> --}}
                             </div>
                         </div>
-                    </div></div>
+                    </div>
                 </div>
             </div>
+        </div>
                         
 
                     

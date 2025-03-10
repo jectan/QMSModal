@@ -72,43 +72,17 @@
                                             <div class="col-md-8">
                                                 <input id="lastname" name="lastname" type="text" class="form-control @error('lastname') is-invalid @enderror" value="{{old('lastname')}}">
                                             </div>
-                                        </div>   
-                                        <!-- Job Title -->
-                                        <div class="form-group row">
-                                            <label for="job_title" class="col-md-3">Job Title</label>
-                                            <div class="col-md-8">
-                                                <input id="job_title" name="job_title" type="text" class="form-control" value="{{old('job_title')}}">
-                                            </div>
                                         </div>
-                                        <!-- Office -->
+                                        <!-- Unit -->
                                         <div class="form-group row">
-                                            <label for="office" class="col-md-3">Office<span class="require">*</span></label>
+                                            <label for="unit" class="col-md-3">Unit<span class="require">*</span></label>
                                             <div class="input-group col-md-8">
-                                                <select name="office_id" id="office_id" class="form-control @error('office_id') is-invalid @enderror">
-                                                    <option value="" disabled selected>Select Office</option>
-                                                    @foreach ($offices as $office)
-                                                        <option {{ old("office_id") == $office->id ? 'selected' : '' }} value="{{$office->id}}">{{$office->name}}</option> 
+                                                <select name="unitID" id="unitID" class="form-control @error('unitID') is-invalid @enderror">
+                                                    <option value="" disabled selected>Select Unit</option>
+                                                    @foreach ($unit as $unit)
+                                                        <option {{ old("unitID") == $unit->unitID ? 'selected' : '' }} value="{{$unit->unitID}}">{{$unit->unitName}}</option> 
                                                     @endforeach
                                                 </select>
-                                        
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-
-                                        <!-- Contact No. -->
-                                        <div class="form-group row">
-                                            <label for="contact_no" class="col-md-4">Contact Number</label>
-                                            <div class="col-md-8">
-                                                <input id="contact_no" name="contact_no" type="text" class="form-control @error('contact_no') is-invalid @enderror" value="{{old('contact_no')}}">
-                                            </div>
-                                        </div>
-
-                                        <!-- Email -->
-                                        <div class="form-group row">
-                                            <label for="email" class="col-md-4">Email Address</label>
-                                            <div class="col-md-8">
-                                                <input id="email" name="email" type="text" class="form-control @error('email') is-invalid @enderror" value="{{old('email')}}">
                                             </div>
                                         </div>
                                     </div>
@@ -126,19 +100,20 @@
 
                         <!-- Second TAB -->
                         <div id="credential-part" class="content" role="tabpanel" aria-labelledby="credential-part-trigger">
-                            <fieldset id="profile" class="pl-5" style="background-color: rgb(247, 255, 255)">
+                            <fieldset id="profile" class="pl-5 mt-3" style="background-color: rgb(247, 255, 255)">
 
                                 <!-- User Role/s -->
                                 <div class="form-group row">
-                                    <label for="office" class="col-md-3">Role<span class="require">*</span></label>
-                                    <div class="input-group col-md-8">
-                                        <select name="role_id" id="role_id" class="form-control @error('role_id') is-invalid @enderror">
-                                            <option value="" disabled selected>Select Role</option>
-                                            @foreach ($roles as $role)
-                                                <option {{ old("role_id") == $role->id ? 'selected' : '' }} value="{{$role->id}}">{{$role->name}}</option> 
-                                            @endforeach
-                                        </select>
-                                
+                                    <div class="col-md-6">
+                                        <label for="unit" class="col-md-3">Role<span class="require">*</span></label>
+                                        <div class="input-group">
+                                            <select name="role_id" id="role_id" class="form-control @error('role_id') is-invalid @enderror">
+                                                <option value="" disabled selected>Select Role</option>
+                                                @foreach ($roles as $role)
+                                                    <option {{ old("role_id") == $role->id ? 'selected' : '' }} value="{{$role->id}}">{{$role->name}}</option> 
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 {{-- <div class="form-group">
@@ -163,15 +138,14 @@
                                                     </span>
                                                 @enderror
                                         </div>
-
-                                        <!-- Default Password -->
-                                        <div class="col-md-6 p-2 pl-3" style="background-color: #f5faff;border:1px solid black;">
-                                            <h6>NOTE: For the first login, use default password: <strong>*1234#</strong></h6>
-                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="card-footer pt-2  p-0 white" style="background-color: white">
+                                    <!-- Default Password -->
+                                    <div class="col-md-6 p-2 pl-3" style="background-color: #f5faff;border:1px solid black;">
+                                            <h6>NOTE: For the first login, use default password: <strong>*1234#</strong></h6>
+                                    </div>
                                     <div class="btn-group float-right">
                                         <button type="button" class="btn btn-default" onclick="stepper.previous()"><i class="fas fa-arrow-left"></i> Previous</button>
                                         <button type="submit" class="btn btn-primary"><i class="fas fa-save pr-2"></i>Submit</button>

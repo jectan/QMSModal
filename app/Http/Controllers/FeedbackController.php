@@ -37,7 +37,7 @@ class FeedbackController extends Controller
     // }
     public function publichome()
     {
-        return view('pages.feedback.home');
+        return view('auth.login');
     }
     public function showform()
     {

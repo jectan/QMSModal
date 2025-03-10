@@ -11,19 +11,14 @@ class Staff extends Model
         'firstname',
         'middlename',
         'lastname',
-        'job_title',
         'contact_no',
         'email',
         'user_id',
-        'office_id',
-        'role_id'
+        'unitID',
     ];
 
-    public function office(){
-        return $this->belongsTo(Office::class, 'office_id', 'id');
-    }
-    public function role(){
-        return $this->belongsTo(Role::class, 'role_id', 'id');
+    public function unit(){
+        return $this->belongsTo(Unit::class, 'unitID', 'unitID');
     }
     public function user(){
         return $this->belongsTo(User::class, 'user_id', 'id');

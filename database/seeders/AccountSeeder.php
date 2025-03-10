@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Staff;
 use App\Models\Office;
+use App\Models\Unit;
 use App\Models\Role;
 
 use Illuminate\Support\Facades\Hash;
@@ -42,7 +43,7 @@ class AccountSeeder extends Seeder {
         Office::create(array('name' => "City Mayor's Office - Business and Permit Licensing Office"));
        
         $User =   User::create(array('username' => 'SuperAdmin', 'password' => $password, 'role_id' => $Role->id));
-        $Office = Office::create(array('name' => "City Mayor's Office - Computer Services Division"));
+        $Unit = Unit::create(array('unitName' => "Management Information Systems Service", 'divID' => '1', 'status' => '1'));
         Office::create(array('name' => "City Mayor's Office - GAD"));
         Office::create(array('name' => "City Mayor's Office - Housing and Land Management Division"));
         Office::create(array('name' => "City Mayor's Office - Internal Audit Unit"));
@@ -61,6 +62,6 @@ class AccountSeeder extends Seeder {
         Office::create(array('name' => "City Treasurer Office"));
         Office::create(array('name' => "City Veterinarian Office"));
 
-        Staff::create(array('firstname' => 'Super', 'lastname' => 'Admin','user_id' => $User->id, 'office_id' => $Office->id,'role_id' => $Role->id));
+        Staff::create(array('firstname' => 'Super', 'lastname' => 'Admin','user_id' => $User->id, 'unitID' => $Unit->unitID));
     }
 }

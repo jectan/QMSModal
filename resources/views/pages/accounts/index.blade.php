@@ -28,7 +28,7 @@
                 <tr>
                     <th style="width: 10%">Id</th>
                     <th style="width: 25%">Name</th>
-                    <th style="width: 20%">Office</th>
+                    <th style="width: 20%">Unit</th>
                     <th style="width: 20%">User Role</th>
                     <th style="width: 15%">Username</th>
                     <th style="width: 10%">Action</th>
@@ -39,8 +39,8 @@
                     <tr>
                     <td>{{$user->id}}</td>
                     <td>{{$user->staff->firstname . ' ' . $user->staff->middlename . ' ' . $user->staff->lastname ?? ''}}</td>
-                    <td>{{$user->staff->office->name}}</td>
-                    <td>{{$user->staff->role->name}}</td>
+                    <td>{{$user->staff->unit->unitName}}</td>
+                    <td>{{$user->role->name}}</td>
                     <td>{{$user->username}} <br>
                         @if($user->isActive == false)
                         <span class="badge bg-danger">Deactivated</span>

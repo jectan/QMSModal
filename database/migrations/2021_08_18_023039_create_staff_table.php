@@ -26,16 +26,11 @@ class CreateStaffTable extends Migration
                   ->references('id')
                   ->on('users')
                   ->onDelete('cascade');
-            $table->unsignedBigInteger('office_id')->unsigned();
-            $table->foreign('office_id')
-                  ->references('id')
-                  ->on('offices')
+            $table->unsignedInteger('unitID')->unsigned();
+            $table->foreign('unitID')
+                  ->references('unitID')
+                  ->on('Unit')
                  ->onDelete('cascade');
-            $table->unsignedBigInteger('role_id')->unsigned();
-            $table->foreign('role_id')
-                ->references('id')
-                ->on('roles')
-                ->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

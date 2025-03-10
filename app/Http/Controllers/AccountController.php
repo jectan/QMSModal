@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Unit;
 use App\Models\Office;
 use App\Models\Staff;
 use App\Models\UserRole;
@@ -27,8 +28,8 @@ class AccountController extends Controller
     public function create()
     {
         $roles = Role::all();
-        $offices = Office::all();
-        return view('pages.accounts.create',['roles' => $roles, 'offices' => $offices]);
+        $units = Unit::all();
+        return view('pages.accounts.create',['roles' => $roles, 'unit' => $units]);
     }
 
     // Save Staff Account Form to database
@@ -37,12 +38,12 @@ class AccountController extends Controller
         $firstname  = $request->firstname;
         $middlename = $request->middlename;
         $lastname   = $request->lastname;
-        $job_title  = $request->job_title;
-        $office_id  = $request->office_id;
+        $role_id  = $request->role_id;
+        $unitID  = $request->unitID;
         
         $staffs = Staff::all();
         foreach($staffs as $staff){
-            if($staff->firstname == $firstname && $staff->middlename == $middlename && $staff->lastname == $lastname && $staff->job_title == $job_title && $staff->office_id == $office_id){
+            if($staff->firstname == $firstname && $staff->middlename == $middlename && $staff->lastname == $lastname && $staff->unitID == $unitID){
                 return redirect()->back()->with('error-user', 'Staff already registered!');
             }
         }
@@ -51,7 +52,7 @@ class AccountController extends Controller
             'firstname'  => 'required|string|max:255',
             'middlename' => 'nullable|string|max:255',
             'lastname'   => 'required|string|max:255',
-            'office_id'  => 'required',
+            'unitID'  => 'required',
             'role_id'    => 'required',
             'email'      => 'nullable|email',
             'username'   => 'required|string|max:255|unique:users',
@@ -71,12 +72,8 @@ class AccountController extends Controller
                 'firstname'  => $request->firstname,
                 'middlename' => $request->middlename,
                 'lastname'   => $request->lastname,
-                'job_title'  => $request->job_title,
-                'contact_no' => $request->contact_no, 
-                'email'      => $request->email, 
                 'user_id'    => $user->id, 
-                'office_id'  => $request->office_id, 
-                'role_id'  => $request->role_id, 
+                'unitID'  => $request->unitID, 
             ]);
 
             // foreach($request->role_id as $role_id){
@@ -100,9 +97,9 @@ class AccountController extends Controller
     {   
         $user = User::find($id);
         $roles = Role::all();
-        $offices = Office::all();
+        $units = Unit::all();
 
-        return view('pages.accounts.update',['user' => $user, 'roles' => $roles, 'offices' => $offices]);
+        return view('pages.accounts.update',['user' => $user, 'roles' => $roles, 'unit' => $units]);
     }
 
     // Save updates of Staff Account Info
@@ -118,13 +115,12 @@ class AccountController extends Controller
             $staff->firstname  = $request->firstname;
             $staff->middlename = $request->middlename;
             $staff->lastname   = $request->lastname;
-            $staff->job_title  = $request->job_title;
-            $staff->office_id  = $request->office_id;
-            $staff->role_id     = $request->role_id;
+            $staff->unitID  = $request->unitID;
             $staff->update();
 
             $user = User::find($request->user_id);
             $user->username = $request->username;
+            $user->role_id     = $request->role_id;
             $user->update();
 
             DB::commit();
