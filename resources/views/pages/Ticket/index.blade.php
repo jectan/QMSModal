@@ -8,7 +8,7 @@
   <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                <h4 class="h2" style="padding-left: 5px">List of Tickets</h4>
+                <h4 class="h2" style="padding-left: 5px">List of Documents</h4>
             </div>
         </div>
         <div class="card card-primary card-tabs" style="margin: 10px">
@@ -69,7 +69,7 @@
               </div>
             </div>
 
-            <div class="col-12 col-sm-6 col-md-2">
+            <!-- <div class="col-12 col-sm-6 col-md-2">
               <div class="info-box small-box ">
                 <span class="info-box-icon elevation-1" style="background-color:  #007bff; color:white">
                 <i class="fas fa-ticket-alt"></i></span>
@@ -80,7 +80,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
           @endif
               <div class="card-header p-0 pt-1">
                 <ul class="nav nav-tabs" id="settings-tab" role="tablist">
@@ -102,12 +102,12 @@
                   <li class="nav-item">
                     <a class="nav-link " id="closed" data-toggle="pill" href="#closed-content" role="tab" aria-controls="closed-content" aria-selected="false">Closed</a>
                   </li>
-                  <li class="nav-item">
+                  <!-- <li class="nav-item">
                     <a class="nav-link " id="with-feedback" data-toggle="pill" href="#with-feedback-content" role="tab" aria-controls="with-feedback-content" aria-selected="false">With Feedback</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link " id="cancelled" data-toggle="pill" href="#cancelled-content" role="tab" aria-controls="cancelled-content" aria-selected="false">Cancelled</a>
-                  </li>
+                  </li> -->
                 </ul>
               </div>
               <div class="card-body">

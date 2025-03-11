@@ -15,9 +15,16 @@ class RoleController extends Controller
         if (request()->ajax()) {
 
             return datatables()->of(Role::select('*'))
-            ->addColumn('action', '<class="btn-group">
-               <a href="javascript:void(0)" onClick="editrole({{ $id }})" data-toggle="tooltip" class="btn btn-info btn-xs"><i class="fas fa-edit"></i></a>
-               <a href="javascript:void(0);" onclick="deleteCase(this)" data-id="{{ $id }}" class="btn btn-info btn-xs"><i class="fas fa-trash"></i></a>')
+            ->addColumn('action', 
+            '<div class="btn-group">
+                <button type="button" class="btn btn-sm btn-info mx-2" href="javascript:void(0)" onClick="editrole({{ $id }})" data-toggle="tooltip" data-original-title="Edit">
+                    <span class="material-icons" style="font-size: 20px;">edit</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-danger" href="javascript:void(0)" onclick="deleteCase(this)" data-id="{{ $id }}" data-toggle="tooltip" data-original-title="Delete">
+                    <span class="material-icons" style="font-size: 20px;">delete</span>
+                </button>
+            </div>'
+        )
             ->rawColumns(['action'])
             ->addIndexColumn()
             ->make(true);

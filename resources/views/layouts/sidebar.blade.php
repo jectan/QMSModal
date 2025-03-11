@@ -15,7 +15,7 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item">
-            <a href="/dashboard" class="nav-link {{ $page == 'Dashboard' ? 'active' : '' }}">
+            <a href="/dashboardv2" class="nav-link {{ $page == 'dashboardv2' ? 'active' : '' }}">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
@@ -28,7 +28,7 @@
             <a href="/caller" class="nav-link {{ $page == 'Caller' ? 'active' : '' }}">
               <i class="nav-icon fas fa-phone"></i>
               <p>
-                Caller
+                Documents
               </p>
             </a>
           </li>
@@ -36,7 +36,7 @@
             <a href="/ticket" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
               <i class="nav-icon fas fa-ticket-alt"></i>
               <p>
-                Ticket
+              Documents
               </p>
             </a>
           </li>
@@ -62,19 +62,19 @@
           </li>
           @endif
           @if(Auth::user()->role->id==1) 
-          <li class="nav-item">
+          <!--li class="nav-item">
             <a href="/caller" class="nav-link {{ $page == 'Caller' ? 'active' : '' }}">
-              <i class="nav-icon fas fa-phone"></i>
+              <i class="nav-icon fas fa-doc"></i>
               <p>
-                Caller
+              Documents
               </p>
             </a>
-          </li>
+          </li-->
           <li class="nav-item">
             <a href="/ticket" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
-              <i class="nav-icon fas fa-ticket-alt"></i>
+              <i class="nav-icon fas fa-file-alt"></i>
               <p>
-                Ticket
+              Documents
               </p>
             </a>
           </li>

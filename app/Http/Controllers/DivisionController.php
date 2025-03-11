@@ -39,10 +39,10 @@ class DivisionController extends Controller
             return datatables()->of(Division::select('*'))
             ->addColumn('action', 
             '<div class="btn-group">
-                <button type="button" class="btn btn-sm btn-info" href="javascript:void(0)" onClick="editDivision({{ $divID }})" data-toggle="tooltip" data-original-title="Edit">
+                <button type="button" class="btn btn-sm btn-info mx-2" href="javascript:void(0)" onClick="editDivision({{ $divID }})" data-toggle="tooltip" data-original-title="Edit">
                 <span class="material-icons" style="font-size: 20px;">edit</span>
                 </button>
-                <button type="button" class="btn btn-sm btn-info" href="javascript:void(0)" onclick="deleteDivision(this)" data-id="{{ $divID }}" data-toggle="tooltip" data-original-title="Delete">
+                <button type="button" class="btn btn-sm btn-danger" href="javascript:void(0)" onclick="deleteDivision(this)" data-id="{{ $divID }}" data-toggle="tooltip" data-original-title="Delete">
                 <span class="material-icons" style="font-size: 20px;">delete</span>
                 </button>
             </div>')

@@ -13,7 +13,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Registered Documents</span>
-        <span class="info-box-number closed"></span>
+        <span class="info-box-number closed">33</span>
       </div>
     </div>
   </div>
@@ -24,7 +24,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">For Review</span>
-        <span class="info-box-number created"></span>
+        <span class="info-box-number created">10</span>
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">For Approval</span>
-        <span class="info-box-number working"></span>
+        <span class="info-box-number working">5</span>
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Obsolete Documents</span>
-        <span class="info-box-number for-closing"></span>
+        <span class="info-box-number for-closing">20</span>
       </div>
     </div>
   </div>
@@ -63,7 +63,7 @@
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Quality Procedure</span>
-        <span class="info-box-number total"></span>
+        <span class="info-box-number total">5</span>
       </div>
     </div>
   </div>
@@ -74,7 +74,7 @@
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Procedure Manuals</span>
-        <span class="info-box-number total"></span>
+        <span class="info-box-number total">33</span>
       </div>
     </div>
   </div>
@@ -83,9 +83,9 @@
     <div class="info-box small-box bg-info">
       <span class="info-box-icon elevation-1" style="background-color: white; color: #17a2b8">
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
-      <div class="info-box-content">
-        <span class="info-box-text">Forms,Templates & Guidelines</span>
-        <span class="info-box-number total"></span>
+      <div class="info-box-content ">
+        <span class="info-box-text word-wrap">Forms,Templates & Guidelines</span>
+        <span class="info-box-number total">103</span>
       </div>
     </div>
   </div>

@@ -1,3 +1,22 @@
+.word-wrap {
+  word-wrap: break-word; /* Older CSS property */
+  overflow-wrap: break-word; /* Newer, recommended property */
+}
+.btn-info {
+  background-color: #1f488f !important; /* Change to your desired color */
+  border-color: #1f488f !important;
+}
+
+.btn-info:hover {
+  background-color: #17366f !important; /* Darker shade for hover effect */
+  border-color: #17366f !important;
+}
+
+.page-item.active .page-link {
+  background-color: #1f488f !important; /* Change to your desired color */
+  border-color: #17366f !important;
+}
+
 .buttonColor1{
   background: #ff9900;
 }
@@ -50,7 +69,7 @@
 }
 
 .text-pink {
-  color: #de4c75;
+  color: #4c78de;
 }
 
 .shadowbox{
@@ -120,8 +139,8 @@ button:hover {
     height: 100%;
     top: 0;
     left: -100%;
-    background: rgb(77, 100, 232);
-    background: linear-gradient(90deg, rgb(79, 134, 236) 11%, rgb(5, 95, 212) 40%);
+    background: rgb(31, 72, 143);
+    background: linear-gradient(90deg, rgb(79, 134, 236) 11%, rgb(31, 72, 143) 40%);
   
     -webkit-transition: all 0.4s;
     -o-transition: all 0.4s;
@@ -222,7 +241,7 @@ button:hover {
 .custom-tooltip .tooltiptext {
   visibility: hidden;
   width: 140px;
-  background-color: #e83e8c;
+  background-color: #3e85e8;
   color: #fff;
   text-align: center;
   border-radius: 6px;
@@ -244,7 +263,7 @@ button:hover {
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: #e83e8c transparent transparent transparent;
+  border-color: #3e85e8 transparent transparent transparent;
 }
 
 .custom-tooltip:hover .tooltiptext {
