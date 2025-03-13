@@ -14,12 +14,13 @@ use App\Models\Office;
 use App\Models\StartworkingLog;
 use App\Models\OfficeAssignedTicketLog;
 use App\Models\TicketLog;
+use App\Models\RequestDocument;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Exception;
 
-class TicketController extends Controller
+class DocumentController extends Controller
 
 {
     public function __construct(SeriesService $series_service) 
@@ -27,29 +28,34 @@ class TicketController extends Controller
         $this->series_service = $series_service;
     }
 
-    public function ticketTally(){
+    public function documentTally(){
         
         $user = Auth::user();
 
-        $tickets['total_ticket']  = Ticket::whereHas('actions', function ($query) use($user){
+        $documents['register'] = RequestDocument::where('requestStatus', 'Registered')->count();
+        $documents['review'] = RequestDocument::where('requestStatus', 'For Review')->count();
+        $documents['approval'] = RequestDocument::where('requestStatus', 'For Approval')->count();
+        $documents['archive'] = RequestDocument::where('requestStatus', 'Archive')->count();
+
+/*         $documents['total_ticket']  = Ticket::whereHas('actions', function ($query) use($user){
             $query->where('office_id', $user->staff->office_id);})->count();
           
-        $tickets['assigned'] = Ticket::where('status', 'assigned')->whereHas('actions', function ($query) use($user){
+        $documents['assigned'] = Ticket::where('status', 'assigned')->whereHas('actions', function ($query) use($user){
             $query->where('office_id', $user->staff->office_id);})->count();
 
-        $tickets['working'] = Ticket::where('status', 'working')->whereHas('actions', function ($query) use($user){
+        $documents['working'] = Ticket::where('status', 'working')->whereHas('actions', function ($query) use($user){
             $query->where('office_id', $user->staff->office_id);})->count();
 
-        $tickets['for-closing'] = Ticket::where('status', 'for-closing')->whereHas('actions', function ($query) use($user){
+        $documents['for-closing'] = Ticket::where('status', 'for-closing')->whereHas('actions', function ($query) use($user){
             $query->where('office_id', $user->staff->office_id);})->count();
 
-        $tickets['closed'] =  Ticket::where('status', 'closed')->whereHas('actions', function ($query) use($user){
+        $documents['closed'] =  Ticket::where('status', 'closed')->whereHas('actions', function ($query) use($user){
             $query->where('office_id', $user->staff->office_id);})->count();
 
-        $tickets['feedback'] = Ticket::where('status', 'closed')->whereNotNull('date_rated')->whereHas('actions', function ($query) use($user){ $query->where('office_id', $user->staff->office_id);})->count();
+        $documents['feedback'] = Ticket::where('status', 'closed')->whereNotNull('date_rated')->whereHas('actions', function ($query) use($user){ $query->where('office_id', $user->staff->office_id);})->count(); */
 
      
-        echo json_encode($tickets);
+        echo json_encode($documents);
         exit;
     }
 
@@ -59,7 +65,12 @@ class TicketController extends Controller
     
         if ($user->role_id == 4){
             
-            $created = Ticket::where('status', 'created')->whereHas('actions', function ($query) use($user){
+            $requestDocumments = RequestDocument::with(['createdBy', 'documentType', 'requestType'])
+            ->where('requestStatus', '!=', 'Deleted', function ($query) use($user){
+                $query->where('unitID', $user->staff->unitID);})
+            ->get();
+
+            /* $created = Ticket::where('status', 'created')->whereHas('actions', function ($query) use($user){
                 $query->where('office_id', $user->staff->office_id);})->get();
             
             $assigned = Ticket::where('status', 'assigned')->whereHas('actions', function ($query) use($user){
@@ -78,9 +89,10 @@ class TicketController extends Controller
                 $query->where('office_id', $user->staff->office_id);})->get();
 
             $with_feedback = Ticket::where('status', 'closed')->whereNotNull('date_rated')->whereHas('actions', function ($query) use($user){
-                $query->where('office_id', $user->staff->office_id);})->get();
+                $query->where('office_id', $user->staff->office_id);})->get(); */
 
         }else{ 
+            $requestDocuments = RequestDocument::where('requestStatus', '!=', 'Deleted')->get();
             $created = Ticket::where('status', 'created')->get();
             $assigned = Ticket::where('status', 'assigned')->get();
             $working = Ticket::where('status', 'working')->get();
@@ -90,17 +102,17 @@ class TicketController extends Controller
             $cancelled = Ticket::where('status', 'cancelled')->get();
             $closed = Ticket::where('status', 'closed')->whereNull('date_rated')->get();
     }
-        return view('pages.ticket.index', ['created' => $created, 'assigned' => $assigned, 'workings' => $working, 'for_closings' => $for_closing, 'closed' => $closed, 'with_feedbacks' => $with_feedback, 'cancelled' => $cancelled, 'closed' => $closed]);
+        return view('pages.ticket.index', ['created' => $created, 'requestDocuments' => $requestDocuments, 'assigned' => $assigned, 'workings' => $working, 'for_closings' => $for_closing, 'closed' => $closed, 'with_feedbacks' => $with_feedback, 'cancelled' => $cancelled, 'closed' => $closed]);
     }
      
     public function cancel(Request $request)
     {
-        $ticket = Ticket::find($request->id);
-        $ticket->status    = 'cancelled';
-        $ticket->status_updated_at   = \Carbon\Carbon::now();
-        $ticket->updated_by_id     =  Auth::id();
-        $ticket->remarks = $request->remarks;
-        $ticket->update();
+        $document = Ticket::find($request->id);
+        $document->status    = 'cancelled';
+        $document->status_updated_at   = \Carbon\Carbon::now();
+        $document->updated_by_id     =  Auth::id();
+        $document->remarks = $request->remarks;
+        $document->update();
        
         return response()->json(array('success' => 'Successfully Cancelled'));
     }
@@ -114,44 +126,44 @@ class TicketController extends Controller
     public function show($id)
     {
         
-        $ticket = Ticket::find($id);
-        $caller = Caller::where('id', $ticket->caller_id)->first();
+        $document = Ticket::find($id);
+        $caller = Caller::where('id', $document->caller_id)->first();
         $caller_types = CallerType::all();
 
-        return view('pages.ticket.update', ['caller' => $caller, 'caller_types' => $caller_types, 'ticket' => $ticket]);
+        return view('pages.ticket.update', ['caller' => $caller, 'caller_types' => $caller_types, 'ticket' => $document]);
     }
 
     public function update(Request $request)
     {
         $id = $request->id;
-        $ticket = Ticket::find($id);
-        $ticket->call_type_id = $request->call_type_id;
-        $ticket->call_details = $request->call_details;
-        $ticket->updated_by_id     =  Auth::id();
-        $ticket->update();
+        $document = Ticket::find($id);
+        $document->call_type_id = $request->call_type_id;
+        $document->call_details = $request->call_details;
+        $document->updated_by_id     =  Auth::id();
+        $document->update();
         
-        return redirect('/ticket/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $ticket, 'id' => $id]);
+        return redirect('/ticket/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id]);
     }
     public function closeticket(Request $request)
     {
         // dd($request->id);
         
         $id = $request->id;
-        $ticket = Ticket::find($id);
-        $ticket->status = 'closed';
-        $ticket->updated_by_id     =  Auth::id();
-        $ticket->status_updated_at=Carbon::now();
-        $ticket->update();
+        $document = Ticket::find($id);
+        $document->status = 'closed';
+        $document->updated_by_id     =  Auth::id();
+        $document->status_updated_at=Carbon::now();
+        $document->update();
 
-        $ticket_log = new TicketLog();
-        $ticket_log->ticket_id = $ticket->id;
-        $ticket_log->status = "closed";
-        $ticket_log->assigned_by_id =Auth::id();
-        $ticket_log-> remarks =$request->remarks;
+        $document_log = new TicketLog();
+        $document_log->ticket_id = $document->id;
+        $document_log->status = "closed";
+        $document_log->assigned_by_id =Auth::id();
+        $document_log-> remarks =$request->remarks;
        
-        $ticket_log->save();
+        $document_log->save();
         
-        return redirect('/ticket/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $ticket, 'id' => $id, ]);
+        return redirect('/ticket/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id, ]);
     }
 
     public function store(Request $request)
@@ -164,7 +176,7 @@ class TicketController extends Controller
 
         $request->validate($rule);
 
-        $ticket = Ticket::Create(
+        $document = Ticket::Create(
             [
                 'ticket_no' => $this->series_service->get('ticket'). '' . $random,
                 'caller_id' => $request->caller_id,
@@ -185,27 +197,27 @@ class TicketController extends Controller
         $caller->updated_by_id     =  Auth::id();
         $caller->update();
 
-        $ticket_log = new TicketLog();
-        $ticket_log->ticket_id = $ticket->id;
-        $ticket_log->status = "created";
-        $ticket_log->assigned_by_id =Auth::id();
-        $ticket_log-> remarks =$request->remarks;
-        $ticket_log->save();
+        $document_log = new TicketLog();
+        $document_log->ticket_id = $document->id;
+        $document_log->status = "created";
+        $document_log->assigned_by_id =Auth::id();
+        $document_log-> remarks =$request->remarks;
+        $document_log->save();
         return redirect('/ticket')->with(['success' => 'Successfully Saved!']);
     }
 
     public function view($id)
     {
-        $ticket = Ticket::with("actions","logs")->where('id', $id)->first();
+        $document = Ticket::with("actions","logs")->where('id', $id)->first();
         $offices = Office::all()->sortBy('name');
     
         $assigned_office_action  = null;
         if(Auth::user()->role_id == 4) {
             $office_id = Auth::user()->staff->office_id;
-            $assigned_office_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $ticket->id)->first();
+            $assigned_office_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $document->id)->first();
         }
         return view('pages.ticket.display-ticket', [
-            'ticket' => $ticket, 
+            'ticket' => $document, 
             'offices' => $offices,
             'assigned_office_action' => $assigned_office_action
         ]);
@@ -214,10 +226,10 @@ class TicketController extends Controller
     public function assignedOffice(Request $request)
     {
         try {
-            // $ticket_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $request->ticket_id)->first();
+            // $document_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $request->ticket_id)->first();
 
             $office_exist = OfficeAssignedTicket::where("office_id", $request->office_id)->where("ticket_id", $request->ticket_id)->first();
-            // $ticket_exist = OfficeAssignedTicket::where("ticket_id", $request->ticket_id)->first();
+            // $document_exist = OfficeAssignedTicket::where("ticket_id", $request->ticket_id)->first();
 
             if ($office_exist) {
                 return response()->json(array('success' => false, "message" => "Office already exist"));
@@ -229,26 +241,26 @@ class TicketController extends Controller
                 'ticket_id' => $request->ticket_id,
                 'assigned_by_id' => Auth::id()
             ]);
-            $ticket_log = new OfficeAssignedTicketLog();
-            $ticket_log->assigned_office_ticket_id = $assigned_office->id;
-            $ticket_log->status = "pending";
-            $ticket_log->assigned_by_id =Auth::id();
-            $ticket_log-> remarks =$request->remarks;
-            $ticket_log-> office_id =$request->office_id;
-            $ticket_log->save();
+            $document_log = new OfficeAssignedTicketLog();
+            $document_log->assigned_office_ticket_id = $assigned_office->id;
+            $document_log->status = "pending";
+            $document_log->assigned_by_id =Auth::id();
+            $document_log-> remarks =$request->remarks;
+            $document_log-> office_id =$request->office_id;
+            $document_log->save();
             $assigned_office->save();
 
-            $ticket = Ticket::where("id",  $request->ticket_id)->first();
-            if ($ticket->status == 'created') {
-                $ticket->status = 'assigned';
-                $ticket->update();
+            $document = Ticket::where("id",  $request->ticket_id)->first();
+            if ($document->status == 'created') {
+                $document->status = 'assigned';
+                $document->update();
 
-                $ticket_log = new TicketLog();
-                $ticket_log->ticket_id = $ticket->id;
-                $ticket_log->status = "assigned";
-                $ticket_log->assigned_by_id =Auth::id();
-                $ticket_log-> remarks =$request->remarks;    
-                $ticket_log->save();
+                $document_log = new TicketLog();
+                $document_log->ticket_id = $document->id;
+                $document_log->status = "assigned";
+                $document_log->assigned_by_id =Auth::id();
+                $document_log-> remarks =$request->remarks;    
+                $document_log->save();
             }
             
     
@@ -265,28 +277,28 @@ class TicketController extends Controller
     {
         try {
             $office_id = Auth::user()->staff->office_id;
-            $ticket_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $request->ticket_id)->first();
+            $document_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $request->ticket_id)->first();
             
             DB::beginTransaction();
-            $ticket_action->status = 'working';
-            $ticket_action->status_updated_by_id = Auth::id();
-            $ticket_action->status_updated_at = Carbon::now();
-            $ticket_action->estimated_date = $request->estimated_date;
-            $ticket_action->remarks = $request->remarks;
-            $ticket_action->update();
+            $document_action->status = 'working';
+            $document_action->status_updated_by_id = Auth::id();
+            $document_action->status_updated_at = Carbon::now();
+            $document_action->estimated_date = $request->estimated_date;
+            $document_action->remarks = $request->remarks;
+            $document_action->update();
             
-            $ticket_log = new OfficeAssignedTicketLog();
-            $ticket_log->assigned_office_ticket_id = $ticket_action->id;
-            $ticket_log->status = "working";
-            $ticket_log->assigned_by_id =Auth::id();
-            $ticket_log-> remarks = $request->remarks;
-            $ticket_log-> office_id =$office_id;
-            $ticket_log->save();
+            $document_log = new OfficeAssignedTicketLog();
+            $document_log->assigned_office_ticket_id = $document_action->id;
+            $document_log->status = "working";
+            $document_log->assigned_by_id =Auth::id();
+            $document_log-> remarks = $request->remarks;
+            $document_log-> office_id =$office_id;
+            $document_log->save();
 
-            $ticket_actions = OfficeAssignedTicket::where("ticket_id", $request->ticket_id)->get();
+            $document_actions = OfficeAssignedTicket::where("ticket_id", $request->ticket_id)->get();
 
             $to_update_status = true;
-            foreach ($ticket_actions as $action) {
+            foreach ($document_actions as $action) {
                 if ($action->status != 'working') {
                     $to_update_status = false;
                     break;
@@ -295,17 +307,17 @@ class TicketController extends Controller
             }
 
             if ($to_update_status) {
-                $ticket = Ticket::where("id",  $request->ticket_id)->first();
-                $ticket->status = 'working';
-                $ticket->status_updated_at = Carbon::now();
-                $ticket->update();
+                $document = Ticket::where("id",  $request->ticket_id)->first();
+                $document->status = 'working';
+                $document->status_updated_at = Carbon::now();
+                $document->update();
 
-                $ticket_log = new TicketLog();
-                $ticket_log->ticket_id = $ticket->id;
-                $ticket_log->status = "working";
-                $ticket_log->assigned_by_id =Auth::id();
-                $ticket_log-> remarks = $request->remarks;
-                $ticket_log->save();
+                $document_log = new TicketLog();
+                $document_log->ticket_id = $document->id;
+                $document_log->status = "working";
+                $document_log->assigned_by_id =Auth::id();
+                $document_log-> remarks = $request->remarks;
+                $document_log->save();
                 
             }
 
@@ -323,27 +335,27 @@ class TicketController extends Controller
     {
         try {
             $office_id = Auth::user()->staff->office_id;
-            $ticket_id = $request->ticket_id;
-            $ticket_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $ticket_id)->first();
+            $document_id = $request->ticket_id;
+            $document_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $document_id)->first();
 
             DB::beginTransaction();
-            $ticket_action->status = $request->status;
-            $ticket_action->status_updated_by_id = Auth::id();
-            $ticket_action->actual_date = Carbon::now();
-            $ticket_action->work_done = $request->work_done;
-            $ticket_action->update();
+            $document_action->status = $request->status;
+            $document_action->status_updated_by_id = Auth::id();
+            $document_action->actual_date = Carbon::now();
+            $document_action->work_done = $request->work_done;
+            $document_action->update();
 
-            $ticket_log = new OfficeAssignedTicketLog();
-            $ticket_log->assigned_office_ticket_id = $ticket_action->id;
-            $ticket_log->status =  $ticket_action->status;
-            $ticket_log->assigned_by_id =Auth::id();
-            $ticket_log->remarks = $request->remarks;
-            $ticket_log->office_id =$office_id;
-            $ticket_log->save();
+            $document_log = new OfficeAssignedTicketLog();
+            $document_log->assigned_office_ticket_id = $document_action->id;
+            $document_log->status =  $document_action->status;
+            $document_log->assigned_by_id =Auth::id();
+            $document_log->remarks = $request->remarks;
+            $document_log->office_id =$office_id;
+            $document_log->save();
 
-            $ticket_actions = OfficeAssignedTicket::where("ticket_id", $ticket_id)->get();
+            $document_actions = OfficeAssignedTicket::where("ticket_id", $document_id)->get();
             $to_update_status = true;
-            foreach ($ticket_actions as $action) {
+            foreach ($document_actions as $action) {
                 if (!($action->status == 'resolved' || $action->status == 'unresolved')) {
                     $to_update_status = false;
                     break;
@@ -353,17 +365,17 @@ class TicketController extends Controller
             }
 
             if ($to_update_status) {
-                $ticket = Ticket::where("id", $ticket_id)->first();
-                $ticket->status = 'for-closing';
-                $ticket->status_updated_at = Carbon::now();
-                $ticket->update();
+                $document = Ticket::where("id", $document_id)->first();
+                $document->status = 'for-closing';
+                $document->status_updated_at = Carbon::now();
+                $document->update();
 
-                $ticket_log = new TicketLog();
-                $ticket_log->ticket_id = $ticket->id;
-                $ticket_log->status = 'for-closing';
-                $ticket_log->assigned_by_id =Auth::id();
-                $ticket_log-> remarks = $request->remarks;
-                $ticket_log->save();
+                $document_log = new TicketLog();
+                $document_log->ticket_id = $document->id;
+                $document_log->status = 'for-closing';
+                $document_log->assigned_by_id =Auth::id();
+                $document_log-> remarks = $request->remarks;
+                $document_log->save();
             }
 
           
@@ -386,8 +398,8 @@ class TicketController extends Controller
                 ->addColumn('action',  '<a href="javascript:void(0)" id="removebtn" onClick="removeUserOffice({{ $id }})" data-toggle="tooltip" data-original-title="Edit" class="btn btn-outline-danger btn-sm"><i class="fas fa-minus"></i></a>')
                 //  ->addColumn('action',  '<a href="javascript:void(0)" id="removeUserOffice" data-toggle="tooltip" data-original-title="Edit" class="btn btn-outline-danger btn-sm"><i class="fas fa-minus"></i></a>')
                 ->rawColumns(['action'])
-                ->addColumn('office', function (OfficeAssignedTicket $ticket) {
-                    return $ticket->office->name;
+                ->addColumn('office', function (OfficeAssignedTicket $document) {
+                    return $document->office->name;
                 })
                 ->addIndexColumn()
                 ->make(true);
@@ -403,14 +415,14 @@ class TicketController extends Controller
             return datatables()->of($assigned_office)
                 ->addColumn('action',  '<a href="javascript:void(0)" data-target="#mdl-timeline-office{{$id}}" data-toggle="modal"  class="btn btn-outline-danger btn-sm"><i class="fas fa-eye"></i></a>')
                 ->rawColumns(['action'])
-                ->addColumn('office', function (OfficeAssignedTicket $ticket) {
-                    return $ticket->office->name;
+                ->addColumn('office', function (OfficeAssignedTicket $document) {
+                    return $document->office->name;
                 })
-                ->addColumn('assignedBy', function (OfficeAssignedTicket $ticket) {
-                    return $ticket->assignedBy->staff->fullname;
+                ->addColumn('assignedBy', function (OfficeAssignedTicket $document) {
+                    return $document->assignedBy->staff->fullname;
                 })
-                ->addColumn('assignedAt', function (OfficeAssignedTicket $ticket) {
-                    return $ticket->created_at;
+                ->addColumn('assignedAt', function (OfficeAssignedTicket $document) {
+                    return $document->created_at;
                 })
                 ->addIndexColumn()
                 ->make(true);
@@ -426,8 +438,8 @@ class TicketController extends Controller
             return datatables()->of($assigned_office)
                 //  ->addColumn('action',  '<a href="javascript:void(0)" id="removebtn" data-toggle="tooltip" data-original-title="Edit" class="btn btn-outline-danger btn-sm"><i class="fas fa-minus"></i></a>')
                 //  ->rawColumns(['action'])
-                ->addColumn('office', function (OfficeAssignedTicket $ticket) {
-                    return $ticket->office->name;
+                ->addColumn('office', function (OfficeAssignedTicket $document) {
+                    return $document->office->name;
                 })
 
                 ->addIndexColumn()

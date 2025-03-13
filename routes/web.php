@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\ActionTicketController;
-use App\Http\Controllers\TicketController;
+use App\Http\Controllers\ActionDocumentController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CallerTypeController;
 use App\Http\Controllers\DivisionController;
@@ -58,11 +58,11 @@ Route::post('/home/save-form', [FeedbackController::class, 'saveForm']);
 
 //closing ticket administrator and admin staff
 Route::group(['middleware' => 'role:1,3'], function (){
-Route::get('/ticket/close/{id}', [TicketController::class, 'closeticket']);
+Route::get('/ticket/close/{id}', [DocumentController::class, 'closeticket']);
 });
 
 //Office Ticket Tally
-Route::get('/ticket/computeTotal',[TicketController::class, 'ticketTally']);
+Route::get('/ticket/computeTotal',[DocumentController::class, 'documentTally']);
      
 Route::get('logout',[AuthController::class, 'logout'])->name('logout');
 Route::get('/setpassword', [AuthController::class, 'setPassword']);
@@ -95,24 +95,24 @@ Route::post('/accounts/user-roles/add',[AccountController::class, 'addUserRole']
 Route::delete('/accounts/user-roles/remove/{id}',[AccountController::class, 'removeUserRole']);
   
 //Ticket
-Route::get('/ticket', [TicketController::class, 'index']);
-Route::post('/ticket/store', [TicketController::class, 'store']);
-Route::get('caller/{caller_id}/ticket/create', [TicketController::class, 'proceedTicket']);
-Route::get('/ticket/show/{id}', [TicketController::class, 'show']);
-Route::post('/ticket/update', [TicketController::class, 'update']);
-Route::get('/ticket/view/{id}', [TicketController::class, 'view']);
-Route::post('/ticket/cancel', [TicketController::class, 'cancel']);
-Route::delete('/ticket/delete/{id}', [TicketController::class, 'destroy']);
-Route::post('/ticket/assign/add',[TicketController::class, 'assignedOffice']);
-Route::get('/ticket/show-assign/{id}',[TicketController::class, 'getOffice']);
+Route::get('/ticket', [DocumentController::class, 'index']);
+Route::post('/ticket/store', [DocumentController::class, 'store']);
+Route::get('caller/{caller_id}/ticket/create', [DocumentController::class, 'proceedTicket']);
+Route::get('/ticket/show/{id}', [DocumentController::class, 'show']);
+Route::post('/ticket/update', [DocumentController::class, 'update']);
+Route::get('/ticket/view/{id}', [DocumentController::class, 'view']);
+Route::post('/ticket/cancel', [DocumentController::class, 'cancel']);
+Route::delete('/ticket/delete/{id}', [DocumentController::class, 'destroy']);
+Route::post('/ticket/assign/add',[DocumentController::class, 'assignedOffice']);
+Route::get('/ticket/show-assign/{id}',[DocumentController::class, 'getOffice']);
 
 //action ticket
-Route::post('/ticket/update/store', [ActionTicketController::class, 'store']);
-Route::post('/ticket/update/working', [TicketController::class, 'startWorking']);
-Route::post('/ticket/update/processed', [TicketController::class, 'ticketProcessed']);
-Route::get('/ticket/update/assigned/{id}', [TicketController::class, 'assigned']);
-Route::get('/ticket/update/action-status/{id}', [TicketController::class, 'actionStatus']);
-Route::delete('/ticket/update/remove/{id}', [TicketController::class, 'removeUserOffice']);
+Route::post('/ticket/update/store', [ActionDocumentController::class, 'store']);
+Route::post('/ticket/update/working', [DocumentController::class, 'startWorking']);
+Route::post('/ticket/update/processed', [DocumentController::class, 'ticketProcessed']);
+Route::get('/ticket/update/assigned/{id}', [DocumentController::class, 'assigned']);
+Route::get('/ticket/update/action-status/{id}', [DocumentController::class, 'actionStatus']);
+Route::delete('/ticket/update/remove/{id}', [DocumentController::class, 'removeUserOffice']);
 
 //Position
 Route::get('/position', [PositionController::class, 'index']);
@@ -174,25 +174,25 @@ Route::get('/feedback',[FeedbackController::class, 'index']);
     // Admin staffS
     Route::group(['middleware' => 'role:all'], function (){
 //ticket  
-Route::get('/ticket', [TicketController::class, 'index']);
-Route::post('/ticket/store', [TicketController::class, 'store']);
-Route::get('caller/{caller_id}/ticket/create', [TicketController::class, 'proceedTicket']);
-Route::get('/ticket/show/{id}', [TicketController::class, 'show']);
-Route::post('/ticket/update', [TicketController::class, 'update']);
-Route::get('/ticket/view/{id}', [TicketController::class, 'view']);
-Route::post('/ticket/cancel/', [TicketController::class, 'cancel']);
-Route::delete('/ticket/delete/{id}', [TicketController::class, 'destroy']);
-Route::post('/ticket/assign/add',[TicketController::class, 'assignedOffice']);
-Route::get('/ticket/show-assign/{id}',[TicketController::class, 'getOffice']);
+Route::get('/ticket', [DocumentController::class, 'index']);
+Route::post('/ticket/store', [DocumentController::class, 'store']);
+Route::get('caller/{caller_id}/ticket/create', [DocumentController::class, 'proceedTicket']);
+Route::get('/ticket/show/{id}', [DocumentController::class, 'show']);
+Route::post('/ticket/update', [DocumentController::class, 'update']);
+Route::get('/ticket/view/{id}', [DocumentController::class, 'view']);
+Route::post('/ticket/cancel/', [DocumentController::class, 'cancel']);
+Route::delete('/ticket/delete/{id}', [DocumentController::class, 'destroy']);
+Route::post('/ticket/assign/add',[DocumentController::class, 'assignedOffice']);
+Route::get('/ticket/show-assign/{id}',[DocumentController::class, 'getOffice']);
 
 
 //action ticket
-//Route::post('/ticket/update/store', [ActionTicketController::class, 'store']);
-//Route::post('/ticket/update/working', [TicketController::class, 'startWorking']);
-//Route::post('/ticket/update/processed', [TicketController::class, 'ticketProcessed']);
-//Route::get('/ticket/update/assigned/{id}', [TicketController::class, 'assigned']);
-//Route::get('/ticket/update/action-status/{id}', [TicketController::class, 'actionStatus']);
-//Route::delete('/ticket/update/remove/{id}', [TicketController::class, 'removeUserOffice']);
+//Route::post('/ticket/update/store', [ActionDocumentController::class, 'store']);
+//Route::post('/ticket/update/working', [DocumentController::class, 'startWorking']);
+//Route::post('/ticket/update/processed', [DocumentController::class, 'ticketProcessed']);
+//Route::get('/ticket/update/assigned/{id}', [DocumentController::class, 'assigned']);
+//Route::get('/ticket/update/action-status/{id}', [DocumentController::class, 'actionStatus']);
+//Route::delete('/ticket/update/remove/{id}', [DocumentController::class, 'removeUserOffice']);
 
        
 });

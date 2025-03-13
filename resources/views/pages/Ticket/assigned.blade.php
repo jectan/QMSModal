@@ -20,8 +20,8 @@
                     @foreach($assigned as $assign)
                     <tr>
                         <td>{{$assign->ticket_no}}</td>
-                        <td>{{$assign->caller ? $assign->caller ->fullname : ""}}</td>
-                        <td>{{$assign->callerType ? $assign->callerType->name : ""}}</td>
+                        <td>{{$assign->caller ? $working->caller ->fullname : ""}}</td>
+                        <td>{{$assign->callerType ? $working->callerType->name : ""}}</td>
                         <td>{{$assign->call_status}}</td>
                         <td>{{$assign->status}}</td>
                         <td>{{$assign->created_at}}</td>

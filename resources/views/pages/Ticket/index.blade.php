@@ -13,7 +13,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Registered Documents</span>
-        <span class="info-box-number closed">33</span>
+        <span class="info-box-number register"></span>
       </div>
     </div>
   </div>
@@ -24,7 +24,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">For Review</span>
-        <span class="info-box-number created">10</span>
+        <span class="info-box-number review"></span>
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">For Approval</span>
-        <span class="info-box-number working">5</span>
+        <span class="info-box-number approval"></span>
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Archived Documents</span>
-        <span class="info-box-number for-closing">20</span>
+        <span class="info-box-number archive"></span>
       </div>
     </div>
   </div>
@@ -57,6 +57,16 @@
         <div class="card-header">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                 <h4 class="h2" style="padding-left: 5px">List of Documents</h4>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                  <div class="btn-group mr-2">
+                      <div class="container-login100-form-btn">
+                          <div class="wrap-login100-form-btn">
+                              <div class="login100-form-bgbtn"></div>
+                              <button class="login100-form-btn" onclick="location.href='{{ URL('/ticket') }}'"><i class="fa fa-plus pr-2"></i> New Request</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
             </div>
         </div>
         <div class="card card-primary card-tabs" style="margin: 10px">
@@ -82,7 +92,7 @@
                 <div class="tab-content" id="set-content">
                   @if(Auth::user()->role->id!=4)
                   <div class="tab-pane fade show active " id="created-content" role="tabpanel" aria-labelledby="created-tab">
-                    @include('pages.ticket.created-tickets')
+                    @include('pages.ticket.requested-document')
                   </div>
                  @endif
                  <div class="tab-pane fade {{Auth::user()->role->id == 4 ? 'show active' : 'null'}}" id="assigned-content" role="tabpanel" aria-labelledby="assigned-tab">
@@ -119,6 +129,10 @@
         dataType: 'json',
         success:function(res)
         {
+          $(".register").html(res['register']);
+          $(".review").html(res['review']);
+          $(".approval").html(res['approval']);
+          $(".archive").html(res['archive']);
           $(".total").html(res['total_ticket']);
           $(".assigned").html(res['assigned']);
           $(".working").html(res['working']);
