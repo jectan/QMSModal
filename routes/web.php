@@ -17,6 +17,7 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardV2Controller;
+use App\Http\Controllers\MasterlistController;
 
 
     Route::any('slug', function()
@@ -25,6 +26,8 @@ use App\Http\Controllers\DashboardV2Controller;
     });
 
 
+//Masterlist
+Route::get('/masterlist', [MasterlistController::class, 'index'])->name('masterlist.index');
 
 Route::get('/', [FeedbackController::class, 'publichome']);
 Route::get('/about-us', [FeedbackController::class, 'about']);

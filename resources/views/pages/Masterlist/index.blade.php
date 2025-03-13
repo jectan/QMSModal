@@ -1,57 +1,56 @@
 @extends('layouts.app',[
-    'page' => 'Manage Documents',
-    'title' => 'Manage Documents'
+    'page' => 'Masterlist',
+    'title' => 'Masterlist'
 ])
 
 @section('content')
 <section class="content">
-<div class="row">
 
+<div class="row"> 
 <div class="col-12 col-sm-6 col-md-3">
-    <div class="info-box small-box bg-success">
-      <span class="info-box-icon elevation-1" style="background-color: white; color: green">
-      <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
+    <div class="info-box small-box bg-dblue">
+      <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
+      <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">Registered Documents</span>
-        <span class="info-box-number closed">33</span>
+        <span class="info-box-text">Quality Manual</span>
+        <span class="info-box-number total">5</span>
       </div>
     </div>
   </div>
 
   <div class="col-12 col-sm-6 col-md-3">
-    <div class="info-box small-box bg-danger">
-      <span class="info-box-icon elevation-1" style="background-color: white; color: #dc3545">
-      <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
+    <div class="info-box small-box bg-dblue">
+      <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
+      <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">For Review</span>
-        <span class="info-box-number created">10</span>
+        <span class="info-box-text">Quality Procedure</span>
+        <span class="info-box-number total">5</span>
       </div>
     </div>
   </div>
 
   <div class="col-12 col-sm-6 col-md-3">
-    <div class="info-box small-box bg-warning">
-      <span class="info-box-icon elevation-1" style="background-color: white; color: #ffc107">
-      <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
+    <div class="info-box small-box bg-dblue">
+      <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
+      <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">For Approval</span>
-        <span class="info-box-number working">5</span>
+        <span class="info-box-text">Procedure Manuals</span>
+        <span class="info-box-number total">33</span>
       </div>
     </div>
   </div>
 
   <div class="col-12 col-sm-6 col-md-3">
-    <div class="info-box small-box bg-secondary">
-      <span class="info-box-icon elevation-1" style="background-color: white; color: gray">
-      <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
-      <div class="info-box-content">
-        <span class="info-box-text">Archived Documents</span>
-        <span class="info-box-number for-closing">20</span>
+    <div class="info-box small-box bg-dblue">
+      <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
+      <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
+      <div class="info-box-content ">
+        <span class="info-box-text word-wrap">Forms,Templates & Guidelines</span>
+        <span class="info-box-number total">103</span>
       </div>
     </div>
   </div>
 </div>
-
 
   <div class="card">
         <div class="card-header">
@@ -64,17 +63,17 @@
                 <ul class="nav nav-tabs" id="settings-tab" role="tablist">
                   @if(Auth::user()->role->id!=4)
                   <li class="nav-item">
-                    <a class="nav-link active" id="created" data-toggle="pill" href="#created-content" role="tab" aria-controls="created-content" aria-selected="true">Requested</a>
+                    <a class="nav-link active" id="created" data-toggle="pill" href="#created-content" role="tab" aria-controls="created-content" aria-selected="true">Quality Manual</a>
                   </li>
                   @endif
                   <li class="nav-item">
-                          <a class="nav-link {{Auth::user()->role->id == 4 ? 'active' : 'null'}}" id="assigned" data-toggle="pill" href="#assigned-content" role="tab" aria-controls="assigned-content" aria-selected="false">For Review</a>
+                          <a class="nav-link {{Auth::user()->role->id == 4 ? 'active' : 'null'}}" id="assigned" data-toggle="pill" href="#assigned-content" role="tab" aria-controls="assigned-content" aria-selected="false">Quality Procedure</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link " id="working" data-toggle="pill" href="#working-content" role="tab" aria-controls="working-content" aria-selected="false">For Approval</a>
+                    <a class="nav-link " id="working" data-toggle="pill" href="#working-content" role="tab" aria-controls="working-content" aria-selected="false">Procedure Manuals</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link " id="for-closing" data-toggle="pill" href="#for-closing-content" role="tab" aria-controls="for-closing-content" aria-selected="false">For Registration</a>
+                    <a class="nav-link " id="for-closing" data-toggle="pill" href="#for-closing-content" role="tab" aria-controls="for-closing-content" aria-selected="false">Forms, Templates & Guidelines</a>
                   </li>
                 </ul>
               </div>
@@ -82,26 +81,26 @@
                 <div class="tab-content" id="set-content">
                   @if(Auth::user()->role->id!=4)
                   <div class="tab-pane fade show active " id="created-content" role="tabpanel" aria-labelledby="created-tab">
-                    @include('pages.ticket.created-tickets')
+                    @include('pages.masterlist.qualitymanuals')
                   </div>
                  @endif
                  <div class="tab-pane fade {{Auth::user()->role->id == 4 ? 'show active' : 'null'}}" id="assigned-content" role="tabpanel" aria-labelledby="assigned-tab">
-                  @include('pages.ticket.assigned')
+                 @include('pages.masterlist.qualityprocedures')
                 </div>
                   <div class="tab-pane fade" id="working-content" role="tabpanel" aria-labelledby="working-tab">
-                    @include('pages.ticket.working')
+                  
                   </div>
                   <div class="tab-pane fade" id="for-closing-content" role="tabpanel" aria-labelledby="for-closing-tab">
-                    @include('pages.ticket.for-closing')
+                   
                   </div>
                   <div class="tab-pane fade" id="closed-content" role="tabpanel" aria-labelledby="closed-tab">
-                    @include('pages.ticket.closed')
+                   
                   </div>
                   <div class="tab-pane fade" id="with-feedback-content" role="tabpanel" aria-labelledby="with-feedback-tab">
-                    @include('pages.ticket.with-feedback')
+                    
                   </div>
                   <div class="tab-pane fade" id="cancelled-content" role="tabpanel" aria-labelledby="cancelled-tab">
-                    @include('pages.ticket.cancelled')
+                
                   </div>
                 </div>
               </div>

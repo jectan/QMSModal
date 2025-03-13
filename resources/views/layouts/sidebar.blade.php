@@ -22,63 +22,26 @@
               </p>
             </a>
           </li>
-         
-          @if(Auth::user()->role->id==2)
-          <li class="nav-item">
-            <a href="/caller" class="nav-link {{ $page == 'Caller' ? 'active' : '' }}">
-              <i class="nav-icon fas fa-phone"></i>
-              <p>
-                Documents
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="/ticket" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
-              <i class="nav-icon fas fa-ticket-alt"></i>
-              <p>
-              Documents
-              </p>
-            </a>
-          </li>
-          @endif
-          @if(Auth::user()->role->id==3)
-          <li class="nav-item">
-            <a href="/ticket" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
-              <i class="nav-icon fas fa-ticket-alt"></i>
-              <p>
-                Ticket
-              </p>
-            </a>
-          </li>
-          @endif
-          @if(Auth::user()->role->id==4)
-          <li class="nav-item">
-            <a href="/ticket" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
-              <i class="nav-icon fas fa-ticket-alt"></i>
-              <p>
-                Ticket
-              </p>
-            </a>
-          </li>
-          @endif
-          @if(Auth::user()->role->id==1) 
-          <!--li class="nav-item">
-            <a href="/caller" class="nav-link {{ $page == 'Caller' ? 'active' : '' }}">
-              <i class="nav-icon fas fa-doc"></i>
-              <p>
-              Documents
-              </p>
-            </a>
-          </li-->
           <li class="nav-item">
             <a href="/ticket" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
               <i class="nav-icon fas fa-file-alt"></i>
               <p>
-              Documents
+              Manage Documents
               </p>
             </a>
           </li>
 
+          <li class="nav-item">
+            <a href="/masterlist" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
+              <i class="nav-icon fa fa-th-list" aria-hidden="true"></i>
+              <p>
+              Masterlist
+              </p>
+            </a>
+          </li>
+     
+          @if(Auth::user()->role->id==1) 
+          
           {{-- {{Auth::user()->roles[0]['id']}} --}}
           <li class="nav-item">
             <a href="/accounts" class="nav-link {{ $page == 'Account' ? 'active' : '' }}">

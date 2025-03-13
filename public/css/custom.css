@@ -2,9 +2,27 @@
   word-wrap: break-word; /* Older CSS property */
   overflow-wrap: break-word; /* Newer, recommended property */
 }
+
+#settings-tab.nav-tabs .nav-link {
+  background-color: #17366f !important; /* Change to your preferred color */
+  color: white !important; /* Text color */
+  border-color: #17366f !important; /* Border color */
+}
+
+#settings-tab.nav-tabs .nav-link.active {
+  background-color: #1f488f !important; /* Active tab color */
+  color: white !important;
+  border-color: #1f488f !important;
+}
+
 .btn-info {
   background-color: #1f488f !important; /* Change to your desired color */
   border-color: #1f488f !important;
+}
+.bg-dblue{
+  background-color: #1f488f !important; /* Change to your desired color */
+  border-color: #1f488f !important;
+  color:white;
 }
 
 .btn-info:hover {
@@ -149,7 +167,6 @@ button:hover {
   }
   
   .login100-form-btn {
-    font-family: Poppins-Medium;
     font-size: 15px;
     color: #fff;
     /* line-height: 1.2; */

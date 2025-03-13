@@ -45,7 +45,7 @@
       <span class="info-box-icon elevation-1" style="background-color: white; color: gray">
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">Obsolete Documents</span>
+        <span class="info-box-text">Archived Documents</span>
         <span class="info-box-number for-closing">20</span>
       </div>
     </div>
@@ -58,8 +58,8 @@
   </div>
   
   <div class="col-12 col-sm-6 col-md-3">
-    <div class="info-box small-box bg-info">
-      <span class="info-box-icon elevation-1" style="background-color: white; color: #17a2b8">
+    <div class="info-box small-box bg-dblue">
+      <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Quality Procedure</span>
@@ -69,8 +69,8 @@
   </div>
 
   <div class="col-12 col-sm-6 col-md-3">
-    <div class="info-box small-box bg-info">
-      <span class="info-box-icon elevation-1" style="background-color: white; color: #17a2b8">
+    <div class="info-box small-box bg-dblue">
+      <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Procedure Manuals</span>
@@ -80,8 +80,8 @@
   </div>
 
   <div class="col-12 col-sm-6 col-md-3">
-    <div class="info-box small-box bg-info">
-      <span class="info-box-icon elevation-1" style="background-color: white; color: #17a2b8">
+    <div class="info-box small-box bg-dblue">
+      <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content ">
         <span class="info-box-text word-wrap">Forms,Templates & Guidelines</span>

@@ -7,12 +7,12 @@
         <table class="table table-striped w-100" id="ticket-for-closing" style="font-size: 14px">
             <thead>
                 <tr>
-                    <th style="width: 10%">Ticket No.</th>
-                    <th style="width: 25%">Ticket Requestor</th>
-                    <th style="width: 10%">Ticket Type</th>
-                    <th style="width: 15%">Call Status</th>
-                    <th style="width: 15%">Status</th>
-                    <th style="width: 15%">Call Date & Time</th>
+                    <th style="width: 10%">Document Ref No.</th>
+                    <th style="width: 25%">Doc Title</th>
+                    <th style="width: 15%">Document Type</th>
+                    <th style="width: 15%">Requestor</th>
+                    <th style="width: 15%">Unit</th>
+                    <th style="width: 10%">Status</th>
                     <th style="width: 10%">Action</th>
                 </tr>
                 <tbody>
