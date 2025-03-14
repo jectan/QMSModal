@@ -31,7 +31,7 @@
                         <button class="btn btn-info btn-xs" 
                         onclick="location.href='/caller/view/{{ $caller->id }}'"><i class="fas fa-eye"></i></button>
                         <button class="btn btn-primary btn-xs" 
-                        onclick="location.href='caller/{{$caller->id}}/ticket/create'"><i class="fas fa-ticket-alt"></i></button>
+                        onclick="location.href='caller/{{$caller->id}}/documents/create'"><i class="fas fa-ticket-alt"></i></button>
                         @if(Auth::user()->role->id==1)
                         <button class="btn btn-danger btn-xs" onclick="deleteCase(this)" data-id="{{$caller->id}}" data-toggle="tooltip" data-original-title="Delete"><i class="fas fa-trash"></i></button>
                         @endif

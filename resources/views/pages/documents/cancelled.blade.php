@@ -17,16 +17,16 @@
                 </tr>
                 <tbody>
                     
-                    @foreach($closed as $close)
+                    @foreach($cancelled as $cancel)
                     <tr>
-                        <td>{{$close->ticket_no}}</td>
-                        <td>{{$close->caller ? $close->caller ->fullname : ""}}</td>
-                        <td>{{$close->callerType ? $close->callerType->name : ""}}</td>
-                        <td>{{$close->call_status}}</td>
-                        <td>{{$close->status}}</td>
-                        <td>{{$close->created_at}}</td>
+                        <td>{{$cancel->ticket_no}}</td>
+                        <td>{{$cancel->caller ? $cancel->caller ->fullname : ""}}</td>
+                        <td>{{$cancel->callerType ? $cancel->callerType->name : ""}}</td>
+                        <td>{{$cancel->call_status}}</td>
+                        <td>{{$cancel->status}}</td>
+                        <td>{{$cancel->created_at}}</td>
                         <td>
-                            <button class="btn btn-info btn-xs" onclick="location.href='/ticket/view/{{ $close->id }}'" ><i class="fas fa-eye"></i></button>                          
+                            <button class="btn btn-info btn-xs" onclick="location.href='/documents/view/{{ $cancel->id }}'" ><i class="fas fa-eye"></i></button>                          
                         </td>
                     </tr >
                     @endforeach
@@ -41,7 +41,7 @@
 <script type="text/javascript">
  
     $(document).ready( function () {
-         $('#ticket-closed').DataTable();
+         $('#ticket-cancel').DataTable();
     });
  
 </script>

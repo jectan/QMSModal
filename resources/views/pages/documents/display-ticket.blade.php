@@ -5,7 +5,7 @@
 @section('content')
     <div class="row" style="margin-bottom: 4px;">
         <div class="col-md-12">
-            <a class="btn btn-secondary btn-sm float-right mr-1" onclick="location.href='{{ URL('/ticket') }}'"><i
+            <a class="btn btn-secondary btn-sm float-right mr-1" onclick="location.href='{{ URL('/documents') }}'"><i
                     class="fas fa-chevron-left"></i>&nbsp;Back</a>
         </div>
     </div>
@@ -25,7 +25,7 @@
                 @endif
                 @if ($ticket->status == 'created')
                     <a class="button8 btn-sm float-right mr-1" style="background-color: #ffd43b"
-                        onclick="location.href='/ticket/show/{{ $ticket->id }}'"><i
+                        onclick="location.href='/documents/show/{{ $ticket->id }}'"><i
                             class="fas fa-edit"></i>&nbsp;Update</a>
 
                     <a class="button8 btn-sm float-right mr-1" style="background-color: #5d5d5d"><i
@@ -35,7 +35,7 @@
 
                     @if ($ticket->status == 'for-closing')
                         <a class="button8 btn-sm float-right mr-1" style="background-color: #0cc521" {{-- onclick="location. --}}
-                            href='/ticket/close/{{ $ticket->id }}'><i class="fas fa-check-square"></i>&nbsp;Close</a>
+                            href='/documents/close/{{ $ticket->id }}'><i class="fas fa-check-square"></i>&nbsp;Close</a>
 
                     @endif
 
@@ -357,7 +357,7 @@
                     <h4 class="modal-title" id="office-modal-title">Assign Ticket</h4>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="/ticket/assign/add" id="AccountForm" name="AccountForm">
+                    <form method="POST" action="/documents/assign/add" id="AccountForm" name="AccountForm">
                         @csrf
                         <div class="form-group row" id="user_offices">
                             <label for="name" class="col-md-3">Offices<span class="require">*</span></label>
@@ -392,7 +392,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-default"
-                        onclick="location.href='/ticket/view/{{ $ticket->id }}'" data-dismiss="modal">Okay</button>
+                        onclick="location.href='/documents/view/{{ $ticket->id }}'" data-dismiss="modal">Okay</button>
 
                 </div>
                 {{-- </form> --}}
@@ -403,7 +403,7 @@
     <div class="modal fade" id="action-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
             <div class="modal-content">
-                <form method="POST" action="/ticket/update/working" id="ActionForm" name="ActionForm">
+                <form method="POST" action="/documents/update/working" id="ActionForm" name="ActionForm">
                     @csrf
                     <div class="modal-header card-head">
                         <h4 class="modal-title" id="action-modal-title">Ticket Action</h4>
@@ -461,7 +461,7 @@
     <div class="modal fade" id="unresolvable-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
             <div class="modal-content">
-                <form method="POST" action="/ticket/update/processed" id="ActionForm" name="ActionForm">
+                <form method="POST" action="/documents/update/processed" id="ActionForm" name="ActionForm">
                     @csrf
                     <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">
                     <input type="hidden" name="status" value="unresolved">
@@ -559,7 +559,7 @@
     <div class="modal fade" id="resolved-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
             <div class="modal-content">
-                <form method="POST" action="/ticket/update/processed" id="ActionForm" name="ActionForm">
+                <form method="POST" action="/documents/update/processed" id="ActionForm" name="ActionForm">
                     @csrf
                     <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">
                     <input type="hidden" name="status" value="resolved">
@@ -631,7 +631,7 @@
             $('#assigned-offices-dt').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ url('/ticket/update/assigned') }}/" + id,
+                ajax: "{{ url('/documents/update/assigned') }}/" + id,
 
                 columns: [{
                         data: 'office',
@@ -684,7 +684,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: "{{ url('/ticket/cancel') }}",
+                url: "{{ url('/documents/cancel') }}",
                 data: formData,
                 cache: false,
                 contentType: false,
@@ -730,7 +730,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '{{ url('/ticket/assign/add') }}',
+                url: '{{ url('/documents/assign/add') }}',
                 data: {
                     ticket_id: ticket_id,
                     office_id: office_id,
@@ -760,7 +760,7 @@
             var id = $office_id;
             $.ajax({
                 type: 'DELETE',
-                url: '{{ url('/ticket/update/remove/') }}/' + id,
+                url: '{{ url('/documents/update/remove/') }}/' + id,
                 dataType: 'json',
                 success: function(res) {
                     var oTable = $('#user-offices').dataTable();
@@ -775,7 +775,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "{{ url('/ticket/update/assigned') }}",
+                url: "{{ url('/documents/update/assigned') }}",
                 data: {
                     id: id
                 },

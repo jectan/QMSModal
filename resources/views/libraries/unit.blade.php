@@ -12,35 +12,12 @@
                     <div class="wrap-login100-form-btn">
                         <div class="login100-form-bgbtn"></div>
                         <button class="login100-form-btn" data-toggle="modal" data-target="#unit-modal"><i
-                                class="fa fa-plus pr-2"></i>Unit</button>
+                                class="fa fa-plus pr-2"></i>Add Unit</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- DATATABLE -->
-    <!-- <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body table-responsive">
-                    <table class="table table-striped w-100" id="office-dt" style="font-size: 14px">
-                        <thead>
-                            <tr>
-                                {{-- <th style="width: 5%">id</th> --}}
-                                <th style="width: 10%">Code</th>
-                                <th style="width: 35%">Office Name</th>
-                                <th style="width: 35%">Head Name</th>
-
-                                {{-- <th style="width: 10%">Province</th> --}}
-                                {{-- <th style="width: 5%">Region</th> --}}
-                                <th style="width: 15%">Action</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div> -->
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -65,7 +42,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- MODAL -->
     <div class="modal fade" id="unit-modal" aria-hidden="true">

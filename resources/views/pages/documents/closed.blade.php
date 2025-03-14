@@ -17,16 +17,16 @@
                 </tr>
                 <tbody>
                     
-                    @foreach($assigned as $assign)
+                    @foreach($closed as $close)
                     <tr>
-                        <td>{{$assign->ticket_no}}</td>
-                        <td>{{$assign->caller ? $working->caller ->fullname : ""}}</td>
-                        <td>{{$assign->callerType ? $working->callerType->name : ""}}</td>
-                        <td>{{$assign->call_status}}</td>
-                        <td>{{$assign->status}}</td>
-                        <td>{{$assign->created_at}}</td>
+                        <td>{{$close->ticket_no}}</td>
+                        <td>{{$close->caller ? $close->caller ->fullname : ""}}</td>
+                        <td>{{$close->callerType ? $close->callerType->name : ""}}</td>
+                        <td>{{$close->call_status}}</td>
+                        <td>{{$close->status}}</td>
+                        <td>{{$close->created_at}}</td>
                         <td>
-                            <button class="btn btn-info btn-xs" onclick="location.href='/ticket/view/{{ $assign->id }}'" ><i class="fas fa-eye"></i></button>                          
+                            <button class="btn btn-info btn-xs" onclick="location.href='/documents/view/{{ $close->id }}'" ><i class="fas fa-eye"></i></button>                          
                         </td>
                     </tr >
                     @endforeach
@@ -41,7 +41,7 @@
 <script type="text/javascript">
  
     $(document).ready( function () {
-         $('#ticket-assigned').DataTable();
+         $('#ticket-closed').DataTable();
     });
  
 </script>

@@ -7,13 +7,13 @@
         <h4 class="h4" style="padding-left: 5px">Update Ticket</h4>
         <div>
             <button type="button" class="btn btn-block btn-secondary" style="float: right"
-            onclick="location.href='/ticket/view/{{ $ticket->id }}'"><i
+            onclick="location.href='/documents/view/{{ $ticket->id }}'"><i
                     class="fas fa-chevron-left"></i>&nbsp;Back</button>
         </div>
     </div>
     <section class="content">
         <div class="container-fluid">
-            <form  action="/ticket/update" id="ticket-form" method="POST">
+            <form  action="/documents/update" id="ticket-form" method="POST">
                 @csrf
                 <div class="card card-default">
                     <div class="card-header card-head">

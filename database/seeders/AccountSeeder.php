@@ -42,8 +42,8 @@ class AccountSeeder extends Seeder {
         Office::create(array('name' => "City Mayor's Office - Bids and Awards Committee"));
         Office::create(array('name' => "City Mayor's Office - Business and Permit Licensing Office"));
        
-        $User =   User::create(array('username' => 'SuperAdmin', 'password' => $password, 'role_id' => $Role->id));
-        $Unit = Unit::create(array('unitName' => "Management Information Systems Service", 'divID' => '1', 'status' => '1'));
+        // $User =   User::create(array('username' => 'SuperAdmin', 'password' => $password, 'role_id' => '1'));
+        // $Unit = Unit::create(array('unitName' => "Management Information Systems Service", 'divID' => '1', 'status' => '1'));
         Office::create(array('name' => "City Mayor's Office - GAD"));
         Office::create(array('name' => "City Mayor's Office - Housing and Land Management Division"));
         Office::create(array('name' => "City Mayor's Office - Internal Audit Unit"));
@@ -62,6 +62,15 @@ class AccountSeeder extends Seeder {
         Office::create(array('name' => "City Treasurer Office"));
         Office::create(array('name' => "City Veterinarian Office"));
 
-        Staff::create(array('firstname' => 'Super', 'lastname' => 'Admin','user_id' => $User->id, 'unitID' => $Unit->unitID));
+        $User =   User::create(array('username' => 'SuperAdmin', 'password' => $password, 'role_id' => '1', 'isNew' => '0'));
+        Staff::create(array('firstname' => 'Super', 'lastname' => 'Admin','user_id' => '1', 'unitID' => '8'));
+        $User =   User::create(array('username' => 'DMT', 'password' => $password, 'role_id' => '2', 'isNew' => '0'));
+        Staff::create(array('firstname' => 'Almark', 'lastname' => 'Ramos','user_id' => '2', 'unitID' => '14'));
+        $User =   User::create(array('username' => 'RD', 'password' => $password, 'role_id' => '3', 'isNew' => '0'));
+        Staff::create(array('firstname' => 'Cheryl', 'lastname' => 'Ortega','user_id' => '3', 'unitID' => '16'));
+        $User =   User::create(array('username' => 'QMR', 'password' => $password, 'role_id' => '4', 'isNew' => '0'));
+        Staff::create(array('firstname' => 'Aris', 'lastname' => 'Austria','user_id' => '4', 'unitID' => '17'));
+        $User =   User::create(array('username' => 'jerico.tan@dict.gov.ph', 'password' => $password, 'role_id' => '5', 'isNew' => '0'));
+        Staff::create(array('firstname' => 'Jerico', 'lastname' => 'Tan','user_id' => '5', 'unitID' => '7'));
     }
 }

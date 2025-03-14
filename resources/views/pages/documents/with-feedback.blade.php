@@ -26,7 +26,7 @@
                         <td>{{$with_feedback->status}}</td>
                         <td>{{$with_feedback->created_at}}</td>
                         <td>
-                            <button class="btn btn-info btn-xs" onclick="location.href='/ticket/view/{{ $with_feedback->id }}'" ><i class="fas fa-eye"></i></button>                          
+                            <button class="btn btn-info btn-xs" onclick="location.href='/documents/view/{{ $with_feedback->id }}'" ><i class="fas fa-eye"></i></button>                          
                         </td>
                     </tr >
                     @endforeach

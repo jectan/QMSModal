@@ -18,8 +18,7 @@ class CreateStaffTable extends Migration
             $table->string('firstname');
             $table->string('middlename')->nullable();
             $table->string('lastname');
-            $table->string('job_title')->nullable();
-            $table->string('contact_no')->nullable();
+            $table->string('position')->nullable();
             $table->string('email')->nullable();
             $table->unsignedBigInteger('user_id')->unsigned()->nullable();
             $table->foreign('user_id')

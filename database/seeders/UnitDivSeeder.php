@@ -36,6 +36,7 @@ class UnitDivSeeder extends Seeder
             ['unitName' => 'Records', 'divID' => '1', 'status' => true],
             ['unitName' => 'Supply', 'divID' => '1', 'status' => true],
             ['unitName' => 'ORD', 'divID' => '3', 'status' => true],
+            ['unitName' => 'Administrative and Finance', 'divID' => '1', 'status' => true],
         ]);
     }
 }

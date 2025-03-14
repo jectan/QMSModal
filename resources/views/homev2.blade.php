@@ -13,7 +13,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Registered Documents</span>
-        <span class="info-box-number closed">33</span>
+        <span class="info-box-number register"></span>
       </div>
     </div>
   </div>
@@ -24,7 +24,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">For Review</span>
-        <span class="info-box-number created">10</span>
+        <span class="info-box-number review"></span>
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">For Approval</span>
-        <span class="info-box-number working">5</span>
+        <span class="info-box-number approval"></span>
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Archived Documents</span>
-        <span class="info-box-number for-closing">20</span>
+        <span class="info-box-number archive"></span>
       </div>
     </div>
   </div>
@@ -63,7 +63,7 @@
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Quality Procedure</span>
-        <span class="info-box-number total">5</span>
+        <span class="info-box-number qpt"></span>
       </div>
     </div>
   </div>
@@ -74,7 +74,7 @@
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Procedure Manuals</span>
-        <span class="info-box-number total">33</span>
+        <span class="info-box-number pmt"></span>
       </div>
     </div>
   </div>
@@ -85,7 +85,7 @@
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content ">
         <span class="info-box-text word-wrap">Forms,Templates & Guidelines</span>
-        <span class="info-box-number total">103</span>
+        <span class="info-box-number ftg"></span>
       </div>
     </div>
   </div>
@@ -174,8 +174,28 @@
     </div>
 </div>
 
+<script>
+   $(document).ready(function(){
+    //  COUNT TOTAL
+      $.ajax({
+        type: 'GET',
+        url: "{{ url('/dashboard/computeTotal')}}",
+        dataType: 'json',
+        success:function(res)
+        {
+          $(".register").html(res['register']);
+          $(".review").html(res['review']);
+          $(".approval").html(res['approval']);
+          $(".archive").html(res['archive']);
+          $(".qpt").html(res['qpt']);
+          $(".pmt").html(res['pmt']);
+          $(".ftg").html(res['ftg']);
+        }
+      });
+    });
+</script>
   
-<!--script>
+<!--<script>
   $(document).ready(function(){
     //  COUNT TOTAL
       $.ajax({
@@ -192,8 +212,8 @@
           $(".closed").html(res['closed']);
         }
       });
-
-      $('#topRatings').DataTable({
+</script>
+      <!-- $('#topRatings').DataTable({
               processing: true,
               serverSide: true,
               ajax: "{{ url('/dashboard/topTenHighOffices') }}" ,

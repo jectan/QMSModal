@@ -62,7 +62,8 @@
                       <div class="container-login100-form-btn">
                           <div class="wrap-login100-form-btn">
                               <div class="login100-form-bgbtn"></div>
-                              <button class="login100-form-btn" onclick="location.href='{{ URL('/ticket') }}'"><i class="fa fa-plus pr-2"></i> New Request</button>
+                              <button class="login100-form-btn" data-toggle="modal" data-target="#request-modal"><i
+                              class="fa fa-plus pr-2"></i>New Request</button>
                           </div>
                       </div>
                   </div>
@@ -92,26 +93,26 @@
                 <div class="tab-content" id="set-content">
                   @if(Auth::user()->role->id!=4)
                   <div class="tab-pane fade show active " id="created-content" role="tabpanel" aria-labelledby="created-tab">
-                    @include('pages.ticket.requested-document')
+                    @include('pages.documents.requested-document')
                   </div>
                  @endif
                  <div class="tab-pane fade {{Auth::user()->role->id == 4 ? 'show active' : 'null'}}" id="assigned-content" role="tabpanel" aria-labelledby="assigned-tab">
-                  @include('pages.ticket.assigned')
+                  @include('pages.documents.assigned')
                 </div>
                   <div class="tab-pane fade" id="working-content" role="tabpanel" aria-labelledby="working-tab">
-                    @include('pages.ticket.working')
+                    @include('pages.documents.working')
                   </div>
                   <div class="tab-pane fade" id="for-closing-content" role="tabpanel" aria-labelledby="for-closing-tab">
-                    @include('pages.ticket.for-closing')
+                    @include('pages.documents.for-closing')
                   </div>
                   <div class="tab-pane fade" id="closed-content" role="tabpanel" aria-labelledby="closed-tab">
-                    @include('pages.ticket.closed')
+                    @include('pages.documents.closed')
                   </div>
                   <div class="tab-pane fade" id="with-feedback-content" role="tabpanel" aria-labelledby="with-feedback-tab">
-                    @include('pages.ticket.with-feedback')
+                    @include('pages.documents.with-feedback')
                   </div>
                   <div class="tab-pane fade" id="cancelled-content" role="tabpanel" aria-labelledby="cancelled-tab">
-                    @include('pages.ticket.cancelled')
+                    @include('pages.documents.cancelled')
                   </div>
                 </div>
               </div>
@@ -125,7 +126,7 @@
     //  COUNT TOTAL
       $.ajax({
         type: 'GET',
-        url: "{{ url('/ticket/computeTotal')}}",
+        url: "{{ url('/documents/computeTotal')}}",
         dataType: 'json',
         success:function(res)
         {
@@ -142,6 +143,97 @@
         }
       });
     });
-
 </script>
+
+
+
+
+  <!-- MODAL -->
+  <div class="modal fade" id="request-modal" aria-hidden="true">
+      <div class="modal-dialog modal-lg" style="width: 50%;">
+          <div class="modal-content">
+              <form action="javascript:void(0)" id="request-form" name="request-form" class="form-horizontal" method="POST">
+                  @csrf
+                  <div class="modal-header">
+                      <h4 class="modal-title" id="request-modal-title"></h4>
+                  </div>
+                  <div class="modal-body">
+
+                      <!-- id -->
+                      <input type="hidden" name="requestID" id="requestID">
+
+                      <!-- Request/Document Type Dropdown -->
+                      <div class="form-group row">
+                        <div class="col-md-6">
+                            <label for="requestType" class="form-label"><strong>Request For:</strong><span
+                            class="require">*</span></label>
+                            <select name="requestTypeID" id="requestTypeID" class="form-control">
+                                <option value="">Select Request</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="docType" class="form-label"><strong>Document Type:</strong><span
+                            class="require">*</span></label>
+                            <select name="docTypeID" id="docTypeID" class="form-control">
+                                <option value="">Select Document Type</option>
+                            </select>
+                        </div>
+                      </div>
+
+                      <!-- DocRefCode and CurrentRevNum -->
+                      <div class="form-group row">
+                        <div class="col-md-6">
+                          <label for="docRefCode" class="form-label"><strong>Document Reference Code:</strong></label>
+                              <select name="docRefCode" id="docRefCode" class="form-control">
+                                  <option value="">Doc Ref Code</option>
+                              </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="currentRevNum" class="col-sm-4 control-label">Current Revision Number:</label>
+                          <div class="col-sm-12">
+                              <input type="text" class="form-control" id="currentRevNum" name="currentRevNum">
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Document Title -->
+                      <div class="form-group">
+                          <label for="Document Title" class="col-sm-4 control-label">Document Title:<span
+                                  class="require">*</span></label>
+                          <div class="col-sm-12">
+                              <input type="text" class="form-control" id="docTitle" name="docTitle"
+                                  placeholder="Enter Document Title">
+                          </div>
+                      </div>
+
+                      <!-- Reason -->
+                      <div class="form-group">
+                          <label for="Reason" class="col-sm-4 control-label">Reason/s for the Request:<span
+                                  class="require">*</span></label>
+                          <div class="col-sm-12">
+                              <input type="text" class="form-control" id="requestReason" name="requestReason"
+                                  placeholder="Enter Reason for Request">
+                          </div>
+                      </div>
+
+                      <!-- Status -->
+                      <div class="form-group">
+                          <label for="inputcontent" class="form-label"><strong>Status</strong></label>
+                          <select name="status" id="status">
+                              <option value=1>Active</option>
+                              <option value=0>Inactive</option>
+                          </select>
+                      </div>
+
+
+
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                          <button type="submit" class="btn btn-primary" id="unit-btn-save">Save</button>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
 @endsection

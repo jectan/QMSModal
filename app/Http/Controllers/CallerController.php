@@ -72,7 +72,7 @@ class CallerController extends Controller
             ]);    
         
         if($request->process == 'Proceed to Ticket') {
-            return redirect('caller/'. $caller->id.'/ticket/create')->with(['success' => 'You can now add ticket!']);
+            return redirect('caller/'. $caller->id.'/documents/create')->with(['success' => 'You can now add ticket!']);
         } else {
             return redirect('/caller')->with(['success' => 'Successfully Saved!']);
         }

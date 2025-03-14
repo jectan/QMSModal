@@ -21,7 +21,7 @@
                 <td>{{$anoncaller->created_at}}</td>
                 <td>
                     <button class="btn btn-primary btn-xs" 
-                    onclick="location.href='/ticket/create'"><i class="fas fa-ticket-alt"></i></button>
+                    onclick="location.href='/documents/create'"><i class="fas fa-ticket-alt"></i></button>
                     <button class="btn btn-danger btn-xs" onclick="deleteCase(this)" data-id="{{$anoncaller->id}}" data-toggle="tooltip" data-original-title="Delete"><i class="fas fa-trash"></i></button>           
                 </td>
               </tr >

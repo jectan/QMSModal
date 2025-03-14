@@ -114,7 +114,7 @@
     //  COUNT TOTAL
       $.ajax({
         type: 'GET',
-        url: "{{ url('/ticket/computeTotal')}}",
+        url: "{{ url('/documents/computeTotal')}}",
         dataType: 'json',
         success:function(res)
         {

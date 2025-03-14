@@ -15,7 +15,7 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item">
-            <a href="/dashboardv2" class="nav-link {{ $page == 'dashboardv2' ? 'active' : '' }}">
+            <a href="/dashboard" class="nav-link {{ $page == 'dashboard' ? 'active' : '' }}">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
@@ -23,7 +23,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/ticket" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
+            <a href="/documents" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
               <i class="nav-icon fas fa-file-alt"></i>
               <p>
               Manage Documents

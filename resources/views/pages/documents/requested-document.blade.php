@@ -32,7 +32,7 @@
                         <td>{{$requestDocument->createdBy ? $requestDocument->createdBy ->unit->unitName : ""}}</td>
                         <td>{{$requestDocument->requestStatus ? $requestDocument->requestStatus : ""}}</td>
                         <td>
-                            <button class="btn btn-info btn-xs" onclick="location.href='/ticket/view/{{ $requestDocument->requestID }}'" ><i class="fas fa-eye"></i></button>                          
+                            <button class="btn btn-info btn-xs" onclick="location.href='/documents/view/{{ $requestDocument->requestID }}'" ><i class="fas fa-eye"></i></button>                          
                         </td>
                     </tr >
                     @endforeach

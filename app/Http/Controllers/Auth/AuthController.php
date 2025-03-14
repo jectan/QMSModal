@@ -28,7 +28,7 @@ class AuthController extends Controller
                 return redirect('setpassword');
             } else{
                 if(Auth::user()->isActive == true){
-                    return redirect()->intended('/dashboardv2');
+                    return redirect()->intended('/dashboard');
                 } else{
                     return redirect('login')->with('error', 'Sorry, your account was deactivated.');
                 }

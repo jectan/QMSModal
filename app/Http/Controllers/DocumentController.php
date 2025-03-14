@@ -59,6 +59,11 @@ class DocumentController extends Controller
         exit;
     }
 
+    public function create()
+    {
+        
+    }
+
     public function index()
     {
         $user = Auth::user();
@@ -102,7 +107,7 @@ class DocumentController extends Controller
             $cancelled = Ticket::where('status', 'cancelled')->get();
             $closed = Ticket::where('status', 'closed')->whereNull('date_rated')->get();
     }
-        return view('pages.ticket.index', ['created' => $created, 'requestDocuments' => $requestDocuments, 'assigned' => $assigned, 'workings' => $working, 'for_closings' => $for_closing, 'closed' => $closed, 'with_feedbacks' => $with_feedback, 'cancelled' => $cancelled, 'closed' => $closed]);
+        return view('pages.documents.index', ['created' => $created, 'requestDocuments' => $requestDocuments, 'assigned' => $assigned, 'workings' => $working, 'for_closings' => $for_closing, 'closed' => $closed, 'with_feedbacks' => $with_feedback, 'cancelled' => $cancelled, 'closed' => $closed]);
     }
      
     public function cancel(Request $request)
@@ -121,7 +126,7 @@ class DocumentController extends Controller
     {
         $caller = Caller::findOrFail($caller_id);
         $caller_types = CallerType::all();
-        return view('pages.ticket.proceed-ticket')->with(['caller' => $caller, 'caller_types' => $caller_types]);
+        return view('pages.documents.proceed-ticket')->with(['caller' => $caller, 'caller_types' => $caller_types]);
     }
     public function show($id)
     {
@@ -130,7 +135,7 @@ class DocumentController extends Controller
         $caller = Caller::where('id', $document->caller_id)->first();
         $caller_types = CallerType::all();
 
-        return view('pages.ticket.update', ['caller' => $caller, 'caller_types' => $caller_types, 'ticket' => $document]);
+        return view('pages.documents.update', ['caller' => $caller, 'caller_types' => $caller_types, 'ticket' => $document]);
     }
 
     public function update(Request $request)
@@ -142,7 +147,7 @@ class DocumentController extends Controller
         $document->updated_by_id     =  Auth::id();
         $document->update();
         
-        return redirect('/ticket/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id]);
+        return redirect('/documents/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id]);
     }
     public function closeticket(Request $request)
     {
@@ -163,7 +168,7 @@ class DocumentController extends Controller
        
         $document_log->save();
         
-        return redirect('/ticket/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id, ]);
+        return redirect('/documents/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id, ]);
     }
 
     public function store(Request $request)
@@ -203,7 +208,7 @@ class DocumentController extends Controller
         $document_log->assigned_by_id =Auth::id();
         $document_log-> remarks =$request->remarks;
         $document_log->save();
-        return redirect('/ticket')->with(['success' => 'Successfully Saved!']);
+        return redirect('/documents')->with(['success' => 'Successfully Saved!']);
     }
 
     public function view($id)
@@ -216,7 +221,7 @@ class DocumentController extends Controller
             $office_id = Auth::user()->staff->office_id;
             $assigned_office_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $document->id)->first();
         }
-        return view('pages.ticket.display-ticket', [
+        return view('pages.documents.display-ticket', [
             'ticket' => $document, 
             'offices' => $offices,
             'assigned_office_action' => $assigned_office_action
@@ -324,10 +329,10 @@ class DocumentController extends Controller
             
 
             DB::commit();
-            return redirect('/ticket/view/' . $request->ticket_id)->with('success', "successfully Updated");
+            return redirect('/documents/view/' . $request->ticket_id)->with('success', "successfully Updated");
         } catch (Exception $ex) {
             DB::rollback();
-            return redirect('/ticket/view/' . $request->ticket_id)->with('error', $ex->getMessage());
+            return redirect('/documents/view/' . $request->ticket_id)->with('error', $ex->getMessage());
         }
     }
 
@@ -380,10 +385,10 @@ class DocumentController extends Controller
 
           
             DB::commit();
-            return redirect('/ticket/view/' . $request->ticket_id)->with('success', "successfully Updated");
+            return redirect('/documents/view/' . $request->ticket_id)->with('success', "successfully Updated");
         } catch (Exception $ex) {
             DB::rollback();
-            return redirect('/ticket/view/' . $request->ticket_id)->with('error', $ex->getMessage());
+            return redirect('/documents/view/' . $request->ticket_id)->with('error', $ex->getMessage());
         }
     }
 
@@ -427,7 +432,7 @@ class DocumentController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('pages.ticket.display-ticket');
+        return view('pages.documents.display-ticket');
     }
 
     public function actionStatus($id)
@@ -446,7 +451,7 @@ class DocumentController extends Controller
                 ->make(true);
         }
 
-        return view('pages.ticket.display-ticket');
+        return view('pages.documents.display-ticket');
     }
 
     // Remove Office

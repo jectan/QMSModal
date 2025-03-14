@@ -7,13 +7,13 @@
         <h4 class="h4" style="padding-left: 5px">Create Ticket</h4>
         <div>
             <button type="button" class="btn btn-block btn-secondary" style="float: right"
-                onclick="location.href='/ticket'"><i
+                onclick="location.href='/documents'"><i
                     class="fas fa-chevron-left"></i>&nbsp;Back</button>
         </div>
     </div>
     <section class="content">
         <div class="container-fluid">
-            <form  action="/ticket/store" id="ticket-form" method="POST">
+            <form  action="/documents/store" id="ticket-form" method="POST">
                 @csrf
                 <div class="card card-default">
                     <div class="card-header card-head">
