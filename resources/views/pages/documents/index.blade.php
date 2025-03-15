@@ -121,119 +121,267 @@
     
 </section>
 
-<script>
-   $(document).ready(function(){
-    //  COUNT TOTAL
-      $.ajax({
-        type: 'GET',
-        url: "{{ url('/documents/computeTotal')}}",
-        dataType: 'json',
-        success:function(res)
-        {
-          $(".register").html(res['register']);
-          $(".review").html(res['review']);
-          $(".approval").html(res['approval']);
-          $(".archive").html(res['archive']);
-          $(".total").html(res['total_ticket']);
-          $(".assigned").html(res['assigned']);
-          $(".working").html(res['working']);
-          $(".for-closing").html(res['for-closing']);
-          $(".closed").html(res['closed']);
-          $(".feedback").html(res['feedback']);
-        }
-      });
-    });
-</script>
+<!-- MODAL -->
+<div class="modal fade" id="request-modal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 50%;">
+        <div class="modal-content">
+            <form action="javascript:void(0)" id="request-form" name="request-form" class="form-horizontal" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h4 class="modal-title" id="request-modal-title">Request Document</h4>
+                </div>
+                <div class="modal-body">
 
+                    <!-- id -->
+                    <input type="hidden" name="requestID" id="requestID">
 
-
-
-  <!-- MODAL -->
-  <div class="modal fade" id="request-modal" aria-hidden="true">
-      <div class="modal-dialog modal-lg" style="width: 50%;">
-          <div class="modal-content">
-              <form action="javascript:void(0)" id="request-form" name="request-form" class="form-horizontal" method="POST">
-                  @csrf
-                  <div class="modal-header">
-                      <h4 class="modal-title" id="request-modal-title"></h4>
-                  </div>
-                  <div class="modal-body">
-
-                      <!-- id -->
-                      <input type="hidden" name="requestID" id="requestID">
-
-                      <!-- Request/Document Type Dropdown -->
-                      <div class="form-group row">
-                        <div class="col-md-6">
-                            <label for="requestType" class="form-label"><strong>Request For:</strong><span
-                            class="require">*</span></label>
-                            <select name="requestTypeID" id="requestTypeID" class="form-control">
-                                <option value="">Select Request</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="docType" class="form-label"><strong>Document Type:</strong><span
-                            class="require">*</span></label>
-                            <select name="docTypeID" id="docTypeID" class="form-control">
-                                <option value="">Select Document Type</option>
-                            </select>
-                        </div>
-                      </div>
-
-                      <!-- DocRefCode and CurrentRevNum -->
-                      <div class="form-group row">
-                        <div class="col-md-6">
-                          <label for="docRefCode" class="form-label"><strong>Document Reference Code:</strong></label>
-                              <select name="docRefCode" id="docRefCode" class="form-control">
-                                  <option value="">Doc Ref Code</option>
-                              </select>
-                        </div>
-                        <div class="col-md-6">
-                          <label for="currentRevNum" class="col-sm-4 control-label">Current Revision Number:</label>
-                          <div class="col-sm-12">
-                              <input type="text" class="form-control" id="currentRevNum" name="currentRevNum">
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- Document Title -->
-                      <div class="form-group">
-                          <label for="Document Title" class="col-sm-4 control-label">Document Title:<span
-                                  class="require">*</span></label>
-                          <div class="col-sm-12">
-                              <input type="text" class="form-control" id="docTitle" name="docTitle"
-                                  placeholder="Enter Document Title">
-                          </div>
-                      </div>
-
-                      <!-- Reason -->
-                      <div class="form-group">
-                          <label for="Reason" class="col-sm-4 control-label">Reason/s for the Request:<span
-                                  class="require">*</span></label>
-                          <div class="col-sm-12">
-                              <input type="text" class="form-control" id="requestReason" name="requestReason"
-                                  placeholder="Enter Reason for Request">
-                          </div>
-                      </div>
-
-                      <!-- Status -->
-                      <div class="form-group">
-                          <label for="inputcontent" class="form-label"><strong>Status</strong></label>
-                          <select name="status" id="status">
-                              <option value=1>Active</option>
-                              <option value=0>Inactive</option>
+                    <!-- Request/Document Type Dropdown -->
+                    <div class="form-group row">
+                      <div class="col-md-6">
+                          <label for="requestType" class="form-label"><strong>Request For:</strong><span
+                          class="require">*</span></label>
+                          <select name="requestTypeID" id="requestTypeID" class="form-control">
+                              <option value="">Select Request</option>
                           </select>
                       </div>
-
-
-
-                      <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                          <button type="submit" class="btn btn-primary" id="unit-btn-save">Save</button>
+                      <div class="col-md-6">
+                          <label for="docType" class="form-label"><strong>Document Type:</strong><span
+                          class="require">*</span></label>
+                          <select name="docTypeID" id="docTypeID" class="form-control">
+                              <option value="">Select Document Type</option>
+                          </select>
                       </div>
-                  </div>
-              </form>
-          </div>
-      </div>
-  </div>
+                    </div>
+
+                    <!-- DocRefCode and CurrentRevNum -->
+                    <div class="form-group row">
+                      <div class="col-md-6">
+                        <label for="docRefCode" class="form-label"><strong>Document Reference Code:</strong></label>
+                            <!-- <select name="docRefCode" id="docRefCode" class="form-control">
+                                <option value="">Doc Ref Code</option>
+                            </select> -->
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="docRefCode" name="docRefCode">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="currentRevNum" class="col-sm-4 control-label">Current Revision Number:</label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="currentRevNum" name="currentRevNum">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Document Title -->
+                    <div class="form-group">
+                        <label for="Document Title" class="col-sm-4 control-label">Document Title:<span
+                                class="require">*</span></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="docTitle" name="docTitle"
+                                placeholder="Enter Document Title">
+                        </div>
+                    </div>
+
+                    <!-- Reason -->
+                    <div class="form-group">
+                        <label for="Reason" class="col-sm-4 control-label">Reason/s for the Request:<span
+                                class="require">*</span></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="requestReason" name="requestReason"
+                                placeholder="Enter Reason for Request">
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <!-- <div class="form-group">
+                        <label for="inputcontent" class="form-label"><strong>Status</strong></label>
+                        <select name="status" id="status">
+                            <option value=1>Active</option>
+                            <option value=0>Inactive</option>
+                        </select>
+                    </div> -->
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="unit-btn-save">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+  <!-- AJAX -->
+  <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        
+    $(document).ready(function(){
+      //  COUNT TOTAL
+        $.ajax({
+          type: 'GET',
+          url: "{{ url('/documents/computeTotal')}}",
+          dataType: 'json',
+          success:function(res)
+          {
+            $(".register").html(res['register']);
+            $(".review").html(res['review']);
+            $(".approval").html(res['approval']);
+            $(".archive").html(res['archive']);
+            $(".total").html(res['total_ticket']);
+            $(".assigned").html(res['assigned']);
+            $(".working").html(res['working']);
+            $(".for-closing").html(res['for-closing']);
+            $(".closed").html(res['closed']);
+            $(".feedback").html(res['feedback']);
+          }
+        });
+      });
+
+      // Submit button
+      $('#unit-form').submit(function(e) {
+          e.preventDefault();
+          var formData = new FormData(this);
+
+          $.ajax({
+              type: 'POST',
+              url: "{{ url('/units/store') }}",
+              data: formData,
+              cache: false,
+              contentType: false,
+              processData: false,
+              success: function(res) {
+
+                  if (res.success) {
+                      Swal.fire({
+                          icon: 'success',
+                          title: res.success
+                      });
+
+                      $("#unit-modal").modal('hide');
+                      var oTable = $('#unit-dt').dataTable();
+                      oTable.fnDraw(false);
+
+                      $("#unit-btn-save").html('Save Changes');
+                      $("#unit-btn-save").attr("disabled", false);
+                      $("#unit-form")[0].reset();
+                  } else {
+                      swal.fire({
+                          icon: 'error',
+                          html: res.errors
+                      });
+                  }
+              },
+              error: function(data) {
+                  console.log(data);
+              }
+          });
+      });
+
+      // Define loadRequestType before using it
+      function loadRequestType(selectedrequestTypeID = null, callback = null) {
+          $.ajax({
+              url: "get-requestType",
+              type: "GET",
+              dataType: "json",
+              success: function (response) {
+                  console.log("Response received:", response);
+
+                  if (response.data && response.data.length > 0) {
+                      let options = '';
+
+                      response.data.forEach(function (requestType) {
+                          options += `<option value="${requestType.requestTypeID}">${requestType.requestTypeDesc}</option>`;
+                      });
+
+                      $("#requestTypeID").html(options);
+
+                      // Execute callback after setting dropdown options
+                      if (callback) {
+                          callback();
+                      }
+                  } else {
+                      $("#requestTypeID").html('<option value="">Please Check Libraries</option>');
+                  }
+              },
+              error: function (xhr, status, error) {
+                  console.error("AJAX Error:", xhr.responseText);
+              }
+          });
+      }
+
+      // Define loadDocType before using it
+      function loadDocType(selecteddocTypeID = null, callback = null) {
+          $.ajax({
+              url: "get-docType",
+              type: "GET",
+              dataType: "json",
+              success: function (response) {
+                  console.log("Response received:", response);
+
+                  if (response.data && response.data.length > 0) {
+                      let options = '';
+
+                      response.data.forEach(function (docType) {
+                          options += `<option value="${docType.docTypeID}">${docType.docTypeDesc}</option>`;
+                      });
+
+                      $("#docTypeID").html(options);
+
+                      // Execute callback after setting dropdown options
+                      if (callback) {
+                          callback();
+                      }
+                  } else {
+                      $("#docTypeID").html('<option value="">Please Check Libraries</option>');
+                  }
+              },
+              error: function (xhr, status, error) {
+                  console.error("AJAX Error:", xhr.responseText);
+              }
+          });
+      }
+
+      // Define loadDocType before using it
+      function loadDocRefCode(selectedrequestID = null, callback = null) {
+          $.ajax({
+              url: "get-docRefCode",
+              type: "GET",
+              dataType: "json",
+              success: function (response) {
+                  console.log("Response received:", response);
+
+                  if (response.data && response.data.length > 0) {
+                      let options = '';
+
+                      response.data.forEach(function (requestDocument) {
+                          options += `<option value="${requestDocument.requestDocumentID}">${requestDocument.docRefCode}</option>`;
+                      });
+
+                      $("#requestDocumentID").html(options);
+
+                      // Execute callback after setting dropdown options
+                      if (callback) {
+                          callback();
+                      }
+                  } else {
+                      $("#requestDocumentID").html('<option value="">Please Check Libraries</option>');
+                  }
+              },
+              error: function (xhr, status, error) {
+                  console.error("AJAX Error:", xhr.responseText);
+              }
+          });
+      }
+
+      // Call loadDivisions when modal opens
+      $("#request-modal").on("show.bs.modal", function () {
+        console.log("Modal Opened, Fetching Request Types...");
+        loadRequestType();
+        loadDocType();
+      });
+  </script>
 @endsection

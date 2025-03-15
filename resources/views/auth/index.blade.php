@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Zamboanga City e-Sumbong</title>
+    <title>DICT Document Management System</title>
     <link rel="shortcut icon" type="image/jpg" href="/img/logo1.png"/>
     <link rel="stylesheet" type="text/css" href="/login-css/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/login-css/css/design.css">

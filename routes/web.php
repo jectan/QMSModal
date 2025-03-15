@@ -95,8 +95,11 @@ Route::get('/accounts/user-roles/{id}',[AccountController::class, 'getUserRole']
 Route::post('/accounts/user-roles/add',[AccountController::class, 'addUserRole']);
 Route::delete('/accounts/user-roles/remove/{id}',[AccountController::class, 'removeUserRole']);
   
-//Ticket
+//Document
 Route::get('/documents', [DocumentController::class, 'index']);
+Route::get('/get-requestType', [DocumentController::class, 'getRequestType']);
+Route::get('/get-docType', [DocumentController::class, 'getDocType']);
+Route::get('/get-docRefCode', [DocumentController::class, 'getDocRefCode']);
 Route::post('/documents/store', [DocumentController::class, 'store']);
 Route::get('/documents/create', [DocumentController::class, 'create']);
 Route::get('/documents/show/{id}', [DocumentController::class, 'show']);

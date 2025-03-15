@@ -14,7 +14,9 @@ use App\Models\Office;
 use App\Models\StartworkingLog;
 use App\Models\OfficeAssignedTicketLog;
 use App\Models\TicketLog;
+use App\Models\DocType;
 use App\Models\RequestDocument;
+use App\Models\RequestType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -59,9 +61,22 @@ class DocumentController extends Controller
         exit;
     }
 
-    public function create()
+    public function getRequestType()
     {
-        
+        $requestType = RequestType::select('requestTypeID', 'requestTypeDesc')->get();
+        return response()->json(['data' => $requestType]);
+    }
+
+    public function getDocType()
+    {
+        $docType = DocType::select('docTypeID', 'docTypeDesc')->get();
+        return response()->json(['data' => $docType]);
+    }
+
+    public function getDocRefCode()
+    {
+        $docType = RequestDocument::select('docTypeID', 'docTypeDesc')->get();
+        return response()->json(['data' => $docType]);
     }
 
     public function index()
