@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\ActionDocumentController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CallerTypeController;
@@ -100,7 +99,6 @@ Route::get('/documents', [DocumentController::class, 'index']);
 Route::get('/get-requestType', [DocumentController::class, 'getRequestType']);
 Route::get('/get-docType', [DocumentController::class, 'getDocType']);
 Route::get('/get-docRefCode', [DocumentController::class, 'getDocRefCode']);
-Route::post('/documents/store', [DocumentController::class, 'store']);
 Route::get('/documents/create', [DocumentController::class, 'create']);
 Route::get('/documents/show/{id}', [DocumentController::class, 'show']);
 Route::post('/documents/update', [DocumentController::class, 'update']);
@@ -109,27 +107,6 @@ Route::post('/documents/cancel', [DocumentController::class, 'cancel']);
 Route::delete('/documents/delete/{id}', [DocumentController::class, 'destroy']);
 Route::post('/documents/assign/add',[DocumentController::class, 'assignedOffice']);
 Route::get('/documents/show-assign/{id}',[DocumentController::class, 'getOffice']);
-
-//action ticket
-Route::post('/documents/update/store', [ActionDocumentController::class, 'store']);
-Route::post('/documents/update/working', [DocumentController::class, 'startWorking']);
-Route::post('/documents/update/processed', [DocumentController::class, 'ticketProcessed']);
-Route::get('/documents/update/assigned/{id}', [DocumentController::class, 'assigned']);
-Route::get('/documents/update/action-status/{id}', [DocumentController::class, 'actionStatus']);
-Route::delete('/documents/update/remove/{id}', [DocumentController::class, 'removeUserOffice']);
-
-//Position
-Route::get('/position', [PositionController::class, 'index']);
-Route::post('/position/store', [PositionController::class, 'PositionStore']);
-Route::post('/position/update', [PositionController::class, 'editOffice']);
-Route::delete('/position/delete/{id}', [PositionController::class, 'destroyOffice']);
-
-//Caller-type
-Route::get('/caller-type', [CallerTypeController::class, 'index']);
-Route::post('/caller-type/store', [CallerTypeController::class, 'store']);
-Route::post('/caller-type/proceedTicket', [CallerTypeController::class, 'proceedTicket']);
-Route::post('/caller-type/edit', [CallerTypeController::class, 'edit']);
-Route::delete('/caller-type/delete/{id}', [CallerTypeController::class, 'destroy']);
 
 //Roles
 Route::get('/roles', [RoleController::class, 'index']);
@@ -178,9 +155,9 @@ Route::get('/feedback',[FeedbackController::class, 'index']);
     // Admin staffS
     Route::group(['middleware' => 'role:all'], function (){
 //documents  
-Route::get('/documents', [DocumentController::class, 'index']);
 Route::post('/documents/store', [DocumentController::class, 'store']);
-Route::get('caller/{caller_id}/documents/create', [DocumentController::class, 'proceedTicket']);
+Route::get('/documents/data-request{status?}', [DocumentController::class, 'getDataRequest'])->name('documents.data-request');
+Route::get('/documents', [DocumentController::class, 'index']);
 Route::get('/documents/show/{id}', [DocumentController::class, 'show']);
 Route::post('/documents/update', [DocumentController::class, 'update']);
 Route::get('/documents/view/{id}', [DocumentController::class, 'view']);
@@ -188,16 +165,6 @@ Route::post('/documents/cancel/', [DocumentController::class, 'cancel']);
 Route::delete('/documents/delete/{id}', [DocumentController::class, 'destroy']);
 Route::post('/documents/assign/add',[DocumentController::class, 'assignedOffice']);
 Route::get('/documents/show-assign/{id}',[DocumentController::class, 'getOffice']);
-
-
-//action ticket
-//Route::post('/documents/update/store', [ActionDocumentController::class, 'store']);
-//Route::post('/documents/update/working', [DocumentController::class, 'startWorking']);
-//Route::post('/documents/update/processed', [DocumentController::class, 'ticketProcessed']);
-//Route::get('/documents/update/assigned/{id}', [DocumentController::class, 'assigned']);
-//Route::get('/documents/update/action-status/{id}', [DocumentController::class, 'actionStatus']);
-//Route::delete('/documents/update/remove/{id}', [DocumentController::class, 'removeUserOffice']);
-
        
 });
 

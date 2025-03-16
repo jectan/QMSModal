@@ -75,44 +75,35 @@
                 <ul class="nav nav-tabs" id="settings-tab" role="tablist">
                   @if(Auth::user()->role->id!=4)
                   <li class="nav-item">
-                    <a class="nav-link active" id="created" data-toggle="pill" href="#created-content" role="tab" aria-controls="created-content" aria-selected="true">Requested</a>
+                    <a class="nav-link active" id="request" data-toggle="pill" href="#requested-document" role="tab" aria-controls="requested-document" aria-selected="true">Requested</a>
                   </li>
                   @endif
                   <li class="nav-item">
-                          <a class="nav-link {{Auth::user()->role->id == 4 ? 'active' : 'null'}}" id="assigned" data-toggle="pill" href="#assigned-content" role="tab" aria-controls="assigned-content" aria-selected="false">For Review</a>
+                          <a class="nav-link {{Auth::user()->role->id == 4 ? 'active' : 'null'}}" id="review" data-toggle="pill" href="#review-document" role="tab" aria-controls="review-document" aria-selected="false">For Review</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link " id="working" data-toggle="pill" href="#working-content" role="tab" aria-controls="working-content" aria-selected="false">For Approval</a>
+                    <a class="nav-link " id="approval" data-toggle="pill" href="#approval-document" role="tab" aria-controls="approval-document" aria-selected="false">For Approval</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link " id="for-closing" data-toggle="pill" href="#for-closing-content" role="tab" aria-controls="for-closing-content" aria-selected="false">For Registration</a>
+                    <a class="nav-link " id="registration" data-toggle="pill" href="#registration-document" role="tab" aria-controls="registration-document" aria-selected="false">For Registration</a>
                   </li>
                 </ul>
               </div>
               <div class="card-body">
                 <div class="tab-content" id="set-content">
                   @if(Auth::user()->role->id!=4)
-                  <div class="tab-pane fade show active " id="created-content" role="tabpanel" aria-labelledby="created-tab">
+                  <div class="tab-pane fade show active " id="requested-document" role="tabpanel" aria-labelledby="request-tab">
                     @include('pages.documents.requested-document')
                   </div>
                  @endif
-                 <div class="tab-pane fade {{Auth::user()->role->id == 4 ? 'show active' : 'null'}}" id="assigned-content" role="tabpanel" aria-labelledby="assigned-tab">
-                  @include('pages.documents.assigned')
+                 <div class="tab-pane fade {{Auth::user()->role->id == 4 ? 'show active' : 'null'}}" id="review-document" role="tabpanel" aria-labelledby="review-tab">
+                  @include('pages.documents.review-document')
                 </div>
-                  <div class="tab-pane fade" id="working-content" role="tabpanel" aria-labelledby="working-tab">
-                    @include('pages.documents.working')
+                  <div class="tab-pane fade" id="approval-document" role="tabpanel" aria-labelledby="approval-tab">
+                    @include('pages.documents.approval-document')
                   </div>
-                  <div class="tab-pane fade" id="for-closing-content" role="tabpanel" aria-labelledby="for-closing-tab">
-                    @include('pages.documents.for-closing')
-                  </div>
-                  <div class="tab-pane fade" id="closed-content" role="tabpanel" aria-labelledby="closed-tab">
-                    @include('pages.documents.closed')
-                  </div>
-                  <div class="tab-pane fade" id="with-feedback-content" role="tabpanel" aria-labelledby="with-feedback-tab">
-                    @include('pages.documents.with-feedback')
-                  </div>
-                  <div class="tab-pane fade" id="cancelled-content" role="tabpanel" aria-labelledby="cancelled-tab">
-                    @include('pages.documents.cancelled')
+                  <div class="tab-pane fade" id="registration-document" role="tabpanel" aria-labelledby="registration-tab">
+                    @include('pages.documents.registration-document')
                   </div>
                 </div>
               </div>
@@ -165,9 +156,9 @@
                         </div>
                       </div>
                       <div class="col-md-6">
-                        <label for="currentRevNum" class="col-sm-4 control-label">Current Revision Number:</label>
+                        <label for="currentRevNo" class="col-sm-4 control-label">Current Revision Number:</label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control" id="currentRevNum" name="currentRevNum">
+                            <input type="text" class="form-control" id="currentRevNo" name="currentRevNo">
                         </div>
                       </div>
                     </div>
@@ -203,7 +194,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="unit-btn-save">Save</button>
+                        <button type="submit" class="btn btn-primary" id="request-btn-save">Save</button>
                     </div>
                 </div>
             </form>
@@ -232,54 +223,52 @@
             $(".approval").html(res['approval']);
             $(".archive").html(res['archive']);
             $(".total").html(res['total_ticket']);
-            $(".assigned").html(res['assigned']);
-            $(".working").html(res['working']);
-            $(".for-closing").html(res['for-closing']);
-            $(".closed").html(res['closed']);
-            $(".feedback").html(res['feedback']);
           }
         });
       });
 
       // Submit button
-      $('#unit-form').submit(function(e) {
-          e.preventDefault();
-          var formData = new FormData(this);
+      $('#request-form').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
 
-          $.ajax({
-              type: 'POST',
-              url: "{{ url('/units/store') }}",
-              data: formData,
-              cache: false,
-              contentType: false,
-              processData: false,
-              success: function(res) {
+        $.ajax({
+            type: 'POST',
+            url: "{{ url('/documents/store') }}",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: res.success
+                    });
 
-                  if (res.success) {
-                      Swal.fire({
-                          icon: 'success',
-                          title: res.success
-                      });
+                    $("#request-modal").modal('hide');
 
-                      $("#unit-modal").modal('hide');
-                      var oTable = $('#unit-dt').dataTable();
-                      oTable.fnDraw(false);
+                    // Refresh DataTable immediately after saving
+                    $('#request-dt').DataTable().ajax.reload(null, false);
+                    $('#review-dt').DataTable().ajax.reload(null, false);
+                    $('#approval-dt').DataTable().ajax.reload(null, false);
+                    $('#registration-dt').DataTable().ajax.reload(null, false);
 
-                      $("#unit-btn-save").html('Save Changes');
-                      $("#unit-btn-save").attr("disabled", false);
-                      $("#unit-form")[0].reset();
-                  } else {
-                      swal.fire({
-                          icon: 'error',
-                          html: res.errors
-                      });
-                  }
-              },
-              error: function(data) {
-                  console.log(data);
-              }
-          });
-      });
+                    $("#request-btn-save").html('Save Changes');
+                    $("#request-btn-save").attr("disabled", false);
+                    $("#request-form")[0].reset();
+                } else {
+                    swal.fire({
+                        icon: 'error',
+                        html: res.errors
+                    });
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    });
 
       // Define loadRequestType before using it
       function loadRequestType(selectedrequestTypeID = null, callback = null) {
@@ -373,6 +362,48 @@
               },
               error: function (xhr, status, error) {
                   console.error("AJAX Error:", xhr.responseText);
+              }
+          });
+      }
+
+      // editRequest function
+      function editRequest(requestID) {
+          $.ajax({
+              type: "POST",
+              url: "{{ url('/documents/update') }}",
+              data: { requestID: requestID },
+              "token": "{{ csrf_token() }}",
+              dataType: 'json',
+              success: function(res) {
+                  $('#request-modal-title').html("Request");
+                  $('#request-modal').modal('show');
+                  $('#requestID').val(res.requestID);
+                  $('#docRefCode').val(res.docRefCode);
+                  $('#currentRevNo').val(res.currentRevNo);
+                  $('#docTitle').val(res.docTitle);
+                  $('#requestReason').val(res.requestReason).change();
+                  $('#requestStatus').val('For Review').change();
+
+                  // Load data first, then set the selected value in a callback
+                  loadRequestType(res.requestTypeID, function () {
+                      $("#requestTypeID").val(res.requestTypeID).change(); // Ensure the correct selection
+                  });
+                  
+                  loadDocType(res.docTypeID, function () {
+                      $("#docTypeID").val(res.docTypeID).change(); // Ensure the correct selection
+                  });
+                  
+
+                  $("#request-modal").modal('hide');
+
+                  // Refresh DataTable immediately after saving
+                  $('#request-dt').DataTable().ajax.reload(null, false);
+                  $('#review-dt').DataTable().ajax.reload(null, false);
+                  $('#approval-dt').DataTable().ajax.reload(null, false);
+                  $('#registration-dt').DataTable().ajax.reload(null, false);
+              },
+              error: function(data) {
+                  console.log(data);
               }
           });
       }

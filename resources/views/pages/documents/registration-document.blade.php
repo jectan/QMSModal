@@ -4,7 +4,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-body table-responsive">
-        <table class="table table-striped w-100" id="request-dt" style="font-size: 14px">
+        <table class="table table-striped w-100" id="registration-dt" style="font-size: 14px">
             <thead>
                 <tr>
                     <th style="width: 10%">Document Ref No.</th>
@@ -25,10 +25,10 @@
 <script type="text/javascript">
  
     $(document).ready(function () {
-        $('#request-dt').DataTable({
+        $('#registration-dt').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('documents.data-request', ['status' => '0']) }}", // Fetch data from this route
+            ajax: "{{ route('documents.data-request', ['status' => 'For Registration']) }}", // Fetch data from this route
             columns: [
                 { data: "requestID", name: "requestID" },
                 { data: "docTitle", name: "docTitle" },

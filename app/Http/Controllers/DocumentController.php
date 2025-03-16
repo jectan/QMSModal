@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Exception;
+use Yajra\DataTables\Facades\DataTables;
 
 class DocumentController extends Controller
 
@@ -28,6 +29,124 @@ class DocumentController extends Controller
     public function __construct(SeriesService $series_service) 
     {
         $this->series_service = $series_service;
+    }
+
+    public function store(Request $request)
+    {
+        $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        [
+            'requestTypeID' => $request->requestTypeID,
+            'docTypeID' => $request->docTypeID,
+            'docRefCode' => $request->docRefCode,
+            'currentRevNo' => $request->currentRevNo,
+            'docTitle' => $request->docTitle,
+            'requestReason' => $request->requestReason,
+            'userID' => Auth::id(),
+            'requestFile' => 'empty',
+            'requestDate' => Carbon::now(),
+            'requestStatus' => 'For Review',                  
+        ]);
+                        
+        return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
+    }
+
+    public function validateRequest(Request $request)
+    {
+        try {
+            return Validator::make($request->all(), [
+                'docTitle'      => 'required|string|max:100|unique:RequestDocument,docTitle,' . $request->requestID . ',requestID',
+                'docRefCode'    => 'nullable|string|max:20',
+                'requestReason' => 'required|string|max:100',
+            ], [
+                'docTitle.required'  => 'The Document Title is required.',
+                'docTitle.unique'    => 'This Document Title already exists.',
+                'requestReason.required' => 'Reason for request is required.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function story(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            '' => 'required|unique:docTitle,requestReason,' . $request->requestID . ',requestID',],
+            ['docTitle.required' => 'The Document Title is required.'
+        ]);
+        if ($validator->fails()){
+
+            return response()->json(['errors'=>$validator->errors()->all()]);
+            
+        }else{
+            $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+            [
+                'requestTypeID' => $request->requestTypeID,
+                'docTypeID' => $request->docTypeID,
+                'docRefCode' => $request->docRefCode,
+                'currentRevNo' => '1', 
+                'docTitle' => $request->docTitle,
+                'requestReason' => $request->requestReason,
+                'userID' => Auth::id(),
+                'requestFile' => 'empty',
+                'requestDate' => Carbon::now(),
+                'requestStatus' => 'For Review',                   
+            ]);    
+                         
+            return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
+        }
+        /* $callerid = $request->caller_id;
+        $caller = Caller::find($callerid);
+        $caller->contact_no        = $request->contact_no;
+        $caller->email             = $request->email;
+        $caller->updated_by_id     =  Auth::id();
+        $caller->update();
+
+        $document_log = new TicketLog();
+        $document_log->ticket_id = $document->id;
+        $document_log->status = "created";
+        $document_log->assigned_by_id =Auth::id();
+        $document_log-> remarks =$request->remarks;
+        $document_log->save();
+        return redirect('/documents')->with(['success' => 'Successfully Saved!']); */
+    }
+
+    public function getDataRequest($status)
+    {
+        $requestDocuments = RequestDocument::with(['DocumentType', 'createdBy.unit'])
+            ->select('requestID', 'docTitle', 'docTypeID', 'requestStatus');
+        if ($status !== '0') {
+            $requestDocuments->where('requestStatus', $status);
+        }
+
+        return DataTables::of($requestDocuments)
+            ->addColumn('docTypeDesc', function ($row) {
+                return $row->DocumentType ? $row->DocumentType->docTypeDesc : "";
+            })
+            ->addColumn('requestor', function ($row) {
+                return $row->createdBy ? $row->createdBy->fullname : "";
+            })
+            ->addColumn('unitName', function ($row) {
+                return $row->createdBy && $row->createdBy->unit ? $row->createdBy->unit->unitName : "";
+            })
+            ->addColumn('action', function ($row) {
+                if (Auth::user()->role->id == 2) {
+                    $onClickFunction = "editReview({$row->requestID})";
+                } elseif ($row->requestStatus === 'For Review') {
+                    $onClickFunction = "editRequest({$row->requestID})";
+                } elseif ($row->requestStatus === 'For Approval') {
+                    $onClickFunction = "editApproval({$row->requestID})";
+                } elseif ($row->requestStatus === 'For Registration') {
+                    $onClickFunction = "editRegistration({$row->requestID})";
+                } else {
+                    $onClickFunction = "editRequest({$row->requestID})";
+                }
+        
+                return '<button class="btn btn-info btn-xs" href="javascript:void(0)" onClick="' . $onClickFunction . '">
+                            <i class="fas fa-eye"></i>
+                        </button>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 
     public function documentTally(){
@@ -155,14 +274,10 @@ class DocumentController extends Controller
 
     public function update(Request $request)
     {
-        $id = $request->id;
-        $document = Ticket::find($id);
-        $document->call_type_id = $request->call_type_id;
-        $document->call_details = $request->call_details;
-        $document->updated_by_id     =  Auth::id();
-        $document->update();
-        
-        return redirect('/documents/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id]);
+        $where = array('requestID' => $request->requestID);
+        $Unit  = RequestDocument::where($where)->first();
+      
+        return response()->json($Unit);
     }
     public function closeticket(Request $request)
     {
@@ -184,46 +299,6 @@ class DocumentController extends Controller
         $document_log->save();
         
         return redirect('/documents/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id, ]);
-    }
-
-    public function store(Request $request)
-    {
-        $random = Str::random(4);
-        $rule = [
-            'contact_no' => 'required|numeric|digits_between:10,11',
-            'call_details'  => 'required|string'
-        ];
-
-        $request->validate($rule);
-
-        $document = Ticket::Create(
-            [
-                'ticket_no' => $this->series_service->get('ticket'). '' . $random,
-                'caller_id' => $request->caller_id,
-                'call_type_id' => $request->call_type_id,
-                'call_details' => $request->call_details,
-                'ticket_category'=> 'call',
-                'call_datetime' => \Carbon\Carbon::now(),
-                'created_by_id' =>  Auth::id(),
-                'call_status' => $request->call_status,
-                'status' => 'created',
-                'status_updated_at' =>  Carbon::now()
-            ]
-        );
-        $callerid = $request->caller_id;
-        $caller = Caller::find($callerid);
-        $caller->contact_no        = $request->contact_no;
-        $caller->email             = $request->email;
-        $caller->updated_by_id     =  Auth::id();
-        $caller->update();
-
-        $document_log = new TicketLog();
-        $document_log->ticket_id = $document->id;
-        $document_log->status = "created";
-        $document_log->assigned_by_id =Auth::id();
-        $document_log-> remarks =$request->remarks;
-        $document_log->save();
-        return redirect('/documents')->with(['success' => 'Successfully Saved!']);
     }
 
     public function view($id)
