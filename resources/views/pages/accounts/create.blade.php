@@ -147,8 +147,8 @@
                                             <h6>NOTE: For the first login, use default password: <strong>*1234#</strong></h6>
                                     </div>
                                     <div class="btn-group float-right">
-                                        <button type="button" class="btn btn-default" onclick="stepper.previous()"><i class="fas fa-arrow-left"></i> Previous</button>
                                         <button type="submit" class="btn btn-primary"><i class="fas fa-save pr-2"></i>Submit</button>
+                                        <button type="button" class="btn btn-default" onclick="stepper.previous()"><i class="fas fa-arrow-left"></i> Previous</button>
                                     </div>
                                 </div>
 

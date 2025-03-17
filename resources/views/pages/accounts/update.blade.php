@@ -103,7 +103,7 @@
             
             <!-- /.card-body -->
             <div class="card-footer">
-                <button type="submit" class="btn btn-primary float-right" id="submitbtn">Save changes</button>
+                <button type="submit" class="btn btn-info float-right" id="submitbtn">Save changes</button>
                 <button type="button" class="btn btn-default" onclick="location.href='/accounts'"><i class="fas fa-arrow-left"></i> Back</button>
             </div>
         </form>

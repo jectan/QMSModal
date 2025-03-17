@@ -101,8 +101,8 @@
 
 
                         <div class="modal-footer">
+                            <button type="submit" class="btn btn-info" id="requestType-btn-save">Save</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="requestType-btn-save">Save</button>
                         </div>
                     </div>
                 </form>

@@ -161,6 +161,10 @@ class DocumentController extends Controller
                 return '<button class="btn btn-info btn" href="javascript:void(0)" onClick="' . $onClickFunction . '">
                             <i class="fas fa-eye"></i>
                         </button>
+                        <button class="btn btn-sm btn-success" href="javascript:void(0)" onClick="requestRequest(' . $row->requestID . ')">
+                            <i class="fa fa-pencil" style="font-size:24px"></i>
+                        </button>
+
                         <button class="btn btn-sm btn-danger" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
                             <i class="fa fa-trash-o" style="font-size:24px"></i>
                         </button>

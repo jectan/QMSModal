@@ -11,9 +11,9 @@
                     <th style="width: 25%">Doc Title</th>
                     <th style="width: 15%">Document Type</th>
                     <th style="width: 15%">Requestor</th>
-                    <th style="width: 15%">Unit</th>
+                    <th style="width: 10%">Unit</th>
                     <th style="width: 10%">Status</th>
-                    <th style="width: 10%">Action</th>
+                    <th style="width: 15%">Action</th>
                 </tr>
             </thead>
         </table>

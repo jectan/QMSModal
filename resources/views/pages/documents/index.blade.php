@@ -70,6 +70,7 @@
               </div>
             </div>
         </div>
+        <!-- TABS -->
         <div class="card card-primary card-tabs" style="margin: 10px">
             <div class="card-header p-0 pt-1 bg-dblue">
                 <ul class="nav nav-tabs" id="settings-tab" role="tablist">
@@ -108,6 +109,7 @@
                 </div>
               </div>
       </div>
+      <!-- TABS -->
     </div>
     
 </section>
@@ -201,8 +203,8 @@
                     </div> -->
 
                     <div class="modal-footer">
+                        <button type="submit" class="btn btn-info" id="request-btn-save">Save</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="request-btn-save">Save</button>
                     </div>
                 </div>
             </form>

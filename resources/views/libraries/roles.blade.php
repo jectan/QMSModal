@@ -66,8 +66,8 @@
                     </div>  
                 </div>
                 <div class="modal-footer">
+                    <button type="submit" class="btn btn-info" id="btn-save">Save</button>
                     <button type="button" class="btn btn-default" onClick="clearModal()" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="btn-save">Save</button>
                 </div>
         </form>
         </div>
