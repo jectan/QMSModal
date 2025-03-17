@@ -116,7 +116,7 @@
 <div class="modal fade" id="request-modal" aria-hidden="true">
     <div class="modal-dialog modal-lg" style="width: 50%;">
         <div class="modal-content">
-            <form action="javascript:void(0)" id="request-form" name="request-form" class="form-horizontal" method="POST">
+            <form action="javascript:void(0)" id="request-form" name="request-form" class="form-horizontal" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-header">
                     <h4 class="modal-title" id="request-modal-title">Request Document</h4>
@@ -180,6 +180,14 @@
                         <div class="col-sm-12">
                             <input type="text" class="form-control" id="requestReason" name="requestReason"
                                 placeholder="Enter Reason for Request">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestFile" class="col-sm-4 control-label">Upload Document (PDF Only):<span
+                                class="require">*</span></label>
+                        <div class="col-sm-12">
+                            <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf">
                         </div>
                     </div>
 
@@ -407,6 +415,69 @@
               }
           });
       }
+
+      function cancelRequest(requestID) {
+              const swalWithBootstrapButtons = Swal.mixin({
+                  customClass: {
+                      confirmButton: 'btn btn-danger',
+                      cancelButton: 'btn btn-default'
+                  },
+                  buttonsStyling: false
+              });
+
+              swalWithBootstrapButtons.fire({
+                  title: 'Are you sure?',
+                  text: "You won't be able to revert this!",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonText: 'Yes, delete it!',
+                  cancelButtonText: 'No, cancel!',
+                  reverseButtons: true
+              }).then((result) => {
+                  if (result.value) {
+                      if (result.isConfirmed) {
+
+                          swal.fire({
+                              html: '<h6>Loading... Please wait</h6>',
+                              onRender: function() {
+                                  $('.swal2-content').prepend(sweet_loader);
+                              },
+                              showConfirmButton: false
+                          });
+
+                          $.ajax({
+                            type: "POST",
+                            url: "{{ url('/documents/cancel') }}",
+                            data: {
+                                requestID: requestID,
+                                _token: "{{ csrf_token() }}"
+                              },
+                              success: function(res) {
+
+                                  setTimeout(function() {
+                                      swal.fire({
+                                          icon: 'success',
+                                          html: '<h5>Successfully Cancelled!</h5>'
+                                      });
+
+                                  }, 700);
+                                  $('#request-dt').DataTable().ajax.reload(null, false);
+                                  $('#review-dt').DataTable().ajax.reload(null, false);
+                                  $('#approval-dt').DataTable().ajax.reload(null, false);
+                                  $('#registration-dt').DataTable().ajax.reload(null, false);
+                              }
+                          });
+                      }
+                  } else if (
+                      result.dismiss === Swal.DismissReason.cancel
+                  ) {
+                      toastr.info(
+                          'Action is cancelled',
+                          'CANCELLED'
+                      );
+                  }
+              });
+          }
 
       // Call loadDivisions when modal opens
       $("#request-modal").on("show.bs.modal", function () {

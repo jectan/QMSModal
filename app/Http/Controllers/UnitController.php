@@ -82,7 +82,7 @@ class UnitController extends Controller
                 'status' => $request->status,                    
             ]);    
                          
-            return response()->json(['success'=> 'Successfully saved.', 'office' => $unit]);
+            return response()->json(['success'=> 'Successfully saved.', 'Unit' => $unit]);
         }
     }
       

@@ -33,6 +33,20 @@ class DocumentController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'documentFile' => 'required|mimes:pdf|max:2048',
+        ]);
+
+        // Initialize file path variable
+        $filePath = null;
+
+        // Check if a file is uploaded
+        if ($request->hasFile('documentFile')) {
+            $file = $request->file('documentFile');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('documents', $fileName, 'public'); // Store in storage/app/public/documents
+        }
+
         $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
         [
             'requestTypeID' => $request->requestTypeID,
@@ -42,7 +56,7 @@ class DocumentController extends Controller
             'docTitle' => $request->docTitle,
             'requestReason' => $request->requestReason,
             'userID' => Auth::id(),
-            'requestFile' => 'empty',
+            'requestFile' => $filePath, // Save file path in DB
             'requestDate' => Carbon::now(),
             'requestStatus' => 'For Review',                  
         ]);
@@ -117,6 +131,9 @@ class DocumentController extends Controller
         if ($status !== '0') {
             $requestDocuments->where('requestStatus', $status);
         }
+        else{
+            $requestDocuments->where('requestStatus', '!=', 'Cancelled');
+        }
 
         return DataTables::of($requestDocuments)
             ->addColumn('docTypeDesc', function ($row) {
@@ -141,9 +158,13 @@ class DocumentController extends Controller
                     $onClickFunction = "editRequest({$row->requestID})";
                 }
         
-                return '<button class="btn btn-info btn-xs" href="javascript:void(0)" onClick="' . $onClickFunction . '">
+                return '<button class="btn btn-info btn" href="javascript:void(0)" onClick="' . $onClickFunction . '">
                             <i class="fas fa-eye"></i>
-                        </button>';
+                        </button>
+                        <button class="btn btn-sm btn-danger" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
+                            <i class="fa fa-trash-o" style="font-size:24px"></i>
+                        </button>
+                        ';
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -200,71 +221,11 @@ class DocumentController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
-    
-        if ($user->role_id == 4){
-            
-            $requestDocumments = RequestDocument::with(['createdBy', 'documentType', 'requestType'])
-            ->where('requestStatus', '!=', 'Deleted', function ($query) use($user){
-                $query->where('unitID', $user->staff->unitID);})
-            ->get();
-
-            /* $created = Ticket::where('status', 'created')->whereHas('actions', function ($query) use($user){
-                $query->where('office_id', $user->staff->office_id);})->get();
-            
-            $assigned = Ticket::where('status', 'assigned')->whereHas('actions', function ($query) use($user){
-                $query->where('office_id', $user->staff->office_id);})->get();
-               
-            $working = Ticket::where('status', 'working')->whereHas('actions', function ($query) use($user){
-                $query->where('office_id', $user->staff->office_id);})->get();
-
-            $for_closing = Ticket::where('status', 'for-closing')->whereHas('actions', function ($query) use($user){
-                $query->where('office_id', $user->staff->office_id);})->get();
-
-            $closed = Ticket::where('status', 'closed')->whereHas('actions', function ($query) use($user){
-                $query->where('office_id', $user->staff->office_id);})->get();
-
-            $cancelled = Ticket::where('status', 'cancelled')->whereHas('actions', function ($query) use($user){
-                $query->where('office_id', $user->staff->office_id);})->get();
-
-            $with_feedback = Ticket::where('status', 'closed')->whereNotNull('date_rated')->whereHas('actions', function ($query) use($user){
-                $query->where('office_id', $user->staff->office_id);})->get(); */
-
-        }else{ 
-            $requestDocuments = RequestDocument::where('requestStatus', '!=', 'Deleted')->get();
-            $created = Ticket::where('status', 'created')->get();
-            $assigned = Ticket::where('status', 'assigned')->get();
-            $working = Ticket::where('status', 'working')->get();
-            $for_closing = Ticket::where('status', 'for-closing')->get();
-         
-            $with_feedback = Ticket::where('status', 'closed')->whereNotNull('date_rated')->get();
-            $cancelled = Ticket::where('status', 'cancelled')->get();
-            $closed = Ticket::where('status', 'closed')->whereNull('date_rated')->get();
+        return view('pages.documents.index');
     }
-        return view('pages.documents.index', ['created' => $created, 'requestDocuments' => $requestDocuments, 'assigned' => $assigned, 'workings' => $working, 'for_closings' => $for_closing, 'closed' => $closed, 'with_feedbacks' => $with_feedback, 'cancelled' => $cancelled, 'closed' => $closed]);
-    }
-     
-    public function cancel(Request $request)
-    {
-        $document = Ticket::find($request->id);
-        $document->status    = 'cancelled';
-        $document->status_updated_at   = \Carbon\Carbon::now();
-        $document->updated_by_id     =  Auth::id();
-        $document->remarks = $request->remarks;
-        $document->update();
-       
-        return response()->json(array('success' => 'Successfully Cancelled'));
-    }
-     
-    public function proceedTicket($caller_id)
-    {
-        $caller = Caller::findOrFail($caller_id);
-        $caller_types = CallerType::all();
-        return view('pages.documents.proceed-ticket')->with(['caller' => $caller, 'caller_types' => $caller_types]);
-    }
+
     public function show($id)
     {
-        
         $document = Ticket::find($id);
         $caller = Caller::where('id', $document->caller_id)->first();
         $caller_types = CallerType::all();
@@ -275,10 +236,24 @@ class DocumentController extends Controller
     public function update(Request $request)
     {
         $where = array('requestID' => $request->requestID);
-        $Unit  = RequestDocument::where($where)->first();
+        $RequestDocument  = RequestDocument::where($where)->first();
       
-        return response()->json($Unit);
+        return response()->json(array('success' => 'Successfully Updated'));
     }
+     
+    public function cancel(Request $request)
+    {
+        $RequestDocument = RequestDocument::find($request->requestID);
+        $RequestDocument->Requeststatus    = 'Cancelled';
+        $RequestDocument->update();
+       
+        return response()->json(array('success' => 'Successfully Cancelled'));
+    }
+
+
+
+//TO REMOVE
+
     public function closeticket(Request $request)
     {
         // dd($request->id);
