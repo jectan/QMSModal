@@ -135,7 +135,7 @@
                         data: 'status',
                         name: 'status',
                         render: function(data, type, row) {
-                            return data == 1 ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>';
+                            return data == 1 ? '<span class="badge bg-success" style="font-size: 10px; padding: 8px 12px;">Active</span>' : '<span class="badge bg-danger" style=" font-size: 10px; padding: 8px 12px;">Inactive</span>';
                         }
 
                         

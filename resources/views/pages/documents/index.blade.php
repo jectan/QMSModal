@@ -376,6 +376,11 @@
           });
       }
 
+    // displayRequest function
+    function displayRequest(requestID) {
+        window.location.href = "{{ url('/documents/view') }}/" + requestID;
+    }
+
       // editRequest function
       function editRequest(requestID) {
           $.ajax({

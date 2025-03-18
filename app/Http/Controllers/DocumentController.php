@@ -81,7 +81,7 @@ class DocumentController extends Controller
         }
     }
 
-    public function story(Request $request)
+    public function TestingStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
             '' => 'required|unique:docTitle,requestReason,' . $request->requestID . ',requestID',],
@@ -158,13 +158,12 @@ class DocumentController extends Controller
                     $onClickFunction = "editRequest({$row->requestID})";
                 }
         
-                return '<button class="btn btn-info btn" href="javascript:void(0)" onClick="' . $onClickFunction . '">
+                return '<button class="btn btn-info btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn btn-sm btn-success" href="javascript:void(0)" onClick="requestRequest(' . $row->requestID . ')">
+                        <button class="btn btn-sm btn-success" href="javascript:void(0)" onClick="' . $onClickFunction . '">
                             <i class="fa fa-pencil" style="font-size:24px"></i>
                         </button>
-
                         <button class="btn btn-sm btn-danger" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
                             <i class="fa fa-trash-o" style="font-size:24px"></i>
                         </button>
@@ -280,21 +279,11 @@ class DocumentController extends Controller
         return redirect('/documents/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id, ]);
     }
 
-    public function view($id)
+    public function view($requestID)
     {
-        $document = Ticket::with("actions","logs")->where('id', $id)->first();
-        $offices = Office::all()->sortBy('name');
+        $document = RequestDocument::where('requestID', $requestID)->firstOrFail();
     
-        $assigned_office_action  = null;
-        if(Auth::user()->role_id == 4) {
-            $office_id = Auth::user()->staff->office_id;
-            $assigned_office_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $document->id)->first();
-        }
-        return view('pages.documents.display-ticket', [
-            'ticket' => $document, 
-            'offices' => $offices,
-            'assigned_office_action' => $assigned_office_action
-        ]);
+        return view('pages.documents.display-document', compact('document'));
     }
 
     public function assignedOffice(Request $request)

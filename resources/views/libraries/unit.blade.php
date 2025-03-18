@@ -87,8 +87,8 @@
 
 
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-info" id="unit-btn-save">Save</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="unit-btn-save">Save</button>
                         </div>
                     </div>
                 </form>
@@ -125,7 +125,7 @@
                         data: 'status',
                         name: 'status',
                         render: function(data, type, row) {
-                            return data == 1 ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>';
+                            return data == 1 ? '<span class="badge bg-success" style="font-size: 10px; padding: 8px 12px;">Active</span>' : '<span class="badge bg-danger" style="font-size: 10px; padding: 8px 12px;">Inactive</span>';
                         }
                     },
 
@@ -305,7 +305,6 @@
                     );
                 }
             });
-        
         }
     </script>
 @endsection
