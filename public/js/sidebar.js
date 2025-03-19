@@ -2,7 +2,7 @@ let sidebar1= document.querySelector(".sidebar1");
 let closeBtn = document.querySelector("#btn");
 let searchBtn = document.querySelector(".bx-search");
 
-closeBtn.addEventListener("click", ()=>{
+/* closeBtn.addEventListener("click", ()=>{
   sidebar1.classList.toggle("open");
   menuBtnChange();//calling the function(optional)
 });
@@ -10,7 +10,7 @@ closeBtn.addEventListener("click", ()=>{
 searchBtn.addEventListener("click", ()=>{ // Sidebar open when you click on the search iocn
   sidebar1.classList.toggle("open");
   menuBtnChange(); //calling the function(optional)
-});
+}); */
 
 // following are the code to change sidebar button(optional)
 function menuBtnChange() {

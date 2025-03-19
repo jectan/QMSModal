@@ -56,7 +56,7 @@
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview d-none">
+            <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="/divisions" class="nav-link {{ $page == 'Division' ? 'active' : '' }}">
                   <i class="far fa-circle nav-icon"></i>
