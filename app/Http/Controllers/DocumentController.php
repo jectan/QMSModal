@@ -33,14 +33,14 @@ class DocumentController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        /* $request->validate([
         'requestTypeID' => 'required|integer|exists:requestTypeID',
         'docTypeID' => 'required|integer|exists:docTypeID',
         'currentRevNo' => 'required|numeric|min:0',
         'docTitle' => 'required|string|max:255',
         'requestReason' => 'required|string|max:500',
         'documentFile' => 'required|mimes:pdf|max:2048',
-        ]);
+        ]); */
 
         // Initialize file path variable
         $filePath = null;
