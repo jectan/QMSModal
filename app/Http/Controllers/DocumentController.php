@@ -16,6 +16,7 @@ use App\Models\OfficeAssignedTicketLog;
 use App\Models\TicketLog;
 use App\Models\DocType;
 use App\Models\RequestDocument;
+use App\Models\ReviewDocument;
 use App\Models\RequestType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -24,7 +25,6 @@ use Exception;
 use Yajra\DataTables\Facades\DataTables;
 
 class DocumentController extends Controller
-
 {
     public function __construct(SeriesService $series_service) 
     {
@@ -34,7 +34,12 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'documentFile' => 'required|mimes:pdf|max:2048',
+        'requestTypeID' => 'required|integer|exists:requestTypeID',
+        'docTypeID' => 'required|integer|exists:docTypeID',
+        'currentRevNo' => 'required|numeric|min:0',
+        'docTitle' => 'required|string|max:255',
+        'requestReason' => 'required|string|max:500',
+        'documentFile' => 'required|mimes:pdf|max:2048',
         ]);
 
         // Initialize file path variable

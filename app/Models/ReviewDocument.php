@@ -19,4 +19,12 @@ class Review extends Model
         'reviewDate',
         'reviewStatus',
     ];
+    
+    public function reviewedBy(){
+        return $this->belongsTo(Staff::class, 'userID', 'id');
+    }
+
+    public function reviewedDocument(){
+        return $this->belongsTo(RequestDocument::class, 'requestID', 'requestID');
+    }
 }

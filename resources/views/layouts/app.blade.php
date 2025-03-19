@@ -71,7 +71,7 @@
     <link rel="stylesheet" href="/bower_components/admin-lte/plugins/summernote/summernote-bs4.min.css">
     <link rel="stylesheet" href="/css/feedback.css">
   </head>
-<body class="hold-transition sidebar-mini">
+  <body class="hold-transition skin-blue sidebar-mini sidebar-collapse">
   <div class="preload">
     <div class="position">
       <div class="loadingio-spinner-cube-5ctdgk2q8k"><div class="ldio-kkcjvi12bvg">

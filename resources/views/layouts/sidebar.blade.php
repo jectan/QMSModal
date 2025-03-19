@@ -1,10 +1,9 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4" style="z-index: 1">
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <div class="sidebar sidebar ">
-      <a href="/" class="brand-link">
+    <div class="sidebar">
+      <a href="/dashboard" class="brand-link">
           <img src="/img/logo1.png" alt="AdminLTE Logo" class="brand-image" style="opacity: .8">
           <span class="brand-text" style="font-size: 10px;word-wrap: break-word; ">Document Management System</span><br>
-          
       </a>
     </div>
 
@@ -13,7 +12,7 @@
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
           <li class="nav-item">
             <a href="/dashboard" class="nav-link {{ $page == 'dashboard' ? 'active' : '' }}">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -23,7 +22,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="/documents" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
+            <a href="/documents" class="nav-link {{ $page == 'documents' ? 'active' : '' }}">
               <i class="nav-icon fas fa-file-alt"></i>
               <p>
               Manage Documents
@@ -32,7 +31,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="/masterlist" class="nav-link {{ $page == 'ticket list' ? 'active' : '' }}">
+            <a href="/masterlist" class="nav-link {{ $page == 'masterlist' ? 'active' : '' }}">
               <i class="nav-icon fa fa-th-list" aria-hidden="true"></i>
               <p>
               Masterlist
@@ -57,7 +56,7 @@
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">
+            <ul class="nav nav-treeview d-none">
               <li class="nav-item">
                 <a href="/divisions" class="nav-link {{ $page == 'Division' ? 'active' : '' }}">
                   <i class="far fa-circle nav-icon"></i>
