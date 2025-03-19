@@ -158,14 +158,14 @@ class DocumentController extends Controller
                     $onClickFunction = "editRequest({$row->requestID})";
                 }
         
-                return '<button class="btn btn-info btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
-                            <i class="fas fa-eye"></i>
+                return '<button class="btn btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
+                            <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
-                        <button class="btn btn-sm btn-success" href="javascript:void(0)" onClick="' . $onClickFunction . '">
-                            <i class="fa fa-pencil" style="font-size:24px"></i>
+                        <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '">
+                            <span class="material-icons" style="font-size: 20px;">edit</span>
                         </button>
-                        <button class="btn btn-sm btn-danger" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
-                            <i class="fa fa-trash-o" style="font-size:24px"></i>
+                        <button class="btn btn-sm btn-danger mx-1" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
+                            <span class="material-icons" style="font-size: 20px;">delete</span>
                         </button>
                         ';
             })

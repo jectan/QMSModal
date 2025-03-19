@@ -3,6 +3,11 @@
   overflow-wrap: break-word; /* Newer, recommended property */
 }
 
+.custom-container {
+  max-width: 1400px;
+}
+
+
 #settings-tab.nav-tabs .nav-link {
   background-color: #17366f !important; /* Change to your preferred color */
   color: white !important; /* Text color */
