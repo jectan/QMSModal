@@ -28,7 +28,6 @@
   <!-- button CSS -->
   <link rel="stylesheet" href="/css/button.css">
   <link rel="stylesheet" href="/css/home.css">
-  <link rel="stylesheet" href="/css/sidebar.css">
   <link rel="stylesheet" href="/js/sidebar.js">
   <!-- Toastr -->
   <link rel="stylesheet" href="/bower_components/admin-lte/plugins/toastr/toastr.min.css">
@@ -171,11 +170,15 @@
 <!-- Bootstrap Switch -->
 <script src="/bower_components/admin-lte/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
 
+<<<<<<< HEAD
 <!-- Bootstrap JS Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 
 <!-- date-range-picker -->
+=======
+<!-- pages.documents-picker -->
+>>>>>>> 11af2d37dcd5bb0037fbc083d0aba4e3f92fe8e1
 <script src="/bower_components/admin-lte/plugins/daterangepicker/daterangepicker.js"></script>
 <!-- preloader -->
 <script src="/js/preloader.js"></script>
@@ -183,7 +186,6 @@
 <!-- <script src="/js/patient-picture.js"></script> -->
 
 <script src="/js/sidebar.js" defer></script>
-<script src="/css/sidebar.css"></script>
 
 <!-- Datatables -->
 <script src="/bower_components/admin-lte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
