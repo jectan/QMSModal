@@ -121,7 +121,7 @@ class DocumentController extends Controller
                 return $row->DocumentType ? $row->DocumentType->docTypeDesc : "";
             })
             ->addColumn('requestor', function ($row) {
-                return $row->createdBy ? $row->createdBy->fullname : "";
+                return $row->createdBy ? $row->createdBy->username : "";
             })
             ->addColumn('unitName', function ($row) {
                 return $row->createdBy && $row->createdBy->unit ? $row->createdBy->unit->unitName : "";
@@ -139,7 +139,8 @@ class DocumentController extends Controller
                     $onClickFunction = "editRequest({$row->requestID})";
                 }
         
-                return '<button class="btn btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
+                return '
+                        <button class="btn btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
                         <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '">

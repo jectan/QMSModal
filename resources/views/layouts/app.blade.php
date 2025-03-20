@@ -137,6 +137,8 @@
 
 {{-- <!-- CUSTOM JS -->
 <script src="/js/ajax.js"></script> --}}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <!-- DataTables  & Plugins -->
 <script src="/bower_components/admin-lte/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -170,15 +172,7 @@
 <!-- Bootstrap Switch -->
 <script src="/bower_components/admin-lte/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
 
-<<<<<<< HEAD
-<!-- Bootstrap JS Bundle (includes Popper) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-
-<!-- date-range-picker -->
-=======
 <!-- pages.documents-picker -->
->>>>>>> 11af2d37dcd5bb0037fbc083d0aba4e3f92fe8e1
 <script src="/bower_components/admin-lte/plugins/daterangepicker/daterangepicker.js"></script>
 <!-- preloader -->
 <script src="/js/preloader.js"></script>

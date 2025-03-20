@@ -2,11 +2,73 @@
   word-wrap: break-word; /* Older CSS property */
   overflow-wrap: break-word; /* Newer, recommended property */
 }
+.btn-expandable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: width 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+}
+
+.btn-expandable .material-icons {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.btn-expandable .btn-label {
+  opacity: 0;
+  margin-left: 0;
+  transition: opacity 0.3s ease, margin-left 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.btn-expandable:hover {
+  width: 110px;
+  justify-content: flex-start;
+  padding-left: 10px;
+}
+
+.btn-expandable:hover .btn-label {
+  opacity: 1;
+  margin-left: 8px;
+}
+
+.expandable-button .btn-icon {
+  display: flex;
+  align-items: center;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 40px; /* Collapsed width */
+}
+
+.expandable-button .btn-label {
+  margin-left: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.expandable-button:hover .btn-icon {
+  width: 120px; /* Expanded width */
+}
+
+.expandable-button:hover .btn-label {
+  opacity: 1;
+}
 
 .custom-container {
   max-width: 1400px;
 }
-
 
 #settings-tab.nav-tabs .nav-link {
   background-color: #17366f !important; /* Change to your preferred color */
