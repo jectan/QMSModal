@@ -27,7 +27,7 @@ class RequestDocument extends Model
     ];
 
     public function createdBy(){
-        return $this->belongsTo(Staff::class, 'userID', 'id');
+        return $this->belongsTo(User::class, 'userID', 'id');
     }
 
     public function DocumentType(){

@@ -37,17 +37,32 @@ class DocumentController extends Controller
         'currentRevNo' => 'required|numeric|min:0',
         'docTitle' => 'required|string|max:255',
         'requestReason' => 'required|string|max:500',
-        'documentFile' => 'required|mimes:pdf|max:2048',
+        'documentFile' => 'nullable|mimes:pdf|max:2048',
+        ], [
+            'currentRevNo.required' => 'The Revision Number is required.',
+            'docTitle.required' => 'The Document Title is required.',
+            'requestReason.required' => 'The Reason for Request is required.',
+            'documentFile.required' => 'The Uploaded Document is required.',
         ]);
 
         // Initialize file path variable
         $filePath = null;
+
+        if(empty($request->requestID)){
+            $isNew = true;
+        }
+        else{
+            $isNew = false;
+        }
 
         // Check if a file is uploaded
         if ($request->hasFile('documentFile')) {
             $file = $request->file('documentFile');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('documents', $fileName, 'public'); // Store in storage/app/public/documents
+        }
+        else{
+            $filePath = $request->requestFileOld;
         }
 
         $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
@@ -63,8 +78,14 @@ class DocumentController extends Controller
             'requestDate' => Carbon::now(),
             'requestStatus' => 'For Review',                  
         ]);
-                        
-        return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
+        
+        if($isNew == true)
+        {
+            return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
+        }
+        else{
+            return redirect('/documents')->with('success', 'Successfully Updated.');
+        }
     }
 
     public function validateRequest(Request $request)
@@ -82,49 +103,6 @@ class DocumentController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
-
-    public function TestingStore(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            '' => 'required|unique:docTitle,requestReason,' . $request->requestID . ',requestID',],
-            ['docTitle.required' => 'The Document Title is required.'
-        ]);
-        if ($validator->fails()){
-
-            return response()->json(['errors'=>$validator->errors()->all()]);
-            
-        }else{
-            $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
-            [
-                'requestTypeID' => $request->requestTypeID,
-                'docTypeID' => $request->docTypeID,
-                'docRefCode' => $request->docRefCode,
-                'currentRevNo' => '1', 
-                'docTitle' => $request->docTitle,
-                'requestReason' => $request->requestReason,
-                'userID' => Auth::id(),
-                'requestFile' => 'empty',
-                'requestDate' => Carbon::now(),
-                'requestStatus' => 'For Review',                   
-            ]);    
-                         
-            return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
-        }
-        /* $callerid = $request->caller_id;
-        $caller = Caller::find($callerid);
-        $caller->contact_no        = $request->contact_no;
-        $caller->email             = $request->email;
-        $caller->updated_by_id     =  Auth::id();
-        $caller->update();
-
-        $document_log = new TicketLog();
-        $document_log->ticket_id = $document->id;
-        $document_log->status = "created";
-        $document_log->assigned_by_id =Auth::id();
-        $document_log-> remarks =$request->remarks;
-        $document_log->save();
-        return redirect('/documents')->with(['success' => 'Successfully Saved!']); */
     }
 
     public function getDataRequest($status)
@@ -229,6 +207,15 @@ class DocumentController extends Controller
     {
         return view('pages.documents.index');
     }
+    
+    public function view($requestID)
+    {
+        $document = RequestDocument::where('requestID', $requestID)->firstOrFail();
+        $requestType = RequestType::all();
+        $docType = DocType::all();
+    
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType'));
+    }
 
     public function show($id)
     {
@@ -280,13 +267,6 @@ class DocumentController extends Controller
         $document_log->save();
         
         return redirect('/documents/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id, ]);
-    }
-
-    public function view($requestID)
-    {
-        $document = RequestDocument::where('requestID', $requestID)->firstOrFail();
-    
-        return view('pages.documents.display-document', compact('document'));
     }
 
     public function assignedOffice(Request $request)

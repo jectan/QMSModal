@@ -161,7 +161,7 @@
                         <label for="currentRevNo" class="col-sm-4 control-label">Current Revision Number:<span
                         class="require">*</span></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control" id="currentRevNo" name="currentRevNo">
+                            <input type="number" class="form-control" id="currentRevNo" name="currentRevNo" min="0" required>
                         </div>
                       </div>
                     </div>
@@ -172,7 +172,7 @@
                                 class="require">*</span></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control" id="docTitle" name="docTitle"
-                                placeholder="Enter Document Title">
+                                placeholder="Enter Document Title" required>
                         </div>
                     </div>
 
@@ -182,7 +182,7 @@
                                 class="require">*</span></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control" id="requestReason" name="requestReason"
-                                placeholder="Enter Reason for Request">
+                                placeholder="Enter Reason for Request" required>
                         </div>
                     </div>
 
@@ -190,7 +190,7 @@
                         <label for="requestFile" class="col-sm-4 control-label">Upload Document (PDF Only):<span
                                 class="require">*</span></label>
                         <div class="col-sm-12">
-                            <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf">
+                            <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf" required>
                         </div>
                     </div>
 
@@ -205,7 +205,7 @@
 
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-info" id="request-btn-save">Save</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </div>
             </form>
@@ -238,10 +238,97 @@
         });
       });
 
-      // Submit button
-      $('#request-form').submit(function (e) {
-        e.preventDefault();
-        var formData = new FormData(this);
+        // Submit button
+        $('#request-form').submit(function (e){
+            e.preventDefault();
+
+        let isValid = true;
+        let errorMessages = [];
+        let missingFields = []; // ✅ Declare the variable at the start
+        let fileSizeLimit = 2 * 1024 * 1024; // 2MB in bytes
+        let allowedFileType = ["application/pdf"];
+        
+        // Clear previous errors
+        $(".is-invalid").removeClass("is-invalid");
+        $(".error-message").remove();
+
+        // Get input values
+        let currentRevNo = $('#currentRevNo');
+        let docTitle = $('#docTitle');
+        let requestReason = $('#requestReason');
+        let documentFile = $('#documentFile')[0].files[0];
+
+        // Validation Rules
+        if (!currentRevNo.val()) {
+            isValid = false;
+            missingFields.push("Revision Number");
+            currentRevNo.addClass("is-invalid");
+            currentRevNo.after("<div class='error-message text-danger'>The Revision Number is required.</div>");
+        } else if (isNaN(currentRevNo.val()) || currentRevNo.val() < 0) {
+            isValid = false;
+            errorMessages.push("The Revision Number must be a number & greater than or equal to 0.");
+            currentRevNo.addClass("is-invalid");
+        }
+
+        if (!docTitle.val()) {
+            isValid = false;
+            missingFields.push("Document Title");
+            docTitle.addClass("is-invalid");
+            docTitle.after("<div class='error-message text-danger'>The Document Title is required.</div>");
+        } else if (docTitle.val().length > 255) {
+            isValid = false;
+            errorMessages.push("The Document Title must be at most 255 characters.");
+            docTitle.addClass("is-invalid");
+        }
+
+        if (!requestReason.val()) {
+            isValid = false;
+            missingFields.push("Reason for Request");
+            requestReason.addClass("is-invalid");
+            requestReason.after("<div class='error-message text-danger'>The Reason for Request is required.</div>");
+        } else if (requestReason.val().length > 500) {
+            isValid = false;
+            errorMessages.push("The Reason for Request must be at most 500 characters.");
+            requestReason.addClass("is-invalid");
+        }
+
+        if (!documentFile) {
+            isValid = false;
+            missingFields.push("Uploaded Document");
+            $('#documentFile').addClass("is-invalid");
+            $('#documentFile').after("<div class='error-message text-danger'>The Uploaded Document is required.</div>");
+        } else if (!allowedFileType.includes(documentFile.type)) {
+            isValid = false;
+            errorMessages.push("The Uploaded Document must be a PDF file.");
+            $('#documentFile').addClass("is-invalid");
+        } else if (documentFile.size > fileSizeLimit) {
+            isValid = false;
+            errorMessages.push("The Uploaded Document must not exceed 2MB.");
+            $('#documentFile').addClass("is-invalid");
+        }
+
+        // If validation fails, show a detailed error message
+        if (!isValid) {
+            let errorText = "";
+
+            if (missingFields.length > 0) {
+                errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
+            }
+            if (errorMessages.length > 0) {
+                errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
+            }
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Invalid Input',
+                html: errorText,
+            });
+
+            return;
+        }
+
+        // Proceed with form submission via AJAX if all fields are valid
+        let formData = new FormData(this);
 
         $.ajax({
             type: 'POST',
@@ -259,7 +346,7 @@
 
                     $("#request-modal").modal('hide');
 
-                    // Refresh DataTable immediately after saving
+                    // Refresh DataTable after saving
                     $('#request-dt').DataTable().ajax.reload(null, false);
                     $('#review-dt').DataTable().ajax.reload(null, false);
                     $('#approval-dt').DataTable().ajax.reload(null, false);
@@ -269,14 +356,34 @@
                     $("#request-btn-save").attr("disabled", false);
                     $("#request-form")[0].reset();
                 } else {
-                    swal.fire({
+                    Swal.fire({
                         icon: 'error',
+                        title: 'Error',
                         html: res.errors
                     });
                 }
             },
-            error: function (data) {
-                console.log(data);
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    let errorMessages = [];
+
+                    $.each(errors, function (key, messages) {
+                        errorMessages.push(messages.join("<br>"));
+                    });
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Input',
+                        html: errorMessages.join("<br>")
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.'
+                    });
+                }
             }
         });
     });

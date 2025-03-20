@@ -84,8 +84,6 @@
                             </select>
                         </div>
 
-
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-primary" id="unit-btn-save">Save</button>

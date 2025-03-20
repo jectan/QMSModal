@@ -17,7 +17,7 @@ class ReviewController extends Controller
         $this->series_service = $series_service;
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
         'requestID' => 'required|integer|exists:requestID',

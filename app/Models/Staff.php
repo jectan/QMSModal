@@ -20,9 +20,6 @@ class Staff extends Model
     public function unit(){
         return $this->belongsTo(Unit::class, 'unitID', 'unitID');
     }
-    public function user(){
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
 
     public function getFullNameAttribute()
     {
