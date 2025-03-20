@@ -20,3 +20,17 @@ function menuBtnChange() {
    closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the icons class
  }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  let toggleButton = document.getElementById("manageLibrariesToggle");
+  let libraryMenu = document.getElementById("libraryMenu");
+
+  if (toggleButton && libraryMenu) {
+      toggleButton.addEventListener("click", function (event) {
+          event.preventDefault(); // Prevents the page from reloading if clicked
+
+          libraryMenu.classList.toggle("show");
+          toggleButton.classList.toggle("active"); 
+      });
+  }
+});

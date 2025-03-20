@@ -34,8 +34,6 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-        'requestTypeID' => 'required|integer|exists:requestTypeID',
-        'docTypeID' => 'required|integer|exists:docTypeID',
         'currentRevNo' => 'required|numeric|min:0',
         'docTitle' => 'required|string|max:255',
         'requestReason' => 'required|string|max:500',

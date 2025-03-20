@@ -158,7 +158,8 @@
                         </div>
                       </div>
                       <div class="col-md-6">
-                        <label for="currentRevNo" class="col-sm-4 control-label">Current Revision Number:</label>
+                        <label for="currentRevNo" class="col-sm-4 control-label">Current Revision Number:<span
+                        class="require">*</span></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control" id="currentRevNo" name="currentRevNo">
                         </div>
