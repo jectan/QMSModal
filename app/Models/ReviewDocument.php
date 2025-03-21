@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Review extends Model
+class ReviewDocument extends Model
 {
     use HasFactory;
-    public $table = 'Review';
+    public $table = 'ReviewDocument';
     protected $primaryKey = 'reviewID';
     public $timestamps = false;
     protected $fillable=

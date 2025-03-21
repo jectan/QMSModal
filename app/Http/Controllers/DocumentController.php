@@ -88,6 +88,25 @@ class DocumentController extends Controller
         }
     }
 
+    public function storeReview(Request $request)
+    {
+        $request->validate([
+        'reviewComment' => 'required|string|max:255',
+        ], [
+            'reviewComment.required' => 'The Review Comment is required.',
+        ]);
+
+        $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
+        [
+            'requestID' => $request->requestID,
+            'reviewComment' => $request->reviewComment,
+            'userID' => Auth::id(),
+            'reviewStatus' => 'Active',                  
+        ]);
+        
+        return response()->json(['success'=> 'Successfully Saved.', 'ReviewDocument' => $reviewDocument]);
+    }
+
     public function validateRequest(Request $request)
     {
         try {
@@ -139,8 +158,7 @@ class DocumentController extends Controller
                     $onClickFunction = "editRequest({$row->requestID})";
                 }
         
-                return '
-                        <button class="btn btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
+                return '<button class="btn btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
                         <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '">
@@ -154,6 +172,21 @@ class DocumentController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+    
+    public function getReview($requestID)
+    {
+        $reviewDocuments = ReviewDocument::where('requestID', $requestID)
+            ->select('reviewID', 'reviewComment', 'reviewStatus') // ✅ Select the correct fields
+            ->get();
+    
+        return DataTables::of($reviewDocuments)
+            ->addColumn('action', function ($row) {
+                return '<button class="btn btn-sm btn-primary">Edit</button>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+    
 
     public function documentTally(){
         

@@ -156,11 +156,13 @@ Route::get('/feedback',[FeedbackController::class, 'index']);
     Route::group(['middleware' => 'role:all'], function (){
 //documents  
 Route::post('/documents/store', [DocumentController::class, 'store']);
+Route::post('/documents/storeReview', [DocumentController::class, 'storeReview']);
 Route::get('/documents/data-request{status?}', [DocumentController::class, 'getDataRequest'])->name('documents.data-request');
 Route::get('/documents', [DocumentController::class, 'index']);
 Route::get('/documents/show/{id}', [DocumentController::class, 'show']);
 Route::post('/documents/update', [DocumentController::class, 'update']);
 Route::get('/documents/view/{id}', [DocumentController::class, 'view']);
+Route::get('/documents/view/review/{id}', [DocumentController::class, 'getReview']);
 Route::get('/documents/test/{id}', [DocumentController::class, 'test']);
 Route::post('/documents/cancel/', [DocumentController::class, 'cancel']); //This is it!
 Route::post('/documents/assign/add',[DocumentController::class, 'assignedOffice']);
