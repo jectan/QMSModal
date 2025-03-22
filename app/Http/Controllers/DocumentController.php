@@ -103,6 +103,11 @@ class DocumentController extends Controller
             'userID' => Auth::id(),
             'reviewStatus' => 'Active',                  
         ]);
+
+        $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        [
+            'requestStatus' => 'For Revision',
+        ]);
         
         return response()->json(['success'=> 'Successfully Saved.', 'ReviewDocument' => $reviewDocument]);
     }
@@ -126,8 +131,8 @@ class DocumentController extends Controller
 
     public function getDataRequest($status)
     {
-        $requestDocuments = RequestDocument::with(['DocumentType', 'createdBy.unit'])
-            ->select('requestID', 'docTitle', 'docTypeID', 'requestStatus');
+        $requestDocuments = RequestDocument::with(['DocumentType'])
+            ->select('requestID', 'docTitle', 'docTypeID', 'requestStatus', 'userID');
         if ($status !== '0') {
             $requestDocuments->where('requestStatus', $status);
         }
@@ -140,10 +145,10 @@ class DocumentController extends Controller
                 return $row->DocumentType ? $row->DocumentType->docTypeDesc : "";
             })
             ->addColumn('requestor', function ($row) {
-                return $row->createdBy ? $row->createdBy->username : "";
+                return $row->createdBy ? $row->createdBy->Staff->fullname : "";
             })
             ->addColumn('unitName', function ($row) {
-                return $row->createdBy && $row->createdBy->unit ? $row->createdBy->unit->unitName : "";
+                return $row->createdBy ? $row->createdBy->Staff->unit->unitName : "";
             })
             ->addColumn('action', function ($row) {
                 if (Auth::user()->role->id == 2) {
@@ -158,7 +163,7 @@ class DocumentController extends Controller
                     $onClickFunction = "editRequest({$row->requestID})";
                 }
         
-                return '<button class="btn btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
+                return '<button class="btn btn-sm btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
                         <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '">
@@ -176,7 +181,7 @@ class DocumentController extends Controller
     public function getReview($requestID)
     {
         $reviewDocuments = ReviewDocument::where('requestID', $requestID)
-            ->select('reviewID', 'reviewComment', 'reviewStatus') // ✅ Select the correct fields
+            ->select('reviewID', 'reviewComment', 'reviewStatus')
             ->get();
     
         return DataTables::of($reviewDocuments)
@@ -186,7 +191,6 @@ class DocumentController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
-    
 
     public function documentTally(){
         
@@ -270,11 +274,12 @@ class DocumentController extends Controller
      
     public function cancel(Request $request)
     {
-        $RequestDocument = RequestDocument::find($request->requestID);
-        $RequestDocument->Requeststatus    = 'Cancelled';
-        $RequestDocument->update();
-       
-        return response()->json(array('success' => 'Successfully Cancelled'));
+        $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        [
+            'requestStatus' => 'Cancelled',
+        ]);
+        
+        return response()->json(array('success' => 'Successfully Cancelled Request'));
     }
 
 

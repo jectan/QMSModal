@@ -350,6 +350,11 @@ button:hover {
   border-color: #3e85e8 transparent transparent transparent;
 }
 
+.custom-swal .swal2-icon.swal2-info {
+  border-color: green !important;
+  color: green !important;
+}
+
 .custom-tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
