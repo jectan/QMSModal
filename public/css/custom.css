@@ -2,6 +2,8 @@
   word-wrap: break-word; /* Older CSS property */
   overflow-wrap: break-word; /* Newer, recommended property */
 }
+
+
 .btn-expandable {
   display: flex;
   align-items: center;
