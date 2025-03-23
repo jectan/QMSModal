@@ -24,6 +24,8 @@ use App\Http\Controllers\MasterlistController;
         return view('auth.page404');
     });
 
+//About Us
+Route::get('/aboutus', [App\Http\Controllers\AboutController::class, 'index']);
 
 //Masterlist
 Route::get('/masterlist', [MasterlistController::class, 'index'])->name('masterlist.index');
