@@ -489,7 +489,7 @@
 
                     $.ajax({
                         type: "POST",
-                        url: "/documents/forReview",
+                        url: "{{ url('/documents/forReview') }}",
                         data: {
                             requestID: requestID,
                             _token: @json(csrf_token())
@@ -500,7 +500,7 @@
                                     icon: 'success', // 👍 Changed from success to thumbs-up
                                     html: '<h5>Successfully Submitted For Review!</h5>'
                                 }).then(() => {
-                                    window.history.back();
+                                    window.location.reload();
                                 });
                             }, 700);
                         }

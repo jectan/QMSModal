@@ -152,7 +152,15 @@ class DocumentController extends Controller
 
     public function forReview(Request $request)
     {
-        $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
+        [
+            'requestID' => $request->requestID,
+            'reviewComment' => 'Submitted for Review',
+            'userID' => Auth::id(),
+            'reviewStatus' => 'Active',                  
+        ]);
+
+        $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
         [
             'requestStatus' => 'For Review',
         ]);
