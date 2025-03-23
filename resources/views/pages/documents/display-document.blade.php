@@ -11,13 +11,13 @@
         <!-- Action Buttons -->
         <div class="d-flex justify-content-end mt-2 mb-3">
             <div class="expandable-button">
-                <button type="button" class="btn btn-sm btn-secondary mx-1 btn-icon" href="{{ url('/documents') }}" data-bs-toggle="tooltip" title="For Approval">
+                <a href="{{ url('/documents') }}" class="btn btn-sm btn-secondary mx-1 btn-icon" data-bs-toggle="tooltip">
                     <span class="material-icons" style="font-size: 20px;">chevron_left</span>
                     <span class="btn-label">Back</span>
-                </button>
+                </a>
             </div>
             <div class="expandable-button">
-                <button type="button" class="btn btn-sm btn-success mx-1 btn-icon" data-bs-toggle="tooltip" title="For Approval">
+                <button type="button" class="btn btn-sm btn-success mx-1 btn-icon" href="javascript:void(0)"  onClick="reviewedRequest('{{ $document->requestID }}')">
                     <span class="material-icons" style="font-size: 20px;">check_circle</span>
                     <span class="btn-label">Reviewed</span>
                 </button>
@@ -35,7 +35,7 @@
                 </button>
             </div>
             <div class="expandable-button">
-                <button class="btn btn-sm btn-danger btn-icon" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
+                <button class="btn btn-sm btn-danger btn-icon" href="javascript:void(0)" onClick="cancelRequest('{{ $document->requestID }}')">
                     <span class="material-icons" style="font-size: 20px;">delete</span>
                     <span class="btn-label">Delete</span>
                 </button>
@@ -227,7 +227,7 @@
                         searchable: false
                     }
                 ],
-                order: [[0, 'asc']]
+                order: [[0, 'desc']]
             });
         });
 
@@ -302,8 +302,8 @@
                         $('#reviewComment').val('');
 
                         // Optional: Refresh DataTable
-                        if ($.fn.DataTable.isDataTable("#yourDataTableID")) {
-                            $('#yourDataTableID').DataTable().ajax.reload();
+                        if ($.fn.DataTable.isDataTable("#review-dt")) {
+                            $('#review-dt').DataTable().ajax.reload();
                         }
                     } else {
                         Swal.fire({
@@ -338,5 +338,116 @@
             });
         });
     });
+
+    function cancelRequest(requestID) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-danger',
+                cancelButton: 'btn btn-default'
+            },
+            buttonsStyling: false
+        });
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                if (result.isConfirmed) {
+
+                    swal.fire({
+                        html: '<h6>Loading... Please wait</h6>',
+                        onRender: function() {
+                            $('.swal2-content').prepend(sweet_loader);
+                        },
+                        showConfirmButton: false
+                    });
+
+                    $.ajax({
+                    type: "POST",
+                    url: "/documents/cancel",
+                    data: {
+                        requestID: requestID,
+                        _token: @json(csrf_token())
+                        },
+                        success: function(res) {
+
+                            setTimeout(function() {
+                                swal.fire({
+                                    icon: 'success',
+                                    html: '<h5>Successfully Cancelled!</h5>'
+                                }).then(() => {
+                                    window.history.back();
+                                });
+                            }, 700);
+                        }
+                    });
+                }
+            } else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                toastr.info(
+                    'Action is cancelled',
+                    'CANCELLED'
+                );
+            }
+        });
+    }
+
+    function reviewedRequest(requestID) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-secondary'
+            },
+            buttonsStyling: false
+        });
+
+        swalWithBootstrapButtons.fire({
+            title: 'Confirm Review?',
+            text: "This document will be marked as reviewed.",
+            icon: 'info', // ℹ️ Changed from warning to info
+            showCancelButton: true,
+            confirmButtonText: 'Yes, mark as reviewed',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                swal.fire({
+                    html: '<h6>Processing... Please wait</h6>',
+                    showConfirmButton: false
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "/documents/reviewed",
+                    data: {
+                        requestID: requestID,
+                        _token: @json(csrf_token())
+                    },
+                    success: function(res) {
+                        setTimeout(function() {
+                            Swal.fire({
+                                icon: 'success', // 👍 Changed from success to thumbs-up
+                                html: '<h5>Successfully Marked as Reviewed!</h5>'
+                            }).then(() => {
+                                window.history.back();
+                            });
+                        }, 700);
+                    }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                toastr.info(
+                    'Action is cancelled',
+                    'Document remains pending'
+                );
+            }
+        });
+    }
 </script>
 @endsection

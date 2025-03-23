@@ -28,8 +28,8 @@ class Staff extends Model
     public function getFullNameAttribute()
     {
         $first_name = ucfirst($this->firstname);
-        $last_name = ucfirst($this->middlename);
-        $middle_name = ucfirst($this->lastname);
+        $last_name = ucfirst($this->lastname);
+        $middle_name = ucfirst($this->middlename);
         return "{$first_name} {$middle_name} {$last_name}";
     }
 }

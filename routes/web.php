@@ -167,7 +167,7 @@ Route::post('/documents/update', [DocumentController::class, 'update']);
 Route::get('/documents/view/{id}', [DocumentController::class, 'view']);
 Route::get('/documents/view/review/{id}', [DocumentController::class, 'getReview']);
 Route::get('/documents/test/{id}', [DocumentController::class, 'test']);
-Route::post('/documents/cancel/', [DocumentController::class, 'cancel']); //This is it!
+Route::post('/documents/cancel', [DocumentController::class, 'cancel']); //This is it!
 Route::post('/documents/assign/add',[DocumentController::class, 'assignedOffice']);
 Route::get('/documents/show-assign/{id}',[DocumentController::class, 'getOffice']);
        

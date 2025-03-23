@@ -388,101 +388,101 @@
         });
     });
 
-      // Define loadRequestType before using it
-      function loadRequestType(selectedrequestTypeID = null, callback = null) {
-          $.ajax({
-              url: "get-requestType",
-              type: "GET",
-              dataType: "json",
-              success: function (response) {
-                  console.log("Response received:", response);
+    // Define loadRequestType before using it
+    function loadRequestType(selectedrequestTypeID = null, callback = null) {
+        $.ajax({
+            url: "get-requestType",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                console.log("Response received:", response);
 
-                  if (response.data && response.data.length > 0) {
-                      let options = '';
+                if (response.data && response.data.length > 0) {
+                    let options = '';
 
-                      response.data.forEach(function (requestType) {
-                          options += `<option value="${requestType.requestTypeID}">${requestType.requestTypeDesc}</option>`;
-                      });
+                    response.data.forEach(function (requestType) {
+                        options += `<option value="${requestType.requestTypeID}">${requestType.requestTypeDesc}</option>`;
+                    });
 
-                      $("#requestTypeID").html(options);
+                    $("#requestTypeID").html(options);
 
-                      // Execute callback after setting dropdown options
-                      if (callback) {
-                          callback();
-                      }
-                  } else {
-                      $("#requestTypeID").html('<option value="">Please Check Libraries</option>');
-                  }
-              },
-              error: function (xhr, status, error) {
-                  console.error("AJAX Error:", xhr.responseText);
-              }
-          });
-      }
+                    // Execute callback after setting dropdown options
+                    if (callback) {
+                        callback();
+                    }
+                } else {
+                    $("#requestTypeID").html('<option value="">Please Check Libraries</option>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", xhr.responseText);
+            }
+        });
+    }
 
-      // Define loadDocType before using it
-      function loadDocType(selecteddocTypeID = null, callback = null) {
-          $.ajax({
-              url: "get-docType",
-              type: "GET",
-              dataType: "json",
-              success: function (response) {
-                  console.log("Response received:", response);
+    // Define loadDocType before using it
+    function loadDocType(selecteddocTypeID = null, callback = null) {
+        $.ajax({
+            url: "get-docType",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                console.log("Response received:", response);
 
-                  if (response.data && response.data.length > 0) {
-                      let options = '';
+                if (response.data && response.data.length > 0) {
+                    let options = '';
 
-                      response.data.forEach(function (docType) {
-                          options += `<option value="${docType.docTypeID}">${docType.docTypeDesc}</option>`;
-                      });
+                    response.data.forEach(function (docType) {
+                        options += `<option value="${docType.docTypeID}">${docType.docTypeDesc}</option>`;
+                    });
 
-                      $("#docTypeID").html(options);
+                    $("#docTypeID").html(options);
 
-                      // Execute callback after setting dropdown options
-                      if (callback) {
-                          callback();
-                      }
-                  } else {
-                      $("#docTypeID").html('<option value="">Please Check Libraries</option>');
-                  }
-              },
-              error: function (xhr, status, error) {
-                  console.error("AJAX Error:", xhr.responseText);
-              }
-          });
-      }
+                    // Execute callback after setting dropdown options
+                    if (callback) {
+                        callback();
+                    }
+                } else {
+                    $("#docTypeID").html('<option value="">Please Check Libraries</option>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", xhr.responseText);
+            }
+        });
+    }
 
-      // Define loadDocType before using it
-      function loadDocRefCode(selectedrequestID = null, callback = null) {
-          $.ajax({
-              url: "get-docRefCode",
-              type: "GET",
-              dataType: "json",
-              success: function (response) {
-                  console.log("Response received:", response);
+    // Define loadDocType before using it
+    function loadDocRefCode(selectedrequestID = null, callback = null) {
+        $.ajax({
+            url: "get-docRefCode",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                console.log("Response received:", response);
 
-                  if (response.data && response.data.length > 0) {
-                      let options = '';
+                if (response.data && response.data.length > 0) {
+                    let options = '';
 
-                      response.data.forEach(function (requestDocument) {
-                          options += `<option value="${requestDocument.requestDocumentID}">${requestDocument.docRefCode}</option>`;
-                      });
+                    response.data.forEach(function (requestDocument) {
+                        options += `<option value="${requestDocument.requestDocumentID}">${requestDocument.docRefCode}</option>`;
+                    });
 
-                      $("#requestDocumentID").html(options);
+                    $("#requestDocumentID").html(options);
 
-                      // Execute callback after setting dropdown options
-                      if (callback) {
-                          callback();
-                      }
-                  } else {
-                      $("#requestDocumentID").html('<option value="">Please Check Libraries</option>');
-                  }
-              },
-              error: function (xhr, status, error) {
-                  console.error("AJAX Error:", xhr.responseText);
-              }
-          });
-      }
+                    // Execute callback after setting dropdown options
+                    if (callback) {
+                        callback();
+                    }
+                } else {
+                    $("#requestDocumentID").html('<option value="">Please Check Libraries</option>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", xhr.responseText);
+            }
+        });
+    }
 
     // displayRequest function
     function displayRequest(requestID) {
@@ -490,109 +490,109 @@
     }
 
       // editRequest function
-      function editRequest(requestID) {
-          $.ajax({
-              type: "POST",
-              url: "{{ url('/documents/update') }}",
-              data: { requestID: requestID },
-              "token": "{{ csrf_token() }}",
-              dataType: 'json',
-              success: function(res) {
-                  $('#request-modal-title').html("Request");
-                  $('#request-modal').modal('show');
-                  $('#requestID').val(res.requestID);
-                  $('#docRefCode').val(res.docRefCode);
-                  $('#currentRevNo').val(res.currentRevNo);
-                  $('#docTitle').val(res.docTitle);
-                  $('#requestReason').val(res.requestReason).change();
-                  $('#requestStatus').val('For Review').change();
+    function editRequest(requestID) {
+        $.ajax({
+            type: "POST",
+            url: "{{ url('/documents/update') }}",
+            data: { requestID: requestID },
+            "token": "{{ csrf_token() }}",
+            dataType: 'json',
+            success: function(res) {
+                $('#request-modal-title').html("Request");
+                $('#request-modal').modal('show');
+                $('#requestID').val(res.requestID);
+                $('#docRefCode').val(res.docRefCode);
+                $('#currentRevNo').val(res.currentRevNo);
+                $('#docTitle').val(res.docTitle);
+                $('#requestReason').val(res.requestReason).change();
+                $('#requestStatus').val('For Review').change();
 
-                  // Load data first, then set the selected value in a callback
-                  loadRequestType(res.requestTypeID, function () {
-                      $("#requestTypeID").val(res.requestTypeID).change(); // Ensure the correct selection
-                  });
-                  
-                  loadDocType(res.docTypeID, function () {
-                      $("#docTypeID").val(res.docTypeID).change(); // Ensure the correct selection
-                  });
-                  
+                // Load data first, then set the selected value in a callback
+                loadRequestType(res.requestTypeID, function () {
+                    $("#requestTypeID").val(res.requestTypeID).change(); // Ensure the correct selection
+                });
+                
+                loadDocType(res.docTypeID, function () {
+                    $("#docTypeID").val(res.docTypeID).change(); // Ensure the correct selection
+                });
+                
 
-                  $("#request-modal").modal('hide');
+                $("#request-modal").modal('hide');
 
-                  // Refresh DataTable immediately after saving
-                  $('#request-dt').DataTable().ajax.reload(null, false);
-                  $('#review-dt').DataTable().ajax.reload(null, false);
-                  $('#approval-dt').DataTable().ajax.reload(null, false);
-                  $('#registration-dt').DataTable().ajax.reload(null, false);
-              },
-              error: function(data) {
-                  console.log(data);
-              }
-          });
-      }
+                // Refresh DataTable immediately after saving
+                $('#request-dt').DataTable().ajax.reload(null, false);
+                $('#review-dt').DataTable().ajax.reload(null, false);
+                $('#approval-dt').DataTable().ajax.reload(null, false);
+                $('#registration-dt').DataTable().ajax.reload(null, false);
+            },
+            error: function(data) {
+                console.log(data);
+            }
+        });
+    }
 
-      function cancelRequest(requestID) {
-              const swalWithBootstrapButtons = Swal.mixin({
-                  customClass: {
-                      confirmButton: 'btn btn-danger',
-                      cancelButton: 'btn btn-default'
-                  },
-                  buttonsStyling: false
-              });
+    function cancelRequest(requestID) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-danger',
+                cancelButton: 'btn btn-default'
+            },
+            buttonsStyling: false
+        });
 
-              swalWithBootstrapButtons.fire({
-                  title: 'Are you sure?',
-                  text: "You won't be able to revert this!",
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonText: 'Yes, delete it!',
-                  cancelButtonText: 'No, cancel!',
-                  reverseButtons: true
-              }).then((result) => {
-                  if (result.value) {
-                      if (result.isConfirmed) {
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.value) {
+                if (result.isConfirmed) {
 
-                          swal.fire({
-                              html: '<h6>Loading... Please wait</h6>',
-                              onRender: function() {
-                                  $('.swal2-content').prepend(sweet_loader);
-                              },
-                              showConfirmButton: false
-                          });
+                    swal.fire({
+                        html: '<h6>Loading... Please wait</h6>',
+                        onRender: function() {
+                            $('.swal2-content').prepend(sweet_loader);
+                        },
+                        showConfirmButton: false
+                    });
 
-                          $.ajax({
-                            type: "POST",
-                            url: "{{ url('/documents/cancel') }}",
-                            data: {
-                                requestID: requestID,
-                                _token: "{{ csrf_token() }}"
-                              },
-                              success: function(res) {
+                    $.ajax({
+                    type: "POST",
+                    url: "{{ url('/documents/cancel') }}",
+                    data: {
+                        requestID: requestID,
+                        _token: "{{ csrf_token() }}"
+                        },
+                        success: function(res) {
 
-                                  setTimeout(function() {
-                                      swal.fire({
-                                          icon: 'success',
-                                          html: '<h5>Successfully Cancelled!</h5>'
-                                      });
+                            setTimeout(function() {
+                                swal.fire({
+                                    icon: 'success',
+                                    html: '<h5>Successfully Cancelled!</h5>'
+                                });
 
-                                  }, 700);
-                                  $('#request-dt').DataTable().ajax.reload(null, false);
-                                  $('#review-dt').DataTable().ajax.reload(null, false);
-                                  $('#approval-dt').DataTable().ajax.reload(null, false);
-                                  $('#registration-dt').DataTable().ajax.reload(null, false);
-                              }
-                          });
-                      }
-                  } else if (
-                      result.dismiss === Swal.DismissReason.cancel
-                  ) {
-                      toastr.info(
-                          'Action is cancelled',
-                          'CANCELLED'
-                      );
-                  }
-              });
-          }
+                            }, 700);
+                            $('#request-dt').DataTable().ajax.reload(null, false);
+                            $('#review-dt').DataTable().ajax.reload(null, false);
+                            $('#approval-dt').DataTable().ajax.reload(null, false);
+                            $('#registration-dt').DataTable().ajax.reload(null, false);
+                        }
+                    });
+                }
+            } else if (
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                toastr.info(
+                    'Action is cancelled',
+                    'CANCELLED'
+                );
+            }
+        });
+    }
 
       // Call loadDivisions when modal opens
       $("#request-modal").on("show.bs.modal", function () {
