@@ -48,6 +48,50 @@ class DocumentController extends Controller
         // Initialize file path variable
         $filePath = null;
 
+        // Check if a file is uploaded
+        if ($request->hasFile('documentFile')) {
+            $file = $request->file('documentFile');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('documents', $fileName, 'public'); // Store in storage/app/public/documents
+        }
+        else{
+            $filePath = $request->requestFileOld;
+        }
+
+        $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        [
+            'requestTypeID' => $request->requestTypeID,
+            'docTypeID' => $request->docTypeID,
+            'docRefCode' => $request->docRefCode,
+            'currentRevNo' => $request->currentRevNo,
+            'docTitle' => $request->docTitle,
+            'requestReason' => $request->requestReason,
+            'userID' => Auth::id(),
+            'requestFile' => $filePath, // Save file path in DB
+            'requestDate' => Carbon::now(),
+            'requestStatus' => 'Requested',                  
+        ]);
+
+        return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
+    }
+    
+    public function storeEdit(Request $request)
+    {
+        $request->validate([
+        'currentRevNo' => 'required|numeric|min:0',
+        'docTitle' => 'required|string|max:255',
+        'requestReason' => 'required|string|max:500',
+        'documentFile' => 'nullable|mimes:pdf|max:2048',
+        ], [
+            'currentRevNo.required' => 'The Revision Number is required.',
+            'docTitle.required' => 'The Document Title is required.',
+            'requestReason.required' => 'The Reason for Request is required.',
+            'documentFile.required' => 'The Uploaded Document is required.',
+        ]);
+
+        // Initialize file path variable
+        $filePath = null;
+
         if(empty($request->requestID)){
             $isNew = true;
         }
@@ -76,16 +120,10 @@ class DocumentController extends Controller
             'userID' => Auth::id(),
             'requestFile' => $filePath, // Save file path in DB
             'requestDate' => Carbon::now(),
-            'requestStatus' => 'For Review',                  
+            'requestStatus'  => $request->requesStatus,                  
         ]);
         
-        if($isNew == true)
-        {
-            return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
-        }
-        else{
-            return redirect('/documents')->with('success', 'Successfully Updated.');
-        }
+        return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
     }
 
     public function storeReview(Request $request)
@@ -109,7 +147,35 @@ class DocumentController extends Controller
             'requestStatus' => 'For Revision',
         ]);
         
-        return response()->json(['success'=> 'Successfully Saved.', 'ReviewDocument' => $reviewDocument]);
+        return response()->json(['success'=> 'Review Comments Saved.', 'ReviewDocument' => $reviewDocument]);
+    }
+
+    public function forReview(Request $request)
+    {
+        $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        [
+            'requestStatus' => 'For Review',
+        ]);
+        
+        return response()->json(['success'=> 'Document Endorsed For Review.', 'RequestDocument' => $requestDocument]);
+    }
+
+    public function reviewed(Request $request)
+    {
+        $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
+        [
+            'requestID' => $request->requestID,
+            'reviewComment' => 'Reviewed',
+            'userID' => Auth::id(),
+            'reviewStatus' => 'Active',                  
+        ]);
+
+        $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        [
+            'requestStatus' => 'For Approval',
+        ]);
+        
+        return response()->json(['success'=> 'Document Endorsed For Approval.', 'ReviewDocument' => $reviewDocument]);
     }
 
     public function validateRequest(Request $request)
@@ -132,7 +198,7 @@ class DocumentController extends Controller
     public function getDataRequest($status)
     {
         $requestDocuments = RequestDocument::with(['DocumentType'])
-            ->select('requestID', 'docTitle', 'docTypeID', 'requestStatus', 'userID');
+            ->select('requestID', 'docTitle', 'docTypeID', 'requestStatus', 'userID', 'docRefCode');
         if ($status !== '0') {
             $requestDocuments->where('requestStatus', $status);
         }
@@ -151,24 +217,30 @@ class DocumentController extends Controller
                 return $row->createdBy ? $row->createdBy->Staff->unit->unitName : "";
             })
             ->addColumn('action', function ($row) {
-                if (Auth::user()->role->id == 2) {
+                $onClickFunction = "editRequest({$row->requestID})";
+                $isHidden = "";
+
+                if ((in_array($row->requestStatus, ['For Review', 'For Approval', 'For Registration']) || $row->userID !== Auth::id()) 
+                    && Auth::user()->role_id !== 1) {
+                    $isHidden = "hidden";
+                }
+                /*  elseif ($row->requestStatus === 'For Revision (Approval)') {
                     $onClickFunction = "editReview({$row->requestID})";
-                } elseif ($row->requestStatus === 'For Review') {
-                    $onClickFunction = "editRequest({$row->requestID})";
                 } elseif ($row->requestStatus === 'For Approval') {
                     $onClickFunction = "editApproval({$row->requestID})";
                 } elseif ($row->requestStatus === 'For Registration') {
                     $onClickFunction = "editRegistration({$row->requestID})";
                 } else {
                     $onClickFunction = "editRequest({$row->requestID})";
-                }
+                } */
         
                 return '<button class="btn btn-sm btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
-                        <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '">
+                        <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '"' . $isHidden .'>
                             <span class="material-icons" style="font-size: 20px;">edit</span>
                         </button>
+
                         <button class="btn btn-sm btn-danger mx-1" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">delete</span>
                         </button>
@@ -255,21 +327,20 @@ class DocumentController extends Controller
         return view('pages.documents.display-document', compact('document', 'requestType', 'docType'));
     }
 
-    public function show($id)
-    {
-        $document = Ticket::find($id);
-        $caller = Caller::where('id', $document->caller_id)->first();
-        $caller_types = CallerType::all();
-
-        return view('pages.documents.update', ['caller' => $caller, 'caller_types' => $caller_types, 'ticket' => $document]);
-    }
-
     public function update(Request $request)
     {
         $where = array('requestID' => $request->requestID);
         $RequestDocument  = RequestDocument::where($where)->first();
       
         return response()->json(array('success' => 'Successfully Updated'));
+    }
+
+    public function edit(Request $request)
+    {
+        $where = array('requestID' => $request->requestID);
+        $RequestDocument  = RequestDocument::where($where)->first();
+      
+        return response()->json($RequestDocument);
     }
      
     public function cancel(Request $request)
@@ -543,8 +614,4 @@ class DocumentController extends Controller
 
         return response()->json(array('success' => true));
     }
-
-   
- 
 }
-

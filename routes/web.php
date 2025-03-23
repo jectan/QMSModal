@@ -17,7 +17,6 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardV2Controller;
 use App\Http\Controllers\MasterlistController;
-use App\Http\Controllers\AboutController;
 
 
     Route::any('slug', function()
@@ -25,8 +24,6 @@ use App\Http\Controllers\AboutController;
         return view('auth.page404');
     });
 
-//About Us
-Route::get('/aboutus', [App\Http\Controllers\AboutController::class, 'index']);
 
 //Masterlist
 Route::get('/masterlist', [MasterlistController::class, 'index'])->name('masterlist.index');
@@ -98,13 +95,7 @@ Route::post('/accounts/user-roles/add',[AccountController::class, 'addUserRole']
 Route::delete('/accounts/user-roles/remove/{id}',[AccountController::class, 'removeUserRole']);
   
 //Document
-Route::get('/documents', [DocumentController::class, 'index']);
-Route::get('/get-requestType', [DocumentController::class, 'getRequestType']);
-Route::get('/get-docType', [DocumentController::class, 'getDocType']);
-Route::get('/get-docRefCode', [DocumentController::class, 'getDocRefCode']);
 Route::get('/documents/create', [DocumentController::class, 'create']);
-Route::get('/documents/show/{id}', [DocumentController::class, 'show']);
-Route::post('/documents/update', [DocumentController::class, 'update']);
 Route::get('/documents/view/{id}', [DocumentController::class, 'view']);
 Route::post('/documents/cancel', [DocumentController::class, 'cancel']);
 Route::delete('/documents/delete/{id}', [DocumentController::class, 'destroy']);
@@ -156,20 +147,25 @@ Route::get('/feedback',[FeedbackController::class, 'index']);
 });
 
     // Admin staffS
-    Route::group(['middleware' => 'role:all'], function (){
-//documents  
-Route::post('/documents/store', [DocumentController::class, 'store']);
-Route::post('/documents/storeReview', [DocumentController::class, 'storeReview']);
-Route::get('/documents/data-request{status?}', [DocumentController::class, 'getDataRequest'])->name('documents.data-request');
+    Route::group(['middleware' => 'role:1,2,3,4,5'], function (){
+//Documents 
 Route::get('/documents', [DocumentController::class, 'index']);
-Route::get('/documents/show/{id}', [DocumentController::class, 'show']);
-Route::post('/documents/update', [DocumentController::class, 'update']);
-Route::get('/documents/view/{id}', [DocumentController::class, 'view']);
-Route::get('/documents/view/review/{id}', [DocumentController::class, 'getReview']);
-Route::get('/documents/test/{id}', [DocumentController::class, 'test']);
+Route::post('/documents/store', [DocumentController::class, 'store']); //called from index
+Route::post('/documents/edit', [DocumentController::class, 'edit']); //called from index
+Route::post('/documents/storeEdit', [DocumentController::class, 'storeEdit']); //called from display-document
+Route::get('/documents/view/review/{id}', [DocumentController::class, 'getReview']); //called from display-document
+Route::post('/documents/storeReview', [DocumentController::class, 'storeReview']);
+Route::post('/documents/reviewed', [DocumentController::class, 'reviewed']); //called from display-document
+Route::post('/documents/forReview', [DocumentController::class, 'forReview']); //called from display-document
+Route::get('/documents/data-request{status?}', [DocumentController::class, 'getDataRequest'])->name('documents.data-request'); //called by tabs
 Route::post('/documents/cancel', [DocumentController::class, 'cancel']); //This is it!
-Route::post('/documents/assign/add',[DocumentController::class, 'assignedOffice']);
-Route::get('/documents/show-assign/{id}',[DocumentController::class, 'getOffice']);
-       
+Route::get('/get-requestType', [DocumentController::class, 'getRequestType']);
+Route::get('/get-docType', [DocumentController::class, 'getDocType']);
+Route::get('/get-docRefCode', [DocumentController::class, 'getDocRefCode']);
+Route::get('/documents/show/{id}', [DocumentController::class, 'show']); //delete this soon
+Route::post('/documents/update', [DocumentController::class, 'update']); //delete this soon
+Route::get('/documents/view/{id}', [DocumentController::class, 'view']); //delete this soon
+Route::get('/documents/test/{id}', [DocumentController::class, 'test']); // delete this soon
+Route::post('/documents/assign/add',[DocumentController::class, 'assignedOffice']); // delete this soon
+Route::get('/documents/show-assign/{id}',[DocumentController::class, 'getOffice']); // delete this soon   
 });
-

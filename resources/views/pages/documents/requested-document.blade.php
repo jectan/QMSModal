@@ -1,4 +1,3 @@
-
 <!-- DATATABLE -->
 <div class="row">
     <div class="col-md-12">
@@ -30,7 +29,7 @@
             serverSide: true,
             ajax: "{{ route('documents.data-request', ['status' => '0']) }}", // Fetch data from this route
             columns: [
-                { data: "requestID", name: "requestID" },
+                { data: "docRefCode", name: "docRefCode" },
                 { data: "docTitle", name: "docTitle" },
                 { data: "docTypeDesc", name: "docTypeDesc" },
                 { data: "requestor", name: "requestor" },
@@ -41,4 +40,3 @@
         });
     });
 </script>
-

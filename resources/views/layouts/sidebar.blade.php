@@ -83,7 +83,7 @@
         </nav>
 
         <!-- About Us (Bottom Section) -->
-        @if(Auth::user()->role->id==1)
+        @if(Auth::user())
             <ul class="nav nav-pills nav-sidebar flex-column mt-auto">
                 <li class="nav-item">
                     <a href="/aboutus" class="nav-link {{ $page == 'About' ? 'active' : '' }}">
@@ -93,6 +93,5 @@
                 </li>
             </ul>
         @endif
-
     </div>
 </aside>
