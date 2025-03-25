@@ -66,7 +66,7 @@
                 <!-- Edit Button for Users -->
                 @if(Auth::user()->role_id == 1 || (Auth::user()->id == $document->userID && (!in_array($document->requestStatus, ['For Review', 'For Approval', 'For Registration']))))
                     <div class="expandable-button">
-                        <button class="btn btn-sm btn-info mx-1 btn-icon" href="javascript:void(0)" onClick="' . $onClickFunction . '">
+                        <button class="btn btn-sm btn-info mx-1 btn-icon" id="editButton" href="javascript:void(0)">
                             <span class="material-icons" style="font-size: 20px;">edit</span>
                             <span class="btn-label">Edit</span>
                         </button>
@@ -151,21 +151,25 @@
                             <!-- File Upload -->
                             <div class="form-group">
                                 <label for="requestFile" class="col-sm-4 control-label">Upload Document (PDF Only):<span class="require">*</span></label>
-                                <div class="col-sm-12">
-                                    <!-- Display existing file -->
-                                    @if ($document->requestFile)
-                                        <p>Current File: <a href="{{ asset('storage/' . $document->requestFile) }}" target="_blank">{{ basename($document->requestFile) }}</a></p>
-                                    @endif
+                                @if(in_array($document->requestStatus, ['For Registration']))
+                                    <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf">
+                                @else
+                                    <div class="col-sm-12">
+                                        <!-- Display existing file -->
+                                        @if ($document->requestFile)
+                                            <p id="documentLabel">Current File: <a href="{{ asset('storage/' . $document->requestFile) }}" target="_blank">{{ basename($document->requestFile) }}</a></p>
+                                        @endif
 
-                                    <!-- Allow uploading a new file -->
-                                    <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf" value="{{ basename($document->requestFile) }}" hidden>
-                                </div>
+                                        <!-- Allow uploading a new file -->
+                                        <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf" value="{{ basename($document->requestFile) }}" hidden>
+                                    </div>
+                                @endif
                             </div>
 
                             <!-- Submit Button -->
                             <div class="form-group text-center mt-3">
-                                <!-- <button type="submit" class="btn btn-primary">Submit Request</button>
-                                <a href="{{ url('/documents') }}" class="btn btn-secondary">Cancel</a> -->
+                                <button type="submit" id="submitButton" class="btn btn-primary" hidden>Submit Request</button>
+                                <a href="{{ url('/documents') }}" id="cancelEditButton" class="btn btn-secondary" hidden>Cancel</a>
                             </div>
                         </form>
                     </div>
@@ -275,23 +279,56 @@
                 }
             });
 
-            $(document).ready(function() {
-                $('#review-dt').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: "{{ url('/documents/view/review') }}/{{ $document->requestID }}",
-                    columns: [
-                        { data: 'reviewID', name: 'reviewID' },
-                        { data: 'reviewComment', name: 'reviewComment' },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        }
-                    ],
-                    order: [[0, 'desc']]
-                });
+            $('#review-dt').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ url('/documents/view/review') }}/{{ $document->requestID }}",
+                columns: [
+                    { data: 'reviewID', name: 'reviewID' },
+                    { data: 'reviewComment', name: 'reviewComment' },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                order: [[0, 'desc']]
+            });
+
+            //Hide/Unhide DocumentFile
+            $("#editButton").click(function () {
+                let requestTypeID = document.getElementById("requestTypeID");
+                let docTypeID = document.getElementById("docTypeID");
+                let docRefCode = document.getElementById("docRefCode");
+                let currentRevNo = document.getElementById("currentRevNo");
+                let docTitle = document.getElementById("docTitle");
+                let requestReason = document.getElementById("requestReason");
+                let documentLabel = document.getElementById("documentLabel");
+
+                requestTypeID.removeAttribute("readonly");
+                requestTypeID.setAttribute("required", true);
+                docTypeID.removeAttribute("readonly");
+                docTypeID.setAttribute("required", true);
+                docRefCode.removeAttribute("readonly");
+                docRefCode.setAttribute("required", true);
+                currentRevNo.removeAttribute("readonly");
+                currentRevNo.setAttribute("required", true);
+                docTitle.removeAttribute("readonly");
+                docTitle.setAttribute("required", true);
+                requestReason.removeAttribute("readonly");
+                requestReason.setAttribute("required", true);
+                documentLabel.setAttribute("hidden", true);
+                documentFile.removeAttribute("hidden"); // Show
+                submitButton.removeAttribute("hidden");
+                cancelEditButton.removeAttribute("hidden");
+            });
+
+            $("#cancelEditButton").click(function () {
+                // Reload the page after 1 second (optional delay for better UX)
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000); // Adjust time as needed
             });
 
             // Clear reviewComment field on page refresh
