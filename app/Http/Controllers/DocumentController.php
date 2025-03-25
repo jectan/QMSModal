@@ -17,6 +17,7 @@ use App\Models\TicketLog;
 use App\Models\DocType;
 use App\Models\RequestDocument;
 use App\Models\ReviewDocument;
+use App\Models\ApproveDocument;
 use App\Models\RequestType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -131,7 +132,7 @@ class DocumentController extends Controller
         $request->validate([
         'reviewComment' => 'required|string|max:255',
         ], [
-            'reviewComment.required' => 'The Review Comment is required.',
+            'reviewComment.required' => 'The Review Comments are required.',
         ]);
 
         $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
@@ -148,6 +149,30 @@ class DocumentController extends Controller
         ]);
         
         return response()->json(['success'=> 'Review Comments Saved.', 'ReviewDocument' => $reviewDocument]);
+    }
+
+    public function storeApprove(Request $request)
+    {
+        $request->validate([
+        'approveComment' => 'required|string|max:255',
+        ], [
+            'approveComment.required' => 'The Comments are required.',
+        ]);
+
+        $approveDocument = ApproveDocument::updateOrCreate(['approveID' => $request->approveID],
+        [
+            'requestID' => $request->requestID,
+            'approveComment' => $request->approveComment,
+            'userID' => Auth::id(),
+            'approveStatus' => 'Active',                  
+        ]);
+
+        $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        [
+            'requestStatus' => 'For Revision (Approval)',
+        ]);
+        
+        return response()->json(['success'=> 'Comments Saved.', 'ApproveDocument' => $approveDocument]);
     }
 
     public function forReview(Request $request)
@@ -184,6 +209,24 @@ class DocumentController extends Controller
         ]);
         
         return response()->json(['success'=> 'Document Endorsed For Approval.', 'ReviewDocument' => $reviewDocument]);
+    }
+
+    public function approved(Request $request)
+    {
+        $approveDocument = ApproveDocument::updateOrCreate(['approveID' => $request->approveID],
+        [
+            'requestID' => $request->requestID,
+            'approveComment' => 'Approved',
+            'userID' => Auth::id(),
+            'approveStatus' => 'Active',                  
+        ]);
+
+        $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        [
+            'requestStatus' => 'For Registration',
+        ]);
+        
+        return response()->json(['success'=> 'Document Endorsed For Registration.', 'ApproveDocument' => $approveDocument]);
     }
 
     public function validateRequest(Request $request)

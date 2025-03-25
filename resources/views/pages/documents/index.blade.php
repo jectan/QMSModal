@@ -51,7 +51,6 @@
             </div>
         </div>
 
-
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
@@ -194,15 +193,6 @@
                             </div>
                         </div>
 
-                        <!-- Status -->
-                        <!-- <div class="form-group">
-                            <label for="inputcontent" class="form-label"><strong>Status</strong></label>
-                            <select name="status" id="status">
-                                <option value=1>Active</option>
-                                <option value=0>Inactive</option>
-                            </select>
-                        </div> -->
-
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-info" id="request-btn-save">Save</button>
                             <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
@@ -236,7 +226,20 @@
                     $(".total").html(res['total_ticket']);
                 }
             });
+
+            //Enable/Disable DocRefCode
+            $("#requestTypeID").change(function () {
+                var requestType = $(this).val(); // Get selected value
+                var docRefCode = $("#docRefCode");
+
+                if (requestType == "1") {
+                    docRefCode.val("").prop("disabled", true).removeAttr("required"); // Clear, disable, and remove required
+                } else {
+                    docRefCode.prop("disabled", false).attr("required", "required"); // Enable and make required
+                }
+            });
         });
+
 
         // Submit button
         $('#request-form').submit(function (e){

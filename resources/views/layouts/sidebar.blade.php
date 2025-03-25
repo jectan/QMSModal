@@ -1,8 +1,8 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4 d-flex flex-column">
     <!-- Brand Logo -->
-    <a href="/dashboard" class="brand-link">
-        <img src="/img/logo1.png" alt="AdminLTE Logo" class="brand-image" style="opacity: .8">
-        <span class="brand-text" style="font-size: 10px;word-wrap: break-word;">Document Management System</span><br>
+    <a href="/dashboard" class="brand-link d-flex align-items-center">
+        <img src="/img/logo1.png" alt="AdminLTE Logo" class="brand-image" style="opacity: .8; width: auto; height: 100px;">
+        <span class="brand-text" style="font-size: 10px;word-wrap: break-word;">Document<br>Management<br>System</span><br>
     </a>
 
     <!-- Sidebar -->
@@ -81,10 +81,9 @@
                 @endif
             </ul>
         </nav>
-
         <!-- About Us (Bottom Section) -->
-        @if(Auth::user())
-            <ul class="nav nav-pills nav-sidebar flex-column mt-auto">
+        <div class="mt-auto">
+            <ul class="nav nav-pills nav-sidebar flex-column">
                 <li class="nav-item">
                     <a href="/aboutus" class="nav-link {{ $page == 'About' ? 'active' : '' }}">
                         <i class="material-icons nav-icon align-middle">info</i>
@@ -92,6 +91,6 @@
                     </a>
                 </li>
             </ul>
-        @endif
+        </div>
     </div>
 </aside>

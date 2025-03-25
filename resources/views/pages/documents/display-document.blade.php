@@ -10,12 +10,14 @@
             <h2 class="mb-3">Document Details</h2>
             <!-- Action Buttons -->
             <div class="d-flex justify-content-end mt-2 mb-3">
+                <!-- Back Button -->
                 <div class="expandable-button">
                     <a href="{{ url('/documents') }}" class="btn btn-sm btn-secondary mx-1 btn-icon" data-bs-toggle="tooltip">
                         <span class="material-icons" style="font-size: 20px;">chevron_left</span>
                         <span class="btn-label">Back</span>
                     </a>
                 </div>
+                <!-- Submit Button for Review -->
                 @if(Auth::check() && in_array(Auth::user()->role_id, [1, 5]) && (in_array($document->requestStatus, ['Requested'])))
                     <div class="expandable-button">
                         <button type="button" class="btn btn-sm btn-success mx-1 btn-icon" href="javascript:void(0)"  onClick="forReview('{{ $document->requestID }}')">
@@ -24,22 +26,44 @@
                         </button>
                     </div>
                 @endif
-                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 4]))
+
+                <!-- Buttons for QMR for Users -->
+                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 4]) && (in_array($document->requestStatus, ['For Review'])))
                     <div class="expandable-button">
-                        <button type="button" class="btn btn-sm btn-success mx-1 btn-icon" href="javascript:void(0)"  onClick="reviewedRequest('{{ $document->requestID }}')">
+                        <button type="button" class="btn btn-sm btn-success mx-1 btn-icon" id="reviewedButton" href="javascript:void(0)"  onClick="reviewedRequest('{{ $document->requestID }}')">
                             <span class="material-icons" style="font-size: 20px;">check_circle</span>
                             <span class="btn-label">Reviewed</span>
                         </button>
                     </div>
                 @endif
-                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 4]))
+                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 4]) && (in_array($document->requestStatus, ['For Review'])))
                     <div class="expandable-button">
-                        <button type="button" class="btn btn-sm btn-warning mx-1 btn-icon" data-bs-toggle="collapse" data-bs-target="#commentSection" title="For Revision" >
+                        <button type="button" id="rejectButton" class="btn btn-sm btn-warning mx-1 btn-icon" data-bs-toggle="collapse" data-bs-target="#reviewComment" title="For Revision" >
                             <span class="material-icons" style="font-size: 20px;">comment</span>
                             <span class="btn-label">For Revision</span>
                         </button>
                     </div>
                 @endif
+
+                <!-- Buttons for Approving Authority -->
+                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 3]) && (in_array($document->requestStatus, ['For Approval'])))
+                    <div class="expandable-button">
+                        <button type="button" class="btn btn-sm btn-success mx-1 btn-icon" id="approvedButton" href="javascript:void(0)"  onClick="approvedRequest('{{ $document->requestID }}')">
+                            <span class="material-icons" style="font-size: 20px;">check_circle</span>
+                            <span class="btn-label">Approved</span>
+                        </button>
+                    </div>
+                @endif
+                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 3]) && (in_array($document->requestStatus, ['For Approval'])))
+                    <div class="expandable-button">
+                        <button type="button" id="rejectApproveButton" class="btn btn-sm btn-warning mx-1 btn-icon" data-bs-toggle="collapse" data-bs-target="#approvalComment" title="For Revision" >
+                            <span class="material-icons" style="font-size: 20px;">comment</span>
+                            <span class="btn-label">For Revision</span>
+                        </button>
+                    </div>
+                @endif
+
+                <!-- Edit Button for Users -->
                 @if(Auth::user()->role_id == 1 || (Auth::user()->id == $document->userID && (!in_array($document->requestStatus, ['For Review', 'For Approval', 'For Registration']))))
                     <div class="expandable-button">
                         <button class="btn btn-sm btn-info mx-1 btn-icon" href="javascript:void(0)" onClick="' . $onClickFunction . '">
@@ -48,6 +72,7 @@
                         </button>
                     </div>
                 @endif
+                <!-- Delete Button for Users -->
                 @if(Auth::user()->id == $document->userID || Auth::user()->role_id == 1)
                     <div class="expandable-button">
                         <button class="btn btn-sm btn-danger btn-icon" href="javascript:void(0)" onClick="cancelRequest('{{ $document->requestID }}')">
@@ -151,7 +176,8 @@
             <div class="col-md-8 mb-3">
                 <div class="card">
                     <!-- Collapsible Comment Section -->
-                    <div class="collapse" id="commentSection">
+                    <!-- Review Comments -->
+                    <div class="collapse" id="reviewComment">
                         <div class="card border-warning m-3">
                             <div class="card-header bg-warning text-white">
                                 <strong>Comments for Revision</strong>
@@ -162,7 +188,25 @@
                                     <input type="hidden" name="requestID" id="requestID" value="{{ $document->requestID }}">
                                     <textarea class="form-control" rows="3" id="reviewComment" name="reviewComment" placeholder="Add your comment..."></textarea>
                                     <button class="btn btn-sm btn-warning mt-2">Submit Comments</button>
-                                    <button type="button" class="btn btn-sm btn-secondary mt-2" data-bs-toggle="collapse" data-bs-target="#commentSection">Cancel</button>
+                                    <button type="button" class="btn btn-sm btn-secondary mt-2" data-bs-toggle="collapse" data-bs-target="#reviewComment">Cancel</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Approval Comments -->
+                    <div class="collapse" id="approvalComment">
+                        <div class="card border-warning m-3">
+                            <div class="card-header bg-warning text-white">
+                                <strong>Comments for Revision</strong>
+                            </div>
+                            <div class="card-body">
+                                <form action="javascript:void(0)" id="approve-form" name="approve-form" class="form-horizontal" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="requestID" id="requestID" value="{{ $document->requestID }}">
+                                    <textarea class="form-control" rows="3" id="approveComment" name="approveComment" placeholder="Add your comment..."></textarea>
+                                    <button class="btn btn-sm btn-warning mt-2">Submit Comments</button>
+                                    <button type="button" class="btn btn-sm btn-secondary mt-2" data-bs-toggle="collapse" data-bs-target="#approvalComment">Cancel</button>
                                 </form>
                             </div>
                         </div>
@@ -182,28 +226,34 @@
             </div>
         </div>
 
-        <!-- Review History Section -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="card border-warning">
-                            <div class="card-header bg-dblue text-white">
-                                <strong>Document Review History</strong>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="card">
-                                        <div class="card-body table-responsive">
-                                            <table class="table table-striped w-100" id="review-dt" style="font-size: 14px">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width: 10%">No</th>
-                                                        <th style="width: 20%">Comments</th>
-                                                        <th style="width: 15%">Action</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
+        @if(in_array($document->requestStatus, ['For Review', 'For Revision', 'For Approval', 'For Revision (Approval)']))
+            <!-- Review/Approval History Section -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card border-warning">
+                                <div class="card-header bg-dblue text-white">
+                                    @if(in_array($document->requestStatus, ['For Review', 'For Revision']))
+                                        <strong>Document Review History</strong>
+                                    @else
+                                        <strong>Approval Review History</strong>
+                                    @endif
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-body table-responsive">
+                                                <table class="table table-striped w-100" id="review-dt" style="font-size: 14px">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 10%">No</th>
+                                                            <th style="width: 20%">Comments</th>
+                                                            <th style="width: 15%">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -212,7 +262,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
 
     <!-- AJAX -->
@@ -247,7 +297,7 @@
             // Clear reviewComment field on page refresh
             $('#reviewComment').val('');
 
-            // Submit button event
+            // Submit button event for Review
             $('#review-form').submit(function (e) {
                 e.preventDefault();
 
@@ -267,7 +317,7 @@
                     isValid = false;
                     missingFields.push("Review Comment");
                     reviewComment.addClass("is-invalid");
-                    reviewComment.after("<div class='error-message text-danger'>The review comment is required.</div>");
+                    reviewComment.after("<div class='error-message text-danger'>The review comments are required.</div>");
                 } else if (reviewComment.val().length > 500) {
                     isValid = false;
                     errorMessages.push("The review comment must be at most 500 characters.");
@@ -313,10 +363,118 @@
 
                             // Clear the input field after successful submission
                             $('#reviewComment').val('');
+                            $('#rejectButton').hide();
+                            $('#reviewedButton').hide();
 
                             // Optional: Refresh DataTable
                             if ($.fn.DataTable.isDataTable("#review-dt")) {
                                 $('#review-dt').DataTable().ajax.reload();
+                            }
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                html: res.errors
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            let errorMessages = [];
+
+                            $.each(errors, function (key, messages) {
+                                errorMessages.push(messages.join("<br>"));
+                            });
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid Input',
+                                html: errorMessages.join("<br>")
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Something went wrong. Please try again.'
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Submit button event for Approval
+            $('#approve-form').submit(function (e) {
+                e.preventDefault();
+
+                let isValid = true;
+                let errorMessages = [];
+                let missingFields = [];
+
+                // Clear previous errors
+                $(".is-invalid").removeClass("is-invalid");
+                $(".error-message").remove();
+
+                // Get input values
+                let approveComment = $('#approveComment');
+
+                // Validation Rules
+                if (!approveComment.val().trim()) {
+                    isValid = false;
+                    missingFields.push("Review Comment");
+                    approveComment.addClass("is-invalid");
+                    approveComment.after("<div class='error-message text-danger'>The comments are required.</div>");
+                } else if (approveComment.val().length > 500) {
+                    isValid = false;
+                    errorMessages.push("The review comment must be at most 500 characters.");
+                    approveComment.addClass("is-invalid");
+                }
+
+                // Show error messages if validation fails
+                if (!isValid) {
+                    let errorText = "";
+
+                    if (missingFields.length > 0) {
+                        errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
+                    }
+                    if (errorMessages.length > 0) {
+                        errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
+                    }
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Input',
+                        html: errorText,
+                    });
+
+                    return;
+                }
+
+                // Proceed with form submission via AJAX
+                let formData = new FormData(this);
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('/documents/storeApprove') }}",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: res.success
+                            });
+
+                            // Clear the input field after successful submission
+                            $('#approveComment').val('');
+                            $('#rejectApproveButton').hide();
+                            $('#approvedButton').hide();
+
+                            // Optional: Refresh DataTable
+                            if ($.fn.DataTable.isDataTable("#approve-dt")) {
+                                $('#approve-dt').DataTable().ajax.reload();
                             }
                         } else {
                             Swal.fire({
@@ -458,6 +616,58 @@
                     toastr.info(
                         'Action is cancelled',
                         'Document remains pending'
+                    );
+                }
+            });
+        }
+        
+
+        function approvedRequest(requestID) {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: 'Confirm Approval?',
+                text: "This document will be marked as approved.",
+                icon: 'info', // ℹ️ Changed from warning to info
+                showCancelButton: true,
+                confirmButtonText: 'Yes, mark as approved',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    swal.fire({
+                        html: '<h6>Processing... Please wait</h6>',
+                        showConfirmButton: false
+                    });
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/documents/approved",
+                        data: {
+                            requestID: requestID,
+                            _token: @json(csrf_token())
+                        },
+                        success: function(res) {
+                            setTimeout(function() {
+                                Swal.fire({
+                                    icon: 'success', // 👍 Changed from success to thumbs-up
+                                    html: '<h5>Successfully Marked as Approved!</h5>'
+                                }).then(() => {
+                                    window.history.back();
+                                });
+                            }, 700);
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    toastr.info(
+                        'Action is cancelled',
+                        'Document remains   pending'
                     );
                 }
             });

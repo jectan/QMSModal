@@ -62,13 +62,13 @@ class AccountSeeder extends Seeder {
         Office::create(array('name' => "City Treasurer Office"));
         Office::create(array('name' => "City Veterinarian Office"));
 
-        $User =   User::create(array('username' => 'SuperAdmin', 'password' => $password, 'role_id' => '1', 'isNew' => '0'));
-        Staff::create(array('firstname' => 'Super', 'lastname' => 'Admin','user_id' => '1', 'unitID' => '8'));
-        $User =   User::create(array('username' => 'DMT', 'password' => $password, 'role_id' => '2', 'isNew' => '0'));
+        $User =   User::create(array('username' => 'kryztle.evangelista@dict.gov.ph', 'password' => $password, 'role_id' => '1', 'isNew' => '0'));
+        Staff::create(array('firstname' => 'Kryztle Love', 'lastname' => 'Evengelista','user_id' => '1', 'unitID' => '8'));
+        $User =   User::create(array('username' => 'almark.ramos@dict.gov.ph', 'password' => $password, 'role_id' => '2', 'isNew' => '0'));
         Staff::create(array('firstname' => 'Almark', 'lastname' => 'Ramos','user_id' => '2', 'unitID' => '14'));
-        $User =   User::create(array('username' => 'RD', 'password' => $password, 'role_id' => '3', 'isNew' => '0'));
+        $User =   User::create(array('username' => 'cheryl.ortega@dict.gov.ph', 'password' => $password, 'role_id' => '3', 'isNew' => '0'));
         Staff::create(array('firstname' => 'Cheryl', 'lastname' => 'Ortega','user_id' => '3', 'unitID' => '16'));
-        $User =   User::create(array('username' => 'QMR', 'password' => $password, 'role_id' => '4', 'isNew' => '0'));
+        $User =   User::create(array('username' => 'aris.austria@dict.gov.ph', 'password' => $password, 'role_id' => '4', 'isNew' => '0'));
         Staff::create(array('firstname' => 'Aris', 'lastname' => 'Austria','user_id' => '4', 'unitID' => '17'));
         $User =   User::create(array('username' => 'jerico.tan@dict.gov.ph', 'password' => $password, 'role_id' => '5', 'isNew' => '0'));
         Staff::create(array('firstname' => 'Jerico', 'lastname' => 'Tan','user_id' => '5', 'unitID' => '7'));
