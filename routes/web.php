@@ -161,6 +161,8 @@ Route::post('/documents/reviewed', [DocumentController::class, 'reviewed']); //c
 Route::post('/documents/storeApprove', [DocumentController::class, 'storeApprove']); //called from display-document
 Route::post('/documents/approved', [DocumentController::class, 'approved']); //called from display-document
 Route::post('/documents/forReview', [DocumentController::class, 'forReview']); //called from display-document
+Route::get('/documents/view/{id}', [DocumentController::class, 'view']); //called from display-document
+Route::get('/documents/view/edit/{id}', [DocumentController::class, 'viewEdit']); //called from display-document
 Route::get('/documents/data-request{status?}', [DocumentController::class, 'getDataRequest'])->name('documents.data-request'); //called by tabs
 Route::post('/documents/cancel', [DocumentController::class, 'cancel']); //This is it!
 Route::get('/get-requestType', [DocumentController::class, 'getRequestType']);
@@ -168,7 +170,6 @@ Route::get('/get-docType', [DocumentController::class, 'getDocType']);
 Route::get('/get-docRefCode', [DocumentController::class, 'getDocRefCode']);
 Route::get('/documents/show/{id}', [DocumentController::class, 'show']); //delete this soon
 Route::post('/documents/update', [DocumentController::class, 'update']); //delete this soon
-Route::get('/documents/view/{id}', [DocumentController::class, 'view']); //delete this soon
 Route::get('/documents/test/{id}', [DocumentController::class, 'test']); // delete this soon
 Route::post('/documents/assign/add',[DocumentController::class, 'assignedOffice']); // delete this soon
 Route::get('/documents/show-assign/{id}',[DocumentController::class, 'getOffice']); // delete this soon   

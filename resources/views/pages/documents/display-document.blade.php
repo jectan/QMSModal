@@ -95,6 +95,16 @@
                             <input type="hidden" name="requestID" id="requestID" value="{{ $document->requestID }}">
                             <input type="hidden" name="requestFileOld" id="requestFileOld" value="{{ $document->requestFile }}">
 
+                            @if($document->requestStatus == "Requested")
+                                <input type="hidden" name="requestStatus" id="requestStatus" value="Requested">
+                            @elseif($document->requestStatus == "For Revision")
+                                <input type="hidden" name="requestStatus" id="requestStatus" value="For Review">
+                            @elseif($document->requestStatus == "For Revision (Approval)")
+                                <input type="hidden" name="requestStatus" id="requestStatus" value="For Approval">
+                            @else
+                                <input type="hidden" name="requestStatus" id="requestStatus" value="{{ $document->requestStatus }}">
+                            @endif
+
                             <!-- Request Type & Document Type -->
                             <div class="form-group row">
                                 <div class="col-md-6">
@@ -169,7 +179,7 @@
                             <!-- Submit Button -->
                             <div class="form-group text-center mt-3">
                                 <button type="submit" id="submitButton" class="btn btn-primary" hidden>Submit Request</button>
-                                <a href="{{ url('/documents') }}" id="cancelEditButton" class="btn btn-secondary" hidden>Cancel</a>
+                                <button type="button" id="cancelEditButton" class="btn btn-secondary" hidden>Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -190,7 +200,7 @@
                                 <form action="javascript:void(0)" id="review-form" name="review-form" class="form-horizontal" method="POST">
                                     @csrf
                                     <input type="hidden" name="requestID" id="requestID" value="{{ $document->requestID }}">
-                                    <textarea class="form-control" rows="3" id="reviewComment" name="reviewComment" placeholder="Add your comment..."></textarea>
+                                    <textarea class="form-control" rows="3" id="reviewComments" name="reviewComments" placeholder="Add your comment..."></textarea>
                                     <button class="btn btn-sm btn-warning mt-2">Submit Comments</button>
                                     <button type="button" class="btn btn-sm btn-secondary mt-2" data-bs-toggle="collapse" data-bs-target="#reviewComment">Cancel</button>
                                 </form>
@@ -279,6 +289,11 @@
                 }
             });
 
+            var isEdit = {{ $isEdit ?? 0 }};
+            if(isEdit == 1){
+                activateFields();
+            }
+
             $('#review-dt').DataTable({
                 processing: true,
                 serverSide: true,
@@ -298,6 +313,10 @@
 
             //Hide/Unhide DocumentFile
             $("#editButton").click(function () {
+                activateFields();
+            });
+
+            function activateFields(){
                 let requestTypeID = document.getElementById("requestTypeID");
                 let docTypeID = document.getElementById("docTypeID");
                 let docRefCode = document.getElementById("docRefCode");
@@ -322,17 +341,17 @@
                 documentFile.removeAttribute("hidden"); // Show
                 submitButton.removeAttribute("hidden");
                 cancelEditButton.removeAttribute("hidden");
-            });
+            }
 
             $("#cancelEditButton").click(function () {
                 // Reload the page after 1 second (optional delay for better UX)
                 setTimeout(function () {
-                    window.location.reload();
+                    window.location.href = "{{ url('/documents/view/edit') }}/" + {{ $document->requestID }};
                 }, 1000); // Adjust time as needed
             });
 
             // Clear reviewComment field on page refresh
-            $('#reviewComment').val('');
+            $('#reviewComments').val('');
 
             // Submit button event for Review
             $('#review-form').submit(function (e) {
@@ -347,7 +366,7 @@
                 $(".error-message").remove();
 
                 // Get input values
-                let reviewComment = $('#reviewComment');
+                let reviewComment = $('#reviewComments');
 
                 // Validation Rules
                 if (!reviewComment.val().trim()) {

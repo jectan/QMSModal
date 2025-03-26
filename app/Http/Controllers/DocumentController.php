@@ -10,6 +10,7 @@ use App\Models\Ticket;
 use App\Models\OfficeAssignedTicket;
 use App\Services\SeriesService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Office;
 use App\Models\StartworkingLog;
 use App\Models\OfficeAssignedTicketLog;
@@ -19,6 +20,7 @@ use App\Models\RequestDocument;
 use App\Models\ReviewDocument;
 use App\Models\ApproveDocument;
 use App\Models\RequestType;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -105,6 +107,12 @@ class DocumentController extends Controller
             $file = $request->file('documentFile');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('documents', $fileName, 'public'); // Store in storage/app/public/documents
+            
+            // Delete the old file if it exists
+            $oldFile = $request->requestFileOld;
+            if ($oldFile && Storage::exists($oldFile)) {
+                Storage::delete($oldFile);
+            }
         }
         else{
             $filePath = $request->requestFileOld;
@@ -121,10 +129,10 @@ class DocumentController extends Controller
             'userID' => Auth::id(),
             'requestFile' => $filePath, // Save file path in DB
             'requestDate' => Carbon::now(),
-            'requestStatus'  => $request->requesStatus,                  
+            'requestStatus'  => $request->requestStatus,                  
         ]);
         
-        return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
+        return redirect()->back()->with('success', 'Successfully saved.');
     }
 
     public function storeReview(Request $request)
@@ -376,6 +384,16 @@ class DocumentController extends Controller
         $docType = DocType::all();
     
         return view('pages.documents.display-document', compact('document', 'requestType', 'docType'));
+    }
+    
+    public function viewEdit($requestID)
+    {
+        $document = RequestDocument::where('requestID', $requestID)->firstOrFail();
+        $requestType = RequestType::all();
+        $docType = DocType::all();
+        $isEdit = 1;
+    
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit'));
     }
 
     public function update(Request $request)

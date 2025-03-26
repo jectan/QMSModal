@@ -496,7 +496,11 @@
         }
 
         // editRequest function
-        function editRequest(requestID) {
+        function editRequest(requestID){
+            window.location.href = "{{ url('/documents/view/edit') }}/" + requestID;
+        }
+
+        /* function editRequest(requestID) {
             $.ajax({
                 type: "POST",
                 url: "{{ url('/documents/edit') }}",
@@ -556,7 +560,7 @@
                     console.log(data);
                 }
             });
-        }
+        } */
 
         function cancelRequest(requestID) {
             const swalWithBootstrapButtons = Swal.mixin({
