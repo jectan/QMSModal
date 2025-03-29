@@ -55,58 +55,74 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                     <h4 class="h2" style="padding-left: 5px">List of Documents</h4>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group mr-2">
-                            <div class="container-login100-form-btn">
-                                <div class="wrap-login100-form-btn">
-                                    <div class="login100-form-bgbtn"></div>
-                                    <button class="login100-form-btn" data-bs-toggle="modal" data-bs-target="#request-modal">
-                                        <i class="fa fa-plus pr-2"></i> New Request
-                                    </button>
+                    @if(in_array(Auth::user()->role_id, [1, 5]))
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group mr-2">
+                                <div class="container-login100-form-btn">
+                                    <div class="wrap-login100-form-btn">
+                                        <div class="login100-form-bgbtn"></div>
+                                        <button class="login100-form-btn" data-bs-toggle="modal" data-bs-target="#request-modal">
+                                            <i class="fa fa-plus pr-2"></i> New Request
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
             <!-- TABS -->
             <div class="card card-primary card-tabs" style="margin: 10px">
                 <div class="card-header p-0 pt-1 bg-dblue">
                     <ul class="nav nav-tabs" id="settings-tab" role="tablist">
-                        @if(Auth::user()->role->id!=4)
-                        <li class="nav-item">
-                        <a class="nav-link active" id="request" data-toggle="pill" href="#requested-document" role="tab" aria-controls="requested-document" aria-selected="true">Requested</a>
-                        </li>
+
+                        <!-- Only Allow Admin, DMT, and User to View -->
+                        @if(in_array(Auth::user()->role_id, [1, 2, 5]))
+                            <li class="nav-item">
+                                <a class="nav-link active" id="request" data-toggle="pill" href="#requested-document" role="tab" aria-controls="requested-document" aria-selected="true">Requested</a>
+                            </li>
                         @endif
-                        <li class="nav-item">
+
+                        <!-- Only Allow Admin, DMT, QMR, and User to View -->
+                        @if(in_array(Auth::user()->role_id, [1, 2, 4, 5]))
+                            <li class="nav-item">
                                 <a class="nav-link {{Auth::user()->role->id == 4 ? 'active' : 'null'}}" id="review" data-toggle="pill" href="#review-document" role="tab" aria-controls="review-document" aria-selected="false">For Review</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link " id="approval" data-toggle="pill" href="#approval-document" role="tab" aria-controls="approval-document" aria-selected="false">For Approval</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link " id="registration" data-toggle="pill" href="#registration-document" role="tab" aria-controls="registration-document" aria-selected="false">For Registration</a>
-                        </li>
+                            </li>
+                        @endif
+
+                        <!-- Only Allow Admin, DMT, RD, and User to View -->
+                        @if(in_array(Auth::user()->role_id, [1, 2, 3, 5]))
+                            <li class="nav-item">
+                                <a class="nav-link " id="approval" data-toggle="pill" href="#approval-document" role="tab" aria-controls="approval-document" aria-selected="false">For Approval</a>
+                            </li>
+                        @endif
+
+                        <!-- Only Allow Admin, DMT, and User to View -->
+                        @if(in_array(Auth::user()->role_id, [1, 2, 5]))
+                            <li class="nav-item">
+                            <a class="nav-link " id="registration" data-toggle="pill" href="#registration-document" role="tab" aria-controls="registration-document" aria-selected="false">For Registration</a>
+                            </li>
+                        @endif
                     </ul>
-                    </div>
-                    <div class="card-body">
+                </div>
+                <div class="card-body">
                     <div class="tab-content" id="set-content">
-                        @if(Auth::user()->role->id!=4)
-                        <div class="tab-pane fade show active " id="requested-document" role="tabpanel" aria-labelledby="request-tab">
-                        @include('pages.documents.requested-document')
-                        </div>
+                        @if(!in_array(Auth::user()->role_id, [3, 4]))
+                            <div class="tab-pane fade show active " id="requested-document" role="tabpanel" aria-labelledby="request-tab">
+                                @include('pages.documents.requested-document')
+                            </div>
                         @endif
                         <div class="tab-pane fade {{Auth::user()->role->id == 4 ? 'show active' : 'null'}}" id="review-document" role="tabpanel" aria-labelledby="review-tab">
-                        @include('pages.documents.review-document')
-                    </div>
-                        <div class="tab-pane fade" id="approval-document" role="tabpanel" aria-labelledby="approval-tab">
-                        @include('pages.documents.approval-document')
+                            @include('pages.documents.review-document')
                         </div>
-                        <div class="tab-pane fade" id="registration-document" role="tabpanel" aria-labelledby="registration-tab">
-                        @include('pages.documents.registration-document')
+                        <div class="tab-pane fade {{Auth::user()->role->id == 3 ? 'show active' : 'null'}}" id="approval-document" role="tabpanel" aria-labelledby="approval-tab">
+                            @include('pages.documents.approval-document')
+                        </div>
+                        <div class="tab-pane fade {{Auth::user()->role->id == 5 ? 'show active' : 'null'}}" id="registration-document" role="tabpanel" aria-labelledby="registration-tab">
+                            @include('pages.documents.registration-document')
                         </div>
                     </div>
-                    </div>
+                </div>
             </div>
             <!-- TABS -->
         </div>
@@ -223,7 +239,6 @@
                     $(".review").html(res['review']);
                     $(".approval").html(res['approval']);
                     $(".archive").html(res['archive']);
-                    $(".total").html(res['total_ticket']);
                 }
             });
 

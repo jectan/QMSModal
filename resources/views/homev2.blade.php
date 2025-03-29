@@ -103,9 +103,9 @@
                 <table class="table table-striped table-sm" id="QMQPs" style="font-size: 14px">
                   <thead>
                     <tr>
-                      <th style="width: 20%">Doc Ref Code</th>
-                      <th style="width: 70%">Title</th>
-                      <th style="width: 10%">Rev No.</th>
+                      <th style="width: 25%">Doc Ref Code</th>
+                      <th style="width: 60%">Title</th>
+                      <th style="width: 15%">Rev No.</th>
                       </tr>
                   </thead>
                 </table>
@@ -120,12 +120,12 @@
           <h6 class="card-title">ORD Procedure Manuals</h6>
         </div>
             <div class="card-body table-responsive">
-                <table class="table table-striped table-sm" id="QMQPs" style="font-size: 14px">
+                <table class="table table-striped table-sm" id="OPMs" style="font-size: 14px">
                   <thead>
                     <tr>
-                      <th style="width: 20%">Doc Ref Code</th>
-                      <th style="width: 70%">Title</th>
-                      <th style="width: 10%">Rev No.</th>
+                      <th style="width: 25%">Doc Ref Code</th>
+                      <th style="width: 60%">Title</th>
+                      <th style="width: 15%">Rev No.</th>
                       </tr>
                   </thead>
                 </table>
@@ -141,12 +141,12 @@
           <h6 class="card-title">TOD Procedure Manuals</h6>
         </div>
             <div class="card-body table-responsive">
-                <table class="table table-striped table-sm" id="QMQPs" style="font-size: 14px">
+                <table class="table table-striped table-sm" id="TPMs" style="font-size: 14px">
                   <thead>
                     <tr>
-                      <th style="width: 20%">Doc Ref Code</th>
-                      <th style="width: 70%">Title</th>
-                      <th style="width: 10%">Rev No.</th>
+                      <th style="width: 25%">Doc Ref Code</th>
+                      <th style="width: 60%">Title</th>
+                      <th style="width: 15%">Rev No.</th>
                     </tr>
                   </thead>
                 </table>
@@ -160,12 +160,12 @@
           <h6 class="card-title">AFD Procedure Manuals</h6>
         </div>
             <div class="card-body table-responsive">
-                <table class="table table-striped table-sm" id="QMQPs" style="font-size: 14px">
+                <table class="table table-striped table-sm" id="APMs" style="font-size: 14px">
                   <thead>
                     <tr>
-                      <th style="width: 20%">Doc Ref Code</th>
-                      <th style="width: 70%">Title</th>
-                      <th style="width: 10%">Rev No.</th>
+                      <th style="width: 25%">Doc Ref Code</th>
+                      <th style="width: 60%">Title</th>
+                      <th style="width: 15%">Rev No.</th>
                       </tr>
                   </thead>
                 </table>
@@ -192,388 +192,63 @@
           $(".ftg").html(res['ftg']);
         }
       });
+
+      //LoadDataTable1
+      $('#QMQPs').DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: "{{ url('/dashboard/data-request/1') }}", // Fetch data for docTypeID = 1
+          pageLength: 10, // Set default page limit to 10
+          lengthChange: false, // Hide "Show entries" dropdown
+          columns: [
+              { data: 'docRefCode', name: 'docRefCode' },
+              { data: 'docTitle', name: 'docTitle' },
+              { data: 'currentRevNo', name: 'currentRevNo' }
+          ]
+      });
+
+      //LoadDataTable2
+      $('#OPMs').DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: "{{ url('/dashboard/data-request/2') }}", // Fetch data for docTypeID = 1
+          pageLength: 10, // Set default page limit to 10
+          lengthChange: false, // Hide "Show entries" dropdown
+          columns: [
+              { data: 'docRefCode', name: 'docRefCode' },
+              { data: 'docTitle', name: 'docTitle' },
+              { data: 'currentRevNo', name: 'currentRevNo' }
+          ]
+      });
+
+      //LoadDataTable3
+      $('#TPMs').DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: "{{ url('/dashboard/data-request/3') }}", // Fetch data for docTypeID = 1
+          pageLength: 10, // Set default page limit to 10
+          lengthChange: false, // Hide "Show entries" dropdown
+          columns: [
+              { data: 'docRefCode', name: 'docRefCode' },
+              { data: 'docTitle', name: 'docTitle' },
+              { data: 'currentRevNo', name: 'currentRevNo' }
+          ]
+      });
+
+      //LoadDataTable4
+      $('#APMs').DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: "{{ url('/dashboard/data-request/4') }}", // Fetch data for docTypeID = 1
+          pageLength: 10, // Set default page limit to 10
+          lengthChange: false, // Hide "Show entries" dropdown
+          columns: [
+              { data: 'docRefCode', name: 'docRefCode' },
+              { data: 'docTitle', name: 'docTitle' },
+              { data: 'currentRevNo', name: 'currentRevNo' }
+          ]
+      });
+
     });
-</script>
-  
-<!--<script>
-  $(document).ready(function(){
-    //  COUNT TOTAL
-      $.ajax({
-        type: 'GET',
-        url: "{{ url('/dashboard/computeTotal')}}",
-        dataType: 'json',
-        success:function(res)
-        {
-          $(".total").html(res['totalTickets']);
-          $(".created").html(res['created']);
-          $(".assigned").html(res['assigned']);
-          $(".working").html(res['working']);
-          $(".for-closing").html(res['for-closing']);
-          $(".closed").html(res['closed']);
-        }
-      });
-</script>
-      <!-- $('#topRatings').DataTable({
-              processing: true,
-              serverSide: true,
-              ajax: "{{ url('/dashboard/topTenHighOffices') }}" ,
-              columns: [
-                  { data: 'DT_RowIndex' },
-                  { data: null,
-                    render: function (data, type, row) {
-                          var name = row.office;
-                          return name;
-                    }
-                  },
-                  { data: 'total_five_star' },
-                  { data: 'total_four_star' },
-                  { data: 'total_processed' },
-                ],
-              order: [[4, 'desc']],
-              createdRow: (row, data, dataIndex, cells) => {
-                  $(cells[4]).css('background-color', "#b8f6f0");
-                  $(cells[4]).css('font-weight', "bold");
-              },
-              //properties
-              "responsive": true,  "destroy": true, "lengthChange": false, "autoWidth": false, "searching": false, "info" : false,"ordering" : true,
-              paging: true
-      });
-
-      $('#lowRatings').DataTable({
-              processing: true,
-              serverSide: true,
-              ajax: "{{ url('/dashboard/topTenLowOffices') }}" ,
-              columns: [
-                  { data: 'DT_RowIndex' },
-                  { data: null,
-                    render: function (data, type, row) {
-                          var name = row.office;
-                          return name;
-                    }
-                  },
-                  { data: 'total_two_star' },
-                  { data: 'total_one_star' },
-                  { data: 'total_processed' },
-                ],
-              order: [[4, 'desc']],
-              createdRow: (row, data, dataIndex, cells) => {
-                  $(cells[4]).css('background-color', "#b8f6f0");
-                  $(cells[4]).css('font-weight', "bold");
-              },
-              //properties
-              "responsive": true,  "destroy": true, "lengthChange": false, "autoWidth": false, "searching": false, "info" : false,"ordering" : true,
-              paging: true
-      });
-
-
-      $('#topFiveUnresolved').DataTable({
-              processing: true,
-              serverSide: true,
-              ajax: "{{ url('/dashboard/topFiveUnresolved') }}" ,
-              columns: [
-                  { data: 'DT_RowIndex' },
-                  { data: null,
-                    render: function (data, type, row) {
-                          var name = row.office;
-                          return name;
-                    }
-                  },
-                  { data: 'total_unresolved' },
-                  { data: 'total_processed' },
-                ],
-              order: [[3, 'desc']],
-              createdRow: (row, data, dataIndex, cells) => {
-                  $(cells[3]).css('background-color', "#b8f6f0");
-                  $(cells[3]).css('font-weight', "bold");
-              },
-              //properties
-              "responsive": true,  "destroy": true, "lengthChange": false, "autoWidth": false, "searching": false, "info" : false,"ordering" : true,
-              paging: true
-      });
-
-      $('#topFiveResolved').DataTable({
-              processing: true,
-              serverSide: true,
-              ajax: "{{ url('/dashboard/topFiveResolved') }}" ,
-              columns: [
-                  { data: 'DT_RowIndex' },
-                  { data: null,
-                    render: function (data, type, row) {
-                          var name = row.office;
-                          return name;
-                    }
-                  },
-                  { data: 'one_day' },
-                  { data: 'three_days' },
-                  { data: 'total_processed' },
-                ],
-              order: [[4, 'desc']],
-              createdRow: (row, data, dataIndex, cells) => {
-                  $(cells[4]).css('background-color', "#b8f6f0");
-                  $(cells[4]).css('font-weight', "bold");
-              },
-              //properties
-              "responsive": true,  "destroy": true, "lengthChange": false, "autoWidth": false, "searching": false, "info" : false,"ordering" : true,
-              paging: true
-      });
-      
-      $('#topLowResolved').DataTable({
-              processing: true,
-              serverSide: true,
-              ajax: "{{ url('/dashboard/topLowResolved') }}" ,
-              columns: [
-                  { data: 'DT_RowIndex' },
-                  { data: null,
-                    render: function (data, type, row) {
-                          var name = row.office;
-                          return name;
-                    }
-                  },
-                  { data: 'five_days' },
-                  { data: 'seven_days' },
-                  { data: 'thirty_days' },
-                  { data: 'more_than' },
-                  { data: 'total_processed' },
-                ],
-              // order: [[6, 'desc']],
-              // createdRow: (row, data, dataIndex, cells) => {
-              //     $(cells[6]).css('background-color', "#b8f6f0");
-              //     $(cells[6]).css('font-weight', "bold");
-              // },
-              //properties
-              "responsive": true,  "destroy": true, "lengthChange": false, "autoWidth": false, "searching": false, "info" : false,"ordering" : true,
-              paging: true
-      });
-
-        // CHARTS
-      //=====================================CHART BY Resolved =============================
-      var cData = JSON.parse(`<?php //echo $resolve_data; ?>`);
-      console.log(cData);
-      var ctx = $("#chartbyResolve");
-      var data = {
-        labels: cData.label_type,
-        datasets: [
-          {
-            label: "Tickets Count",
-            data: cData.data_type,
-            backgroundColor: [
-              "#28a745", //green
-              "#007bff", //blue
-              "#6f42c1", //purple
-              "#ffc107", //yellow
-              "#fd7e14", //orange
-              "#dc3545", //red
-            ],
-            borderColor: [
-              "#ffffff",
-            ],
-            borderWidth: [1, 1, 1, 1, 1,1,1]
-          }
-        ]
-      };
- 
-      //options
-      var options = {
-        responsive: true,
-        title: {
-          display: true,
-          position: "top",
-          text: "Generated by days",
-          fontSize: 14,
-          fontColor: "#111"
-        },
-        legend: {
-          display: true,
-          position: "bottom",
-          labels: {
-            fontColor: "#333",
-            fontSize: 14
-          }
-        },
-        tooltips: {
-          mode: "label",
-          callbacks: {
-            label: function(tooltipItem, data) {
-              var allData = data.datasets[tooltipItem.datasetIndex].data;
-              var tooltipLabel = data.labels[tooltipItem.index];
-              var tooltipData = allData[tooltipItem.index];
-              var total = 0;
-              for (var i in allData) {
-                total += allData[i];
-              }
-              var tooltipPercentage = Math.round((tooltipData / total) * 100);
-              return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-            }
-          }
-        },
-        plugins: {
-          // Change options for ALL labels of THIS CHART
-          // datalabels: {
-          //   color: "#ffffff",
-          //   align: "center"
-          // }
-          datalabels: false
-        }
-      };
-
-      //create Pie Chart class object
-      var chart1 = new Chart(ctx, {
-        type: "doughnut",
-        data: data,
-        options: options
-      });
-
-       //=====================================CHART BY Assigned =============================
-      var cData = JSON.parse(`<?php //echo $assigned_data; ?>`);
-      console.log(cData);
-      var ctx = $("#chartbyAssigned");
-      var data = {
-        labels: cData.label_type,
-        datasets: [
-          {
-            label: "Tickets Count",
-            data: cData.data_type,
-            backgroundColor: [
-              "#007bff", //blue
-              "#fd7e14", //orange
-              "#dc3545", //red
-            ],
-            borderColor: [
-              "#ffffff",
-            ],
-            borderWidth: [1, 1, 1, 1, 1,1,1]
-          }
-        ]
-      };
- 
-      //options
-      var options = {
-        responsive: true,
-        title: {
-          display: true,
-          position: "top",
-          text: "Generated by days",
-          fontSize: 14,
-          fontColor: "#111"
-        },
-        legend: {
-          display: true,
-          position: "bottom",
-          labels: {
-            fontColor: "#333",
-            fontSize: 14
-          }
-        },
-        tooltips: {
-          mode: "label",
-          callbacks: {
-            label: function(tooltipItem, data) {
-              var allData = data.datasets[tooltipItem.datasetIndex].data;
-              var tooltipLabel = data.labels[tooltipItem.index];
-              var tooltipData = allData[tooltipItem.index];
-              var total = 0;
-              for (var i in allData) {
-                total += allData[i];
-              }
-              var tooltipPercentage = Math.round((tooltipData / total) * 100);
-              return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-            }
-          }
-        },
-        plugins: {
-          // Change options for ALL labels of THIS CHART
-          // datalabels: {
-          //   color: "#ffffff",
-          //   align: "center"
-          // }
-          datalabels: false
-        }
-      };
-
-      //create Pie Chart class object
-      var chart1 = new Chart(ctx, {
-        type: "doughnut",
-        data: data,
-        options: options
-      });
-
-        //=====================================CHART BY Feedback =============================
-        var cData = JSON.parse(`<?php //echo $feedback_data; ?>`);
-      console.log(cData);
-      var ctx = $("#chartbyFeedback");
-      var data = {
-        labels: cData.label_type,
-        datasets: [
-          {
-            label: "Tickets Count",
-            data: cData.data_type,
-            backgroundColor: [
-              "#17a2b8", //teal
-              "#6f42c1", //purple
-              "#ffc107", //yellow
-            ],
-            borderColor: [
-              "#ffffff",
-            ],
-            borderWidth: [1, 1, 1, 1, 1,1,1]
-          }
-        ]
-      };
- 
-      //options
-      var options = {
-        responsive: true,
-        title: {
-          display: true,
-          position: "top",
-          text: "Generated by days",
-          fontSize: 14,
-          fontColor: "#111"
-        },
-        legend: {
-          display: true,
-          position: "bottom",
-          labels: {
-            fontColor: "#333",
-            fontSize: 14
-          }
-        },
-        tooltips: {
-          mode: "label",
-          callbacks: {
-            label: function(tooltipItem, data) {
-              var allData = data.datasets[tooltipItem.datasetIndex].data;
-              var tooltipLabel = data.labels[tooltipItem.index];
-              var tooltipData = allData[tooltipItem.index];
-              var total = 0;
-              for (var i in allData) {
-                total += allData[i];
-              }
-              var tooltipPercentage = Math.round((tooltipData / total) * 100);
-              return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-            }
-          }
-        },
-        plugins: {
-          // Change options for ALL labels of THIS CHART
-          // datalabels: {
-          //   color: "#ffffff",
-          //   align: "center"
-          // }
-          datalabels: false
-        }
-      };
-
-      //create Pie Chart class object
-      var chart1 = new Chart(ctx, {
-        type: "doughnut",
-        data: data,
-        options: options
-      });
-
-   
-     
-  });
-</script-->
-
+  </script>
 @endsection

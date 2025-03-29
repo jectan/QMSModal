@@ -69,17 +69,9 @@ Route::get('logout',[AuthController::class, 'logout'])->name('logout');
 Route::get('/setpassword', [AuthController::class, 'setPassword']);
 Route::post('/setpassword', [AuthController::class, 'storePassword']);
 //dashboard
-Route::get('/dashboards/computeTotal',[DashboardController::class, 'compute']);
-Route::get('/dashboards',[DashboardController::class, 'index']);
 Route::get('/dashboard/computeTotal',[DashboardV2Controller::class, 'documentTally']);
 Route::get('/dashboard', [DashboardV2Controller::class, 'index']);
-
-Route::get('/dashboard/topTenHighOffices', [DashboardController::class, 'topTenHighOffices']);
-Route::get('/dashboard/topTenLowOffices', [DashboardController::class, 'topTenLowOffices']);
-Route::get('/dashboard/topFiveUnresolved', [DashboardController::class, 'topFiveUnresolved']);
-Route::get('/dashboard/topFiveResolved', [DashboardController::class, 'topFiveResolved']);
-Route::get('/dashboard/topLowResolved', [DashboardController::class, 'topLowResolved']);
-
+Route::get('/dashboard/data-request/{dataTable}', [DashboardV2Controller::class, 'getDataRequest']); //called by dashboard data tables
 
     Route::group(['middleware' => 'role:1'], function (){
     //Accounts (CRUD: Staff, User, UserRole)

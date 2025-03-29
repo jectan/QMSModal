@@ -265,6 +265,11 @@ class DocumentController extends Controller
             $requestDocuments->where('requestStatus', '!=', 'Cancelled');
         }
 
+        if (!in_array(Auth::user()->role_id, [1, 2, 3, 4])) {
+            $requestDocuments->where('requestStatus', '!=', 'Registered');
+            $requestDocuments->where('userID', Auth::id());
+        }
+
         return DataTables::of($requestDocuments)
             ->addColumn('docTypeDesc', function ($row) {
                 return $row->DocumentType ? $row->DocumentType->docTypeDesc : "";
@@ -279,7 +284,7 @@ class DocumentController extends Controller
                 $onClickFunction = "editRequest({$row->requestID})";
                 $isHidden = "";
 
-                if ((in_array($row->requestStatus, ['For Review', 'For Approval', 'For Registration']) || $row->userID !== Auth::id()) 
+                if ((in_array($row->requestStatus, ['For Review', 'For Approval', 'For Registration', 'Registered']) || $row->userID !== Auth::id()) 
                     && Auth::user()->role_id !== 1) {
                     $isHidden = "hidden";
                 }

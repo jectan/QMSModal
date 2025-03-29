@@ -20,6 +20,6 @@ class Unit extends Model
 
     public function getDivision()
     {
-        return $this->hasMany(Division::class, 'divID', 'divID');
+        return $this->belongsTo(Division::class, 'divID', 'divID');
     }
 }
