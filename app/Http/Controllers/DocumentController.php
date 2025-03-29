@@ -102,6 +102,17 @@ class DocumentController extends Controller
             $isNew = false;
         }
 
+        if($request->requestStatus == 'For Review'){
+            
+            $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
+            [
+                'requestID' => $request->requestID,
+                'reviewComment' => 'Submitted for Review by ' . Auth::user()->staff->fullname,
+                'userID' => Auth::id(),
+                'reviewStatus' => 'Active',                  
+            ]);
+        }
+
         // Check if a file is uploaded
         if ($request->hasFile('documentFile')) {
             $file = $request->file('documentFile');
@@ -138,15 +149,15 @@ class DocumentController extends Controller
     public function storeReview(Request $request)
     {
         $request->validate([
-        'reviewComment' => 'required|string|max:255',
+        'reviewComments' => 'required|string|max:255',
         ], [
-            'reviewComment.required' => 'The Review Comments are required.',
+            'reviewComments.required' => 'The Review Comments are required.',
         ]);
 
         $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
         [
             'requestID' => $request->requestID,
-            'reviewComment' => $request->reviewComment,
+            'reviewComment' => $request->reviewComments,
             'userID' => Auth::id(),
             'reviewStatus' => 'Active',                  
         ]);
@@ -188,7 +199,7 @@ class DocumentController extends Controller
         $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
         [
             'requestID' => $request->requestID,
-            'reviewComment' => 'Submitted for Review',
+            'reviewComment' => 'Submitted for Review by ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
             'reviewStatus' => 'Active',                  
         ]);
@@ -203,20 +214,54 @@ class DocumentController extends Controller
 
     public function reviewed(Request $request)
     {
-        $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
-        [
-            'requestID' => $request->requestID,
-            'reviewComment' => 'Reviewed',
-            'userID' => Auth::id(),
-            'reviewStatus' => 'Active',                  
-        ]);
-
-        $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
-        [
-            'requestStatus' => 'For Approval',
-        ]);
-        
-        return response()->json(['success'=> 'Document Endorsed For Approval.', 'ReviewDocument' => $reviewDocument]);
+        try {
+            DB::beginTransaction(); // Start transaction
+    
+            // Create or update Review Document
+            $reviewDocument = ReviewDocument::updateOrCreate(
+                ['reviewID' => $request->reviewID],
+                [
+                    'requestID' => $request->requestID,
+                    'reviewComment' => 'Reviewed by ' . Auth::user()->staff->fullname,
+                    'userID' => Auth::id(),
+                    'reviewStatus' => 'Active',                  
+                ]
+            );
+    
+            // Create or update Approve Document
+            $approveDocument = ApproveDocument::updateOrCreate(
+                ['approveID' => $request->approveID],
+                [
+                    'requestID' => $request->requestID,
+                    'approveComment' => 'Endorsed for Approval by ' . Auth::user()->staff->fullname,
+                    'userID' => Auth::id(),
+                    'approveStatus' => 'Active', 
+                ]
+            );
+    
+            // Update Request Document
+            $requestDocument = RequestDocument::updateOrCreate(
+                ['requestID' => $request->requestID],
+                [
+                    'requestStatus' => 'For Approval',
+                ]
+            );
+    
+            DB::commit(); // Commit transaction if all queries succeed
+    
+            return response()->json([
+                'success' => 'Document Endorsed For Approval.',
+                'ReviewDocument' => $reviewDocument
+            ]);
+    
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction if any query fails
+    
+            return response()->json([
+                'error' => 'Failed to process the request. Please try again.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function approved(Request $request)
@@ -224,7 +269,7 @@ class DocumentController extends Controller
         $approveDocument = ApproveDocument::updateOrCreate(['approveID' => $request->approveID],
         [
             'requestID' => $request->requestID,
-            'approveComment' => 'Approved',
+            'approveComment' => 'Approved by ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
             'approveStatus' => 'Active',                  
         ]);
@@ -321,6 +366,20 @@ class DocumentController extends Controller
             ->get();
     
         return DataTables::of($reviewDocuments)
+            ->addColumn('action', function ($row) {
+                return '<button class="btn btn-sm btn-primary">Edit</button>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+    
+    public function getApprove($requestID)
+    {
+        $approveDocuments = ApproveDocument::where('requestID', $requestID)
+            ->select('approveID', 'approveComment', 'approveStatus')
+            ->get();
+    
+        return DataTables::of($approveDocuments)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-sm btn-primary">Edit</button>';
             })

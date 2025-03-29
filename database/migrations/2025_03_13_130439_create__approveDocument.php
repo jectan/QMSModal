@@ -15,6 +15,7 @@ return new class extends Migration
             $table->increments('approveID');
             $table->unsignedInteger('requestID')->index();
             $table->string('approveComment');
+            $table->timestamp('approveDate');
             $table->string('approveStatus');
             $table->unsignedBigInteger('userID')->index();
             $table->foreign('requestID')->references('requestID')->on('RequestDocument');

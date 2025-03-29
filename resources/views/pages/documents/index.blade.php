@@ -118,7 +118,7 @@
                         <div class="tab-pane fade {{Auth::user()->role->id == 3 ? 'show active' : 'null'}}" id="approval-document" role="tabpanel" aria-labelledby="approval-tab">
                             @include('pages.documents.approval-document')
                         </div>
-                        <div class="tab-pane fade {{Auth::user()->role->id == 5 ? 'show active' : 'null'}}" id="registration-document" role="tabpanel" aria-labelledby="registration-tab">
+                        <div class="tab-pane fade" id="registration-document" role="tabpanel" aria-labelledby="registration-tab">
                             @include('pages.documents.registration-document')
                         </div>
                     </div>

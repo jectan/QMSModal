@@ -148,6 +148,7 @@ Route::post('/documents/store', [DocumentController::class, 'store']); //called 
 Route::post('/documents/edit', [DocumentController::class, 'edit']); //called from index
 Route::post('/documents/storeEdit', [DocumentController::class, 'storeEdit']); //called from display-document
 Route::get('/documents/view/review/{id}', [DocumentController::class, 'getReview']); //called from display-document
+Route::get('/documents/view/review2/{id}', [DocumentController::class, 'getApprove']); //called from display-document
 Route::post('/documents/storeReview', [DocumentController::class, 'storeReview']); //called from display-document
 Route::post('/documents/reviewed', [DocumentController::class, 'reviewed']); //called from display-document
 Route::post('/documents/storeApprove', [DocumentController::class, 'storeApprove']); //called from display-document

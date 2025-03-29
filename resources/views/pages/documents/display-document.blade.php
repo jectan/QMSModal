@@ -212,7 +212,7 @@
                     <div class="collapse" id="approvalComment">
                         <div class="card border-warning m-3">
                             <div class="card-header bg-warning text-white">
-                                <strong>Comments for Revision</strong>
+                                <strong>Comments for Revision (Approval)</strong>
                             </div>
                             <div class="card-body">
                                 <form action="javascript:void(0)" id="approve-form" name="approve-form" class="form-horizontal" method="POST">
@@ -258,7 +258,11 @@
                                     <div class="col-md-12">
                                         <div class="card">
                                             <div class="card-body table-responsive">
-                                                <table class="table table-striped w-100" id="review-dt" style="font-size: 14px">
+                                                @if(in_array($document->requestStatus, ['For Review', 'For Revision']))
+                                                    <table class="table table-striped w-100" id="review-dt" style="font-size: 14px">
+                                                @else
+                                                    <table class="table table-striped w-100" id="approve-dt" style="font-size: 14px">
+                                                @endif
                                                     <thead>
                                                         <tr>
                                                             <th style="width: 10%">No</th>
@@ -301,6 +305,23 @@
                 columns: [
                     { data: 'reviewID', name: 'reviewID' },
                     { data: 'reviewComment', name: 'reviewComment' },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                order: [[0, 'desc']]
+            });
+            
+            $('#approve-dt').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ url('/documents/view/review2') }}/{{ $document->requestID }}",
+                columns: [
+                    { data: 'approveID', name: 'approveID' },
+                    { data: 'approveComment', name: 'approveComment' },
                     {
                         data: 'action',
                         name: 'action',
@@ -402,7 +423,6 @@
 
                 // Proceed with form submission via AJAX
                 let formData = new FormData(this);
-
                 $.ajax({
                     type: 'POST',
                     url: "{{ url('/documents/storeReview') }}",
@@ -418,7 +438,7 @@
                             });
 
                             // Clear the input field after successful submission
-                            $('#reviewComment').val('');
+                            $('#reviewComments').val('');
                             $('#rejectButton').hide();
                             $('#reviewedButton').hide();
 

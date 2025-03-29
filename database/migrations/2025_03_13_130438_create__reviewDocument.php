@@ -15,6 +15,7 @@ return new class extends Migration
             $table->increments('reviewID');
             $table->unsignedInteger('requestID')->index();
             $table->string('reviewComment');
+            $table->timestamp('reviewDate');
             $table->string('reviewStatus');
             $table->unsignedBigInteger('userID')->index();
             $table->foreign('requestID')->references('requestID')->on('RequestDocument');
