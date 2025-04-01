@@ -18,7 +18,6 @@ use App\Models\TicketLog;
 use App\Models\DocType;
 use App\Models\RequestDocument;
 use App\Models\ReviewDocument;
-use App\Models\ApproveDocument;
 use App\Models\RequestType;
 
 use Illuminate\Support\Facades\DB;
@@ -157,7 +156,7 @@ class DocumentController extends Controller
         $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
         [
             'requestID' => $request->requestID,
-            'reviewComment' => $request->reviewComments,
+            'reviewComment' => $request->reviewComments . ' by: ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
             'reviewStatus' => 'Active',                  
         ]);
@@ -173,17 +172,17 @@ class DocumentController extends Controller
     public function storeApprove(Request $request)
     {
         $request->validate([
-        'approveComment' => 'required|string|max:255',
+        'reviewComment2' => 'required|string|max:255',
         ], [
-            'approveComment.required' => 'The Comments are required.',
+            'reviewComment2.required' => 'The Comments are requireds.',
         ]);
 
-        $approveDocument = ApproveDocument::updateOrCreate(['approveID' => $request->approveID],
+        $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->approveID],
         [
             'requestID' => $request->requestID,
-            'approveComment' => $request->approveComment,
+            'reviewComment' => $request->reviewComment2 . ' by: ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
-            'approveStatus' => 'Active',                  
+            'reviewStatus' => 'Active',                  
         ]);
 
         $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
@@ -191,7 +190,7 @@ class DocumentController extends Controller
             'requestStatus' => 'For Revision (Approval)',
         ]);
         
-        return response()->json(['success'=> 'Comments Saved.', 'ApproveDocument' => $approveDocument]);
+        return response()->json(['success'=> 'Comments Saved.', 'ReviewDocument' => $reviewDocument]);
     }
 
     public function forReview(Request $request)
@@ -228,17 +227,6 @@ class DocumentController extends Controller
                 ]
             );
     
-            // Create or update Approve Document
-            $approveDocument = ApproveDocument::updateOrCreate(
-                ['approveID' => $request->approveID],
-                [
-                    'requestID' => $request->requestID,
-                    'approveComment' => 'Endorsed for Approval by ' . Auth::user()->staff->fullname,
-                    'userID' => Auth::id(),
-                    'approveStatus' => 'Active', 
-                ]
-            );
-    
             // Update Request Document
             $requestDocument = RequestDocument::updateOrCreate(
                 ['requestID' => $request->requestID],
@@ -266,12 +254,12 @@ class DocumentController extends Controller
 
     public function approved(Request $request)
     {
-        $approveDocument = ApproveDocument::updateOrCreate(['approveID' => $request->approveID],
+        $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->approveID],
         [
             'requestID' => $request->requestID,
-            'approveComment' => 'Approved by ' . Auth::user()->staff->fullname,
+            'reviewComment' => 'Approved by ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
-            'approveStatus' => 'Active',                  
+            'reviewStatus' => 'Active',                  
         ]);
 
         $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
@@ -279,7 +267,7 @@ class DocumentController extends Controller
             'requestStatus' => 'For Registration',
         ]);
         
-        return response()->json(['success'=> 'Document Endorsed For Registration.', 'ApproveDocument' => $approveDocument]);
+        return response()->json(['success'=> 'Document Endorsed For Registration.', 'ReviewDocument' => $reviewDocument]);
     }
 
     public function validateRequest(Request $request)
@@ -362,24 +350,10 @@ class DocumentController extends Controller
     public function getReview($requestID)
     {
         $reviewDocuments = ReviewDocument::where('requestID', $requestID)
-            ->select('reviewID', 'reviewComment', 'reviewStatus')
+            ->select('reviewID', 'reviewComment', 'reviewStatus', 'reviewDate')
             ->get();
     
         return DataTables::of($reviewDocuments)
-            ->addColumn('action', function ($row) {
-                return '<button class="btn btn-sm btn-primary">Edit</button>';
-            })
-            ->rawColumns(['action'])
-            ->make(true);
-    }
-    
-    public function getApprove($requestID)
-    {
-        $approveDocuments = ApproveDocument::where('requestID', $requestID)
-            ->select('approveID', 'approveComment', 'approveStatus')
-            ->get();
-    
-        return DataTables::of($approveDocuments)
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-sm btn-primary">Edit</button>';
             })
@@ -395,24 +369,6 @@ class DocumentController extends Controller
         $documents['review'] = RequestDocument::where('requestStatus', 'For Review')->count();
         $documents['approval'] = RequestDocument::where('requestStatus', 'For Approval')->count();
         $documents['archive'] = RequestDocument::where('requestStatus', 'Archive')->count();
-
-/*         $documents['total_ticket']  = Ticket::whereHas('actions', function ($query) use($user){
-            $query->where('office_id', $user->staff->office_id);})->count();
-          
-        $documents['assigned'] = Ticket::where('status', 'assigned')->whereHas('actions', function ($query) use($user){
-            $query->where('office_id', $user->staff->office_id);})->count();
-
-        $documents['working'] = Ticket::where('status', 'working')->whereHas('actions', function ($query) use($user){
-            $query->where('office_id', $user->staff->office_id);})->count();
-
-        $documents['for-closing'] = Ticket::where('status', 'for-closing')->whereHas('actions', function ($query) use($user){
-            $query->where('office_id', $user->staff->office_id);})->count();
-
-        $documents['closed'] =  Ticket::where('status', 'closed')->whereHas('actions', function ($query) use($user){
-            $query->where('office_id', $user->staff->office_id);})->count();
-
-        $documents['feedback'] = Ticket::where('status', 'closed')->whereNotNull('date_rated')->whereHas('actions', function ($query) use($user){ $query->where('office_id', $user->staff->office_id);})->count(); */
-
      
         echo json_encode($documents);
         exit;
@@ -430,10 +386,24 @@ class DocumentController extends Controller
         return response()->json(['data' => $docType]);
     }
 
-    public function getDocRefCode()
+    public function checkDocRefCode(Request $request)
     {
-        $docType = RequestDocument::select('docTypeID', 'docTypeDesc')->get();
-        return response()->json(['data' => $docType]);
+        $document = RequestDocument::select('requestID', 'docRefCode', 'currentRevNo')
+            ->where('docRefCode', $request->docRefCode)
+            ->where('requestStatus', 'Registered')
+            ->first();
+
+        if ($document) {
+            return response()->json([
+                'exists' => true,
+                'currentRevNo' => $document->currentRevNo, // ✅ Return the specific revision number
+            ]);
+        } else {
+            return response()->json([
+                'exists' => false,
+                'currentRevNo' => null, // ✅ Ensure this key always exists
+            ]);
+        }
     }
 
     public function index()

@@ -90,7 +90,12 @@
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-body">
-                    <form action="{{ url('/documents/storeEdit') }}" method="POST" enctype="multipart/form-data">
+                        
+                    @if(Auth::check() && in_array(Auth::user()->role_id, [1, 2]) && (in_array($document->requestStatus, ['For Registration'])))
+                        <form action="{{ url('/documents/register') }}" method="POST" enctype="multipart/form-data">
+                    @else
+                        <form action="{{ url('/documents/storeEdit') }}" method="POST" enctype="multipart/form-data">
+                    @endif
                             @csrf
                             <input type="hidden" name="requestID" id="requestID" value="{{ $document->requestID }}">
                             <input type="hidden" name="requestFileOld" id="requestFileOld" value="{{ $document->requestFile }}">
@@ -110,7 +115,6 @@
                                 <div class="col-md-6">
                                     <label for="requestTypeID" class="form-label"><strong>Request For:</strong><span class="require">*</span></label>
                                     <select name="requestTypeID" id="requestTypeID" class="form-control" readonly>
-                                        <option value="">Select Request</option>
                                             @foreach($requestType as $row)
                                                 @if($row->requestTypeID == $document->requestTypeID)
                                                     <option value="{{ $row->requestTypeID }}" selected>{{ $row->requestTypeDesc }}</option>
@@ -139,6 +143,7 @@
                                 <div class="col-md-6">
                                     <label for="docRefCode" class="form-label"><strong>Document Reference Code:</strong></label>
                                     <input type="text" class="form-control" id="docRefCode" name="docRefCode" value="{{$document->docRefCode}}" readonly>
+                                    <span id="docRefCodeError" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="currentRevNo" class="form-label"><strong>Current Revision Number:</strong><span class="require">*</span></label>
@@ -160,10 +165,11 @@
 
                             <!-- File Upload -->
                             <div class="form-group">
-                                <label for="requestFile" class="col-sm-4 control-label">Upload Document (PDF Only):<span class="require">*</span></label>
                                 @if(in_array($document->requestStatus, ['For Registration']))
+                                    <label for="requestFile" class="col-sm-4 control-label">Upload Final Copy (PDF Only):<span class="require">*</span></label>
                                     <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf">
                                 @else
+                                    <label for="requestFile" class="col-sm-4 control-label">Upload Document (PDF Only):<span class="require">*</span></label>
                                     <div class="col-sm-12">
                                         <!-- Display existing file -->
                                         @if ($document->requestFile)
@@ -178,8 +184,12 @@
 
                             <!-- Submit Button -->
                             <div class="form-group text-center mt-3">
-                                <button type="submit" id="submitButton" class="btn btn-primary" hidden>Submit Request</button>
-                                <button type="button" id="cancelEditButton" class="btn btn-secondary" hidden>Cancel</button>
+                                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 2]) && (in_array($document->requestStatus, ['For Registration'])))
+                                    <button type="submit" id="submitButton" class="btn btn-primary">Register Document</button>
+                                @else
+                                    <button type="submit" id="submitButton" class="btn btn-primary" hidden>Submit Request</button>
+                                    <button type="button" id="cancelEditButton" class="btn btn-secondary" hidden>Cancel</button>
+                                @endif
                             </div>
                         </form>
                     </div>
@@ -218,7 +228,7 @@
                                 <form action="javascript:void(0)" id="approve-form" name="approve-form" class="form-horizontal" method="POST">
                                     @csrf
                                     <input type="hidden" name="requestID" id="requestID" value="{{ $document->requestID }}">
-                                    <textarea class="form-control" rows="3" id="approveComment" name="approveComment" placeholder="Add your comment..."></textarea>
+                                    <textarea class="form-control" rows="3" id="reviewComment2" name="reviewComment2" placeholder="Add your comment..."></textarea>
                                     <button class="btn btn-sm btn-warning mt-2">Submit Comments</button>
                                     <button type="button" class="btn btn-sm btn-secondary mt-2" data-bs-toggle="collapse" data-bs-target="#approvalComment">Cancel</button>
                                 </form>
@@ -229,7 +239,7 @@
                     <!-- PDF Viewer -->
                     <div class="card-body text-center">
                         @if($document->requestFile)
-                            <iframe src="{{ asset('storage/' . $document->requestFile) }}" 
+                            <iframe id="documentPreview" src="{{ asset('storage/' . $document->requestFile) }}" 
                                 width="100%" height="700px" style="border: none;">
                             </iframe>
                         @else
@@ -240,38 +250,27 @@
             </div>
         </div>
 
-        @if(in_array($document->requestStatus, ['For Review', 'For Revision', 'For Approval', 'For Revision (Approval)']))
-            <!-- Review/Approval History Section -->
+        @if(in_array($document->requestStatus, ['For Review', 'For Revision', 'For Approval', 'For Revision (Approval)', 'For Registration']))
+            <!-- Review History Section -->
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
                             <div class="card border-warning">
                                 <div class="card-header bg-dblue text-white">
-                                    @if(in_array($document->requestStatus, ['For Review', 'For Revision']))
-                                        <strong>Document Review History</strong>
-                                    @else
-                                        <strong>Approval Review History</strong>
-                                    @endif
+                                    <strong>Document Review History</strong>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div class="card">
-                                            <div class="card-body table-responsive">
-                                                @if(in_array($document->requestStatus, ['For Review', 'For Revision']))
-                                                    <table class="table table-striped w-100" id="review-dt" style="font-size: 14px">
-                                                @else
-                                                    <table class="table table-striped w-100" id="approve-dt" style="font-size: 14px">
-                                                @endif
-                                                    <thead>
-                                                        <tr>
-                                                            <th style="width: 10%">No</th>
-                                                            <th style="width: 20%">Comments</th>
-                                                            <th style="width: 15%">Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                </table>
-                                            </div>
+                                        <div class="card-body table-responsive">
+                                            <table class="table table-striped w-100" id="review-dt" style="font-size: 14px">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 30%">Comments/Action</th>
+                                                        <th style="width: 15%">Date</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -301,35 +300,15 @@
             $('#review-dt').DataTable({
                 processing: true,
                 serverSide: true,
+                pageLength: 10,
+                lengthChange: false,
+                searching: false,
                 ajax: "{{ url('/documents/view/review') }}/{{ $document->requestID }}",
                 columns: [
-                    { data: 'reviewID', name: 'reviewID' },
                     { data: 'reviewComment', name: 'reviewComment' },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
+                    { data: 'reviewDate', name: 'reviewDate' }
                 ],
-                order: [[0, 'desc']]
-            });
-            
-            $('#approve-dt').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ url('/documents/view/review2') }}/{{ $document->requestID }}",
-                columns: [
-                    { data: 'approveID', name: 'approveID' },
-                    { data: 'approveComment', name: 'approveComment' },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
-                ],
-                order: [[0, 'desc']]
+                order: [[1, 'desc']]
             });
 
             //Hide/Unhide DocumentFile
@@ -341,7 +320,6 @@
                 let requestTypeID = document.getElementById("requestTypeID");
                 let docTypeID = document.getElementById("docTypeID");
                 let docRefCode = document.getElementById("docRefCode");
-                let currentRevNo = document.getElementById("currentRevNo");
                 let docTitle = document.getElementById("docTitle");
                 let requestReason = document.getElementById("requestReason");
                 let documentLabel = document.getElementById("documentLabel");
@@ -350,10 +328,10 @@
                 requestTypeID.setAttribute("required", true);
                 docTypeID.removeAttribute("readonly");
                 docTypeID.setAttribute("required", true);
-                docRefCode.removeAttribute("readonly");
-                docRefCode.setAttribute("required", true);
-                currentRevNo.removeAttribute("readonly");
-                currentRevNo.setAttribute("required", true);
+                if(requestTypeID.value != 1){
+                    docRefCode.removeAttribute("readonly");
+                    docRefCode.setAttribute("required", true);
+                }
                 docTitle.removeAttribute("readonly");
                 docTitle.setAttribute("required", true);
                 requestReason.removeAttribute("readonly");
@@ -370,9 +348,61 @@
                     window.location.href = "{{ url('/documents/view/edit') }}/" + {{ $document->requestID }};
                 }, 1000); // Adjust time as needed
             });
+            
+            //Enable/Disable DocRefCode
+            $("#requestTypeID").change(function () {
+                var requestType = $(this).val(); // Get selected value
+                var docRefCode = $("#docRefCode");
+                var currentRevNo = $("#currentRevNo");
+                if (requestType == "1") {
+                    alert('lock');
+                    docRefCode.val("For Assigning").prop("readonly", true).removeAttr("required"); // Clear, disable, and remove required
+                    currentRevNo.val("0");
+                } else {
+                    alert('unlock');
+                    docRefCode.val("{{$document->docRefCode}}").prop("readonly", false).attr("required", "required"); // Enable and make required
+                }
+            });
+
+            //Auto Current Revision Number
+            $("#docRefCode").change(function () {
+                var docRefCode = $(this).val(); // Get entered value
+                var currentRevNo = $("#currentRevNo");
+                var errorField = $("#docRefCodeError"); // Error message span
+
+                if (docRefCode !== "") {
+                    $.ajax({
+                        url: "{{ url('/check-docRefCode') }}", // Change to your route
+                        type: "GET",
+                        data: { docRefCode: docRefCode },
+                        success: function (response) {
+                            if (response.exists) {
+                                currentRevNo.val(response.currentRevNo ?? ""); // ✅ Prevent undefined errors
+                                errorField.text(""); // Clear error message
+                                $("#docRefCode").removeClass("is-invalid"); // Remove error styling
+                            } else {
+                                alert("Document Reference Code not found!");
+                                currentRevNo.val("0"); 
+                                $("#docRefCode").addClass("is-invalid"); // Add error styling
+                            }
+                        },
+                        error: function () {
+                            errorField.text("Error checking document reference code.");
+                            $("#docRefCode").addClass("is-invalid"); // Add error styling
+                        }
+                    });
+                }
+            });
 
             // Clear reviewComment field on page refresh
             $('#reviewComments').val('');
+
+            //Change Document Displayed
+            $("#documentFile").change(function () {
+                var documentFile = this.files[0]; // Get the File object
+                var documentPreview = $("#documentPreview");
+                documentPreview.attr("src", URL.createObjectURL(documentFile));
+            });
 
             // Submit button event for Review
             $('#review-form').submit(function (e) {
@@ -492,18 +522,18 @@
                 $(".error-message").remove();
 
                 // Get input values
-                let approveComment = $('#approveComment');
+                let reviewComment2 = $('#reviewComment2');
 
                 // Validation Rules
-                if (!approveComment.val().trim()) {
+                if (!reviewComment2.val().trim()) {
                     isValid = false;
                     missingFields.push("Review Comment");
-                    approveComment.addClass("is-invalid");
-                    approveComment.after("<div class='error-message text-danger'>The comments are required.</div>");
-                } else if (approveComment.val().length > 500) {
+                    reviewComment2.addClass("is-invalid");
+                    reviewComment2.after("<div class='error-message text-danger'>The comments are required.</div>");
+                } else if (reviewComment2.val().length > 500) {
                     isValid = false;
                     errorMessages.push("The review comment must be at most 500 characters.");
-                    approveComment.addClass("is-invalid");
+                    reviewComment2.addClass("is-invalid");
                 }
 
                 // Show error messages if validation fails
@@ -544,7 +574,7 @@
                             });
 
                             // Clear the input field after successful submission
-                            $('#approveComment').val('');
+                            $('#reviewComments').val('');
                             $('#rejectApproveButton').hide();
                             $('#approvedButton').hide();
 
@@ -696,7 +726,6 @@
                 }
             });
         }
-        
 
         function approvedRequest(requestID) {
             const swalWithBootstrapButtons = Swal.mixin({
@@ -786,7 +815,7 @@
                                     icon: 'success', // 👍 Changed from success to thumbs-up
                                     html: '<h5>Successfully Submitted For Review!</h5>'
                                 }).then(() => {
-                                    window.location.reload();
+                                    window.history.back();
                                 });
                             }, 700);
                         }
@@ -799,7 +828,5 @@
                 }
             });
         }
-
-
     </script>
 @endsection

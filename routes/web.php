@@ -160,7 +160,7 @@ Route::get('/documents/data-request{status?}', [DocumentController::class, 'getD
 Route::post('/documents/cancel', [DocumentController::class, 'cancel']); //This is it!
 Route::get('/get-requestType', [DocumentController::class, 'getRequestType']);
 Route::get('/get-docType', [DocumentController::class, 'getDocType']);
-Route::get('/get-docRefCode', [DocumentController::class, 'getDocRefCode']);
+Route::get('/check-docRefCode', [DocumentController::class, 'checkDocRefCode']); //called from index to check if exist
 Route::get('/documents/show/{id}', [DocumentController::class, 'show']); //delete this soon
 Route::post('/documents/update', [DocumentController::class, 'update']); //delete this soon
 Route::get('/documents/test/{id}', [DocumentController::class, 'test']); // delete this soon
