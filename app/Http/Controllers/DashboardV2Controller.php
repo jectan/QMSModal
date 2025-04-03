@@ -87,5 +87,4 @@ class DashboardV2Controller extends Controller
             })
             ->make(true);
     }    
-    
 }

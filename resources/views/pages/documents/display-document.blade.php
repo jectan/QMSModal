@@ -63,6 +63,16 @@
                     </div>
                 @endif
 
+                <!-- Buttons for Document Manager -->
+                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 2]) && (in_array($document->requestStatus, ['For Registration'])))
+                    <div class="expandable-button">
+                        <button type="button" class="btn btn-sm btn-success mx-1+ btn-icon" data-bs-toggle="modal" data-bs-target="#register-modal" data-id='{{ $document->requestID }}' data-requestTypeID='{{ $document->requestTypeID }}'>
+                            <span class="material-icons" style="font-size: 20px;">check_circle</span>
+                            <span class="btn-label">Register</span>
+                        </button>
+                    </div>
+                @endif
+
                 <!-- Edit Button for Users -->
                 @if(Auth::user()->role_id == 1 || (Auth::user()->id == $document->userID && (!in_array($document->requestStatus, ['For Review', 'For Approval', 'For Registration']))))
                     <div class="expandable-button">
@@ -280,6 +290,56 @@
                 </div>
             </div>
         @endif
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal fade" id="register-modal" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style="width: 50%;">
+            <div class="modal-content">
+                <form action="javascript:void(0)" id="register-form" name="register-form" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="request-modal-title">Register Document</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="requestID2" name="requestID2" value="{{ $document->requestID }}">
+                        <input type="hidden" id="requestTypeID2" name="requestTypeID2" value="{{ $document->requestTypeID }}">
+                        <input type="hidden" id="regDocID" name="regDocID">
+
+                        <!-- DocRefCode and CurrentRevNum -->
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="docRefCode" class="form-label"><strong>Document Reference Code:</strong></label>
+                                <div class="col-sm-12">
+                                    <input type="text" class="form-control" id="docRefCode2" name="docRefCode2" value="{{ $document->docRefCode }}" readonly required>
+                                    <span id="docRefCodeError" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="currentRevNo" class="col-sm-4 control-label">Current Revision Number:<span
+                                class="require">*</span></label>
+                                <div class="col-sm-12">
+                                    <input type="number" class="form-control" id="currentRevNo2" name="currentRevNo2" min="0" value="{{ $document->currentRevNo }}" required readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="documentFile2" class="col-sm-4 control-label">Upload Signed Document (PDF Only):<span
+                                    class="require">*</span></label>
+                            <div class="col-sm-12">
+                                <input type="file" class="form-control" id="documentFile2" name="documentFile2" accept=".pdf">
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success" id="request-btn-save">Register</button>
+                            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- AJAX -->
@@ -614,6 +674,133 @@
                     }
                 });
             });
+
+            // Lock and Unlock Fields
+            $("#register-modal").on("show.bs.modal", function () {
+
+                var docRefCode = $("#docRefCode2");
+                var currentRevNo = $("#currentRevNo2");
+                var requestTypeID = $("#requestTypeID2").val();
+                var currentValue = parseInt(currentRevNo.val(), 10) || 0;
+
+                if (requestTypeID === "1") {
+                    docRefCode.val("").prop("readonly", false).attr("required", "required");
+                    currentRevNo.val("0");
+                } else {
+                    docRefCode.prop("readonly", true) .removeAttr("required");
+                    currentRevNo.val(currentValue + 1);
+                }
+            });
+        });
+
+        // Submit Register
+        $('#register-form').submit(function (e){
+            e.preventDefault();
+            var errorField = $("#docRefCodeError");
+
+            if (docRefCode === "" || $("#docRefCode2").hasClass("is-invalid")) {
+                errorField.text("Invalid Document Reference Code. Please check again.");
+                $("#docRefCode").addClass("is-invalid");
+                e.preventDefault(); // Stop form submission
+            }
+            else{
+                let isValid = true;
+                let errorMessages = [];
+                let missingFields = []; // ✅ Declare the variable at the start
+                let allowedFileType = ["application/pdf"];
+                
+                // Clear previous errors
+                $(".is-invalid").removeClass("is-invalid");
+                $(".error-message").remove();
+
+                // Get input values
+                let requestID = $('#requestID2');
+                let docRefCode = $('#docRefCode2');
+                let documentFile = $('#documentFile2')[0].files[0];
+
+                // Validation Rules
+                if (!documentFile) {
+                    isValid = false;
+                    missingFields.push("Uploaded Document");
+                    $('#documentFile2').addClass("is-invalid");
+                    $('#documentFile2').after("<div class='error-message text-danger'>The Uploaded Document is required.</div>");
+                } else if (!allowedFileType.includes(documentFile.type)) {
+                    isValid = false;
+                    errorMessages.push("The Uploaded Document must be a PDF file.");
+                    $('#documentFile2').addClass("is-invalid");
+                }
+
+                // If validation fails, show a detailed error message
+                if (!isValid) {
+                    let errorText = "";
+
+                    if (missingFields.length > 0) {
+                        errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
+                    }
+                    if (errorMessages.length > 0) {
+                        errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
+                    }
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Input',
+                        html: errorText,
+                    });
+
+                    return;
+                }
+
+                // Proceed with form submission via AJAX if all fields are valid
+                let formData = new FormData(this);
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('/documents/register') }}",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: res.success
+                            });
+                            $("#register-modal").modal('hide');
+                            $("#register-form")[0].reset();
+                            window.location.href = "{{ url('/documents') }}/";
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                html: res.errors
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            let errorMessages = [];
+
+                            $.each(errors, function (key, messages) {
+                                errorMessages.push(messages.join("<br>"));
+                            });
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid Input',
+                                html: errorMessages.join("<br>")
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Something went wrong. Please try again.'
+                            });
+                        }
+                    }
+                });
+            }
         });
 
         function cancelRequest(requestID) {

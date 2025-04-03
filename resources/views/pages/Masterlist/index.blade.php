@@ -13,7 +13,7 @@
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Quality Manual</span>
-        <span class="info-box-number total">5</span>
+        <span class="info-box-number qm"></span>
       </div>
     </div>
   </div>
@@ -24,7 +24,7 @@
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Quality Procedure</span>
-        <span class="info-box-number total">5</span>
+        <span class="info-box-number qp"></span>
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
         <span class="info-box-text">Procedure Manuals</span>
-        <span class="info-box-number total">33</span>
+        <span class="info-box-number pm"></span>
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content ">
         <span class="info-box-text word-wrap">Forms,Templates & Guidelines</span>
-        <span class="info-box-number total">103</span>
+        <span class="info-box-number ftg"></span>
       </div>
     </div>
   </div>
@@ -114,16 +114,14 @@
     //  COUNT TOTAL
       $.ajax({
         type: 'GET',
-        url: "{{ url('/documents/computeTotal')}}",
+        url: "{{ url('/masterlist/computeTotal')}}",
         dataType: 'json',
         success:function(res)
         {
-          $(".total").html(res['total_ticket']);
-          $(".assigned").html(res['assigned']);
-          $(".working").html(res['working']);
-          $(".for-closing").html(res['for-closing']);
-          $(".closed").html(res['closed']);
-          $(".feedback").html(res['feedback']);
+          $(".qp").html(res['qp']);
+          $(".qm").html(res['qm']);
+          $(".pm").html(res['pm']);
+          $(".ftg").html(res['ftg']);
         }
       });
     });

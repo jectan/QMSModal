@@ -18,6 +18,7 @@ use App\Models\TicketLog;
 use App\Models\DocType;
 use App\Models\RequestDocument;
 use App\Models\ReviewDocument;
+use App\Models\RegisteredDoc;
 use App\Models\RequestType;
 
 use Illuminate\Support\Facades\DB;
@@ -270,6 +271,57 @@ class DocumentController extends Controller
         return response()->json(['success'=> 'Document Endorsed For Registration.', 'ReviewDocument' => $reviewDocument]);
     }
 
+    public function register(Request $request)
+    {
+        $request->validate([
+        'currentRevNo2' => 'required|numeric|min:0',
+        'docRefCode2' => 'required|string|max:255',
+        'documentFile2' => 'nullable|mimes:pdf|max:2048',
+        ], [
+            'currentRevNo2.required' => 'The Revision Number is required.',
+            'docRefCode2.required' => 'The Document Reference Code is required.',
+            'documentFile2.required' => 'The Uploaded Document is required.',
+        ]);
+
+        $file = $request->file('documentFile2');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $filePath = $file->storeAs('documents', $fileName, 'public'); // Store in storage/app/public/documents
+
+        DB::beginTransaction();
+
+        try {
+            $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID2],
+            [
+                'docRefCode' => $request->docRefCode2,
+                'currentRevNo' => $request->currentRevNo2,
+                'requestStatus' => 'Registered',
+            ]);
+
+            $registerDocument = RegisteredDoc::updateOrCreate(['regDocID' => $request->regDocID],
+            [
+                'requestID' => $request->requestID2,
+                'docFile' => $filePath, // Save file path in DB
+                'effectivityDate' => Carbon::now(), 
+            ]);
+
+            $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
+            [
+                'requestID' => $request->requestID2,
+                'reviewComment' => 'Registered by ' . Auth::user()->staff->fullname,
+                'userID' => Auth::id(),
+                'reviewStatus' => 'Active',                  
+            ]);
+
+            DB::commit();
+    
+            return response()->json(['success' => 'Successfully saved.', 'RegisterDocument' => $registerDocument]);
+        } catch (\Exception $e) {
+            
+            DB::rollback();
+            return response()->json(['error' => 'Failed to save. Error: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function validateRequest(Request $request)
     {
         try {
@@ -321,15 +373,6 @@ class DocumentController extends Controller
                     && Auth::user()->role_id !== 1) {
                     $isHidden = "hidden";
                 }
-                /*  elseif ($row->requestStatus === 'For Revision (Approval)') {
-                    $onClickFunction = "editReview({$row->requestID})";
-                } elseif ($row->requestStatus === 'For Approval') {
-                    $onClickFunction = "editApproval({$row->requestID})";
-                } elseif ($row->requestStatus === 'For Registration') {
-                    $onClickFunction = "editRegistration({$row->requestID})";
-                } else {
-                    $onClickFunction = "editRequest({$row->requestID})";
-                } */
         
                 return '<button class="btn btn-sm btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>

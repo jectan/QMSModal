@@ -29,6 +29,8 @@ Route::get('/aboutus', [App\Http\Controllers\AboutController::class, 'index']);
 
 //Masterlist
 Route::get('/masterlist', [MasterlistController::class, 'index'])->name('masterlist.index');
+Route::get('/masterlist/data-request/{dataTable}', [MasterlistController::class, 'getDataRequest']); //called by masterlist data tables
+Route::get('/masterlist/computeTotal',[MasterlistController::class, 'documentTally']);
 
 Route::get('/', [FeedbackController::class, 'publichome']);
 Route::get('/about-us', [FeedbackController::class, 'about']);
@@ -154,6 +156,7 @@ Route::post('/documents/reviewed', [DocumentController::class, 'reviewed']); //c
 Route::post('/documents/storeApprove', [DocumentController::class, 'storeApprove']); //called from display-document
 Route::post('/documents/approved', [DocumentController::class, 'approved']); //called from display-document
 Route::post('/documents/forReview', [DocumentController::class, 'forReview']); //called from display-document
+Route::post('/documents/register', [DocumentController::class, 'register']); //called from display-document
 Route::get('/documents/view/{id}', [DocumentController::class, 'view']); //called from display-document
 Route::get('/documents/view/edit/{id}', [DocumentController::class, 'viewEdit']); //called from display-document
 Route::get('/documents/data-request{status?}', [DocumentController::class, 'getDataRequest'])->name('documents.data-request'); //called by tabs
