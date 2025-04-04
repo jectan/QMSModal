@@ -227,8 +227,8 @@
             let id = e.getAttribute('data-id');
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
-                    confirmButton: 'btn btn-danger',
-                    cancelButton: 'btn btn-default'
+                    confirmButton: 'btn btn-danger mx-2',
+                    cancelButton: 'btn btn-default mx-2'
                 },
                 buttonsStyling: false
             });

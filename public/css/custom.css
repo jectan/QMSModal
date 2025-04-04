@@ -1,8 +1,46 @@
+.timeline {
+  position: relative;
+  list-style: none;
+  padding-left: 20px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  width: 2px;
+  height: 100%;
+  background: #007bff; /* Timeline line color */
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+  padding-left: 30px;
+}
+
+.timeline-item::before {
+  content: '●';
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  font-size: 16px;
+  color: #007bff; /* Circle color */
+}
+
+.timeline-item .date {
+  font-size: 12px;
+  color: gray;
+}
+
+.timeline-item .status {
+  font-weight: bold;
+}
+
 .word-wrap {
   word-wrap: break-word; /* Older CSS property */
   overflow-wrap: break-word; /* Newer, recommended property */
 }
-
 
 .btn-expandable {
   display: flex;
@@ -360,6 +398,14 @@ button:hover {
 .custom-tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
+}
+
+.swal2-confirm-margin {
+    margin-right: 10px;
+}
+
+.swal2-cancel-margin {
+    margin-left: 10px;
 }
   
 .select2-selection {

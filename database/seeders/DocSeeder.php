@@ -19,6 +19,7 @@ class DocSeeder extends Seeder
             ['docTypeDesc' => 'Template', 'status' => true],
             ['docTypeDesc' => 'Operations Manual', 'status' => true],
             ['docTypeDesc' => 'Procedures Manual', 'status' => true],
+            ['docTypeDesc' => 'Quality Procedure', 'status' => true],
         ]);
         
         DB::table('RequestType')->insert([

@@ -34,7 +34,7 @@ class DashboardV2Controller extends Controller
         $documents['archive'] = RequestDocument::where('requestStatus', 'Archive')->count();
         $documents['qpt'] = RequestDocument::where('docTypeID', '1')->count();
         $documents['pmt'] = RequestDocument::where('docTypeID', '4')->count();
-        $documents['ftg'] = RequestDocument::where('docTypeID', [2,3])->count();
+        $documents['ftg'] = RequestDocument::whereIn('docTypeID', [2,3])->count();
         echo json_encode($documents);
         exit;
     }

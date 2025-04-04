@@ -62,36 +62,36 @@
             <div class="card-header p-0 pt-1 bg-dblue">
                 <ul class="nav nav-tabs" id="settings-tab" role="tablist">
                   @if(Auth::user()->role->id!=4)
-                  <li class="nav-item">
-                    <a class="nav-link active" id="created" data-toggle="pill" href="#created-content" role="tab" aria-controls="created-content" aria-selected="true">Quality Manual</a>
-                  </li>
+                    <li class="nav-item">
+                      <a class="nav-link active" id="qualityManual" data-toggle="pill" href="#quality-manual" role="tab" aria-controls="quality-manual" aria-selected="true">Quality Manual</a>
+                    </li>
                   @endif
+                    <li class="nav-item">
+                        <a class="nav-link {{Auth::user()->role->id == 4 ? 'active' : 'null'}}" id="qualityProcedure" data-toggle="pill" href="#quality-procedure" role="tab" aria-controls="quality-procedure" aria-selected="false">Quality Procedure</a>
+                    </li>
                   <li class="nav-item">
-                          <a class="nav-link {{Auth::user()->role->id == 4 ? 'active' : 'null'}}" id="assigned" data-toggle="pill" href="#assigned-content" role="tab" aria-controls="assigned-content" aria-selected="false">Quality Procedure</a>
+                    <a class="nav-link " id="procedureManual" data-toggle="pill" href="#procedure-manual" role="tab" aria-controls="procedure-manual" aria-selected="false">Procedure Manuals</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link " id="working" data-toggle="pill" href="#working-content" role="tab" aria-controls="working-content" aria-selected="false">Procedure Manuals</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link " id="for-closing" data-toggle="pill" href="#for-closing-content" role="tab" aria-controls="for-closing-content" aria-selected="false">Forms, Templates & Guidelines</a>
+                    <a class="nav-link " id="formsTemplatesGuidelines" data-toggle="pill" href="#forms-templates-guidelines" role="tab" aria-controls="forms-templates-guidelines" aria-selected="false">Forms, Templates & Guidelines</a>
                   </li>
                 </ul>
               </div>
               <div class="card-body">
                 <div class="tab-content" id="set-content">
                   @if(Auth::user()->role->id!=4)
-                  <div class="tab-pane fade show active " id="created-content" role="tabpanel" aria-labelledby="created-tab">
+                  <div class="tab-pane fade show active " id="quality-manual" role="tabpanel" aria-labelledby="quality-manual">
                     @include('pages.masterlist.qualitymanuals')
                   </div>
                  @endif
-                 <div class="tab-pane fade {{Auth::user()->role->id == 4 ? 'show active' : 'null'}}" id="assigned-content" role="tabpanel" aria-labelledby="assigned-tab">
-                 @include('pages.masterlist.qualityprocedures')
+                 <div class="tab-pane fade {{Auth::user()->role->id == 4 ? 'show active' : 'null'}}" id="quality-procedure" role="tabpanel" aria-labelledby="quality-procedure">
+                  @include('pages.masterlist.qualityprocedures')
                 </div>
-                  <div class="tab-pane fade" id="working-content" role="tabpanel" aria-labelledby="working-tab">
-                  
+                  <div class="tab-pane fade" id="procedure-manual" role="tabpanel" aria-labelledby="procedure-manual">
+                    @include('pages.masterlist.proceduremanuals')
                   </div>
-                  <div class="tab-pane fade" id="for-closing-content" role="tabpanel" aria-labelledby="for-closing-tab">
-                   
+                  <div class="tab-pane fade" id="forms-templates-guidelines" role="tabpanel" aria-labelledby="forms-templates-guidelines">
+                  @include('pages.masterlist.formstemplatesguidelines')
                   </div>
                   <div class="tab-pane fade" id="closed-content" role="tabpanel" aria-labelledby="closed-tab">
                    

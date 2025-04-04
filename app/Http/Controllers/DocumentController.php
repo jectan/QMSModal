@@ -290,6 +290,12 @@ class DocumentController extends Controller
         DB::beginTransaction();
 
         try {
+            $updatedRows = RequestDocument::where('docRefCode', $request->docRefCode2)
+                ->where('requestStatus', 'Registered')
+                ->update([
+                    'requestStatus' => 'Obsolete',
+                ]);
+
             $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID2],
             [
                 'docRefCode' => $request->docRefCode2,
@@ -373,12 +379,22 @@ class DocumentController extends Controller
                     && Auth::user()->role_id !== 1) {
                     $isHidden = "hidden";
                 }
+
+                if ((in_array($row->requestStatus, ['For Registration']) || $row->userID !== Auth::id()) 
+                    && Auth::user()->role_id !== 1) {
+                    $isHidden2 = "";
+                }
         
                 return '<button class="btn btn-sm btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
+
                         <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '"' . $isHidden .'>
                             <span class="material-icons" style="font-size: 20px;">edit</span>
+                        </button>
+
+                        <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="registerDocument(' . $onClickFunction . ')"' . $isHidden2 .'>
+                            <span class="material-icons" style="font-size: 20px;">far fa-calendar-check</span>
                         </button>
 
                         <button class="btn btn-sm btn-danger mx-1" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
@@ -392,16 +408,13 @@ class DocumentController extends Controller
     
     public function getReview($requestID)
     {
-        $reviewDocuments = ReviewDocument::where('requestID', $requestID)
-            ->select('reviewID', 'reviewComment', 'reviewStatus', 'reviewDate')
-            ->get();
+        // Fetch review history for the given request ID
+        $reviews = ReviewDocument::where('requestID', $requestID)
+            ->orderBy('reviewDate', 'asc') // Order by date
+            ->get(['reviewDate', 'reviewComment']);
     
-        return DataTables::of($reviewDocuments)
-            ->addColumn('action', function ($row) {
-                return '<button class="btn btn-sm btn-primary">Edit</button>';
-            })
-            ->rawColumns(['action'])
-            ->make(true);
+        // Return response as JSON
+        return response()->json($reviews);
     }
 
     public function documentTally(){

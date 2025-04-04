@@ -203,7 +203,7 @@
                             <label for="requestFile" class="col-sm-4 control-label">Upload Document (PDF Only):<span
                                     class="require">*</span></label>
                             <div class="col-sm-12">
-                                <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf">
+                                <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf" required>
                             </div>
                         </div>
 
@@ -584,8 +584,8 @@
         function cancelRequest(requestID) {
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
-                    confirmButton: 'btn btn-danger',
-                    cancelButton: 'btn btn-default'
+                    confirmButton: 'btn btn-danger mx-2',
+                    cancelButton: 'btn btn-default mx-2'
                 },
                 buttonsStyling: false
             });

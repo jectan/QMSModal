@@ -17,4 +17,8 @@ class RegisteredDoc extends Model
         'effectivityDate',
         'docFile',
     ];
+
+    public function document(){
+        return $this->belongsTo(RequestDocument::class, 'requestID', 'requestID');
+    }
 }

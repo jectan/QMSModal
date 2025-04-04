@@ -123,8 +123,9 @@
                             <!-- Request Type & Document Type -->
                             <div class="form-group row">
                                 <div class="col-md-6">
-                                    <label for="requestTypeID" class="form-label"><strong>Request For:</strong><span class="require">*</span></label>
-                                    <select name="requestTypeID" id="requestTypeID" class="form-control" readonly>
+                                    <label for="requestTypeID" class="form-label"><strong>Request For:</strong></label>
+                                    <input type="text" class="form-control" id="requestType" name="requestType" value="{{$document->requestType->requestTypeDesc}}" readonly>
+                                    <!-- <select name="requestTypeID" id="requestTypeID" class="form-control" readonly>
                                             @foreach($requestType as $row)
                                                 @if($row->requestTypeID == $document->requestTypeID)
                                                     <option value="{{ $row->requestTypeID }}" selected>{{ $row->requestTypeDesc }}</option>
@@ -132,11 +133,12 @@
                                                     <option value="{{ $row->requestTypeID }}">{{ $row->requestTypeDesc }}</option>
                                                 @endif
                                             @endforeach
-                                    </select>
+                                    </select> -->
                                 </div>
                                 <div class="col-md-6">
                                     <label for="docTypeID" class="form-label"><strong>Document Type:</strong><span class="require">*</span></label>
-                                    <select name="docTypeID" id="docTypeID" class="form-control" readonly>
+                                    <input type="text" class="form-control" id="docType" name="docType" value="{{$document->DocumentType->docTypeDesc}}" readonly>
+                                    <!-- <select name="docTypeID" id="docTypeID" class="form-control" readonly>
                                         @foreach($docType as $row)
                                             @if($row->docTypeID == $document->docTypeID)
                                             <option value="{{ $row->docTypeID }}" selected>{{ $row->docTypeDesc }}</option>
@@ -144,7 +146,7 @@
                                                 <option value="{{ $row->docTypeID }}">{{ $row->docTypeDesc }}</option>
                                             @endif
                                         @endforeach
-                                    </select>
+                                    </select> -->
                                 </div>
                             </div>
 
@@ -153,7 +155,7 @@
                                 <div class="col-md-6">
                                     <label for="docRefCode" class="form-label"><strong>Document Reference Code:</strong></label>
                                     <input type="text" class="form-control" id="docRefCode" name="docRefCode" value="{{$document->docRefCode}}" readonly>
-                                    <span id="docRefCodeError" class="text-danger"></span>
+                                    <!--<span id="docRefCodeError" class="text-danger"></span>-->
                                 </div>
                                 <div class="col-md-6">
                                     <label for="currentRevNo" class="form-label"><strong>Current Revision Number:</strong><span class="require">*</span></label>
@@ -173,7 +175,7 @@
                                 <input type="text" class="form-control" id="requestReason" name="requestReason" value="{{ $document->requestReason }}" readonly>
                             </div>
 
-                            <!-- File Upload -->
+                            <!-- File Upload
                             <div class="form-group">
                                 @if(in_array($document->requestStatus, ['For Registration']))
                                     <label for="requestFile" class="col-sm-4 control-label">Upload Final Copy (PDF Only):<span class="require">*</span></label>
@@ -181,22 +183,20 @@
                                 @else
                                     <label for="requestFile" class="col-sm-4 control-label">Upload Document (PDF Only):<span class="require">*</span></label>
                                     <div class="col-sm-12">
-                                        <!-- Display existing file -->
+                                        Display existing file
                                         @if ($document->requestFile)
                                             <p id="documentLabel">Current File: <a href="{{ asset('storage/' . $document->requestFile) }}" target="_blank">{{ basename($document->requestFile) }}</a></p>
                                         @endif
 
-                                        <!-- Allow uploading a new file -->
+                                        Allow uploading a new file
                                         <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf" value="{{ basename($document->requestFile) }}" hidden>
                                     </div>
                                 @endif
-                            </div>
+                            </div> -->
 
                             <!-- Submit Button -->
                             <div class="form-group text-center mt-3">
-                                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 2]) && (in_array($document->requestStatus, ['For Registration'])))
-                                    <button type="submit" id="submitButton" class="btn btn-primary">Register Document</button>
-                                @else
+                                @if(Auth::check() && !in_array(Auth::user()->role_id, [1, 2]) && (in_array($document->requestStatus, ['For Registration'])))
                                     <button type="submit" id="submitButton" class="btn btn-primary" hidden>Submit Request</button>
                                     <button type="button" id="cancelEditButton" class="btn btn-secondary" hidden>Cancel</button>
                                 @endif
@@ -272,15 +272,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div class="card-body table-responsive">
-                                            <table class="table table-striped w-100" id="review-dt" style="font-size: 14px">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width: 30%">Comments/Action</th>
-                                                        <th style="width: 15%">Date</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
+                                        <div class="card-body">
+                                            <ul class="timeline" id="review-timeline"></ul>
                                         </div>
                                     </div>
                                 </div>
@@ -309,10 +302,10 @@
                         <!-- DocRefCode and CurrentRevNum -->
                         <div class="form-group row">
                             <div class="col-md-6">
-                                <label for="docRefCode" class="form-label"><strong>Document Reference Code:</strong></label>
+                                <label for="docRefCode2" class="form-label"><strong>Document Reference Code:</strong></label>
                                 <div class="col-sm-12">
                                     <input type="text" class="form-control" id="docRefCode2" name="docRefCode2" value="{{ $document->docRefCode }}" readonly required>
-                                    <span id="docRefCodeError" class="text-danger"></span>
+                                    <span id="docRefCodeError2" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -328,7 +321,7 @@
                             <label for="documentFile2" class="col-sm-4 control-label">Upload Signed Document (PDF Only):<span
                                     class="require">*</span></label>
                             <div class="col-sm-12">
-                                <input type="file" class="form-control" id="documentFile2" name="documentFile2" accept=".pdf">
+                                <input type="file" class="form-control" id="documentFile2" name="documentFile2" accept=".pdf" required>
                             </div>
                         </div>
 
@@ -357,6 +350,38 @@
                 activateFields();
             }
 
+            $(document).ready(function () {
+                $.ajax({
+                    url: "{{ url('/documents/view/review') }}/{{ $document->requestID }}",
+                    type: "GET",
+                    dataType: "json",
+                    success: function (res) {
+                        console.log("API Response:", res); // Debugging step
+
+                        // Ensure res is an array
+                        let reviews = Array.isArray(res) ? res : Object.values(res);
+                        
+                        reviews.sort((a, b) => new Date(b.reviewDate) - new Date(a.reviewDate));
+
+                        let timelineHTML = "";
+
+                        reviews.forEach(item => {
+                            timelineHTML += `
+                                <li class="timeline-item">
+                                    <div class="date">${item.reviewDate}</div>
+                                    <div class="status">${item.reviewComment}</div>
+                                </li>
+                            `;
+                        });
+
+                        $("#review-timeline").html(timelineHTML);
+                    },
+                    error: function () {
+                        $("#review-timeline").html("<li class='text-danger'>Failed to load review history.</li>");
+                    }
+                });
+            });
+
             $('#review-dt').DataTable({
                 processing: true,
                 serverSide: true,
@@ -373,34 +398,8 @@
 
             //Hide/Unhide DocumentFile
             $("#editButton").click(function () {
-                activateFields();
+                //activateFields();
             });
-
-            function activateFields(){
-                let requestTypeID = document.getElementById("requestTypeID");
-                let docTypeID = document.getElementById("docTypeID");
-                let docRefCode = document.getElementById("docRefCode");
-                let docTitle = document.getElementById("docTitle");
-                let requestReason = document.getElementById("requestReason");
-                let documentLabel = document.getElementById("documentLabel");
-
-                requestTypeID.removeAttribute("readonly");
-                requestTypeID.setAttribute("required", true);
-                docTypeID.removeAttribute("readonly");
-                docTypeID.setAttribute("required", true);
-                if(requestTypeID.value != 1){
-                    docRefCode.removeAttribute("readonly");
-                    docRefCode.setAttribute("required", true);
-                }
-                docTitle.removeAttribute("readonly");
-                docTitle.setAttribute("required", true);
-                requestReason.removeAttribute("readonly");
-                requestReason.setAttribute("required", true);
-                documentLabel.setAttribute("hidden", true);
-                documentFile.removeAttribute("hidden"); // Show
-                submitButton.removeAttribute("hidden");
-                cancelEditButton.removeAttribute("hidden");
-            }
 
             $("#cancelEditButton").click(function () {
                 // Reload the page after 1 second (optional delay for better UX)
@@ -437,11 +436,11 @@
                         data: { docRefCode: docRefCode },
                         success: function (response) {
                             if (response.exists) {
+                                alert("Document Reference Code not found!");
                                 currentRevNo.val(response.currentRevNo ?? ""); // ✅ Prevent undefined errors
                                 errorField.text(""); // Clear error message
                                 $("#docRefCode").removeClass("is-invalid"); // Remove error styling
                             } else {
-                                alert("Document Reference Code not found!");
                                 currentRevNo.val("0"); 
                                 $("#docRefCode").addClass("is-invalid"); // Add error styling
                             }
@@ -678,6 +677,7 @@
             // Lock and Unlock Fields
             $("#register-modal").on("show.bs.modal", function () {
 
+                var modal = $(this);
                 var docRefCode = $("#docRefCode2");
                 var currentRevNo = $("#currentRevNo2");
                 var requestTypeID = $("#requestTypeID2").val();
@@ -688,50 +688,71 @@
                     currentRevNo.val("0");
                 } else {
                     docRefCode.prop("readonly", true) .removeAttr("required");
-                    currentRevNo.val(currentValue + 1);
+                    
+                    if (!modal.data('opened')) {
+                        currentRevNo.val(currentValue + 1);
+                        modal.data('opened', true);
+                    } else {
+                        currentRevNo.val(currentValue);
+                    }
                 }
+            });
+            
+            //Remove Error in File Upload
+            $("#documentFile2").change(function () {
+                var documentFile = $(this).val(); // Get entered value
+
+                $(this).removeClass("is-invalid"); // Remove error styling
+                $(this).next('.error-message').remove();
             });
         });
 
         // Submit Register
         $('#register-form').submit(function (e){
             e.preventDefault();
-            var errorField = $("#docRefCodeError");
 
-            if (docRefCode === "" || $("#docRefCode2").hasClass("is-invalid")) {
-                errorField.text("Invalid Document Reference Code. Please check again.");
-                $("#docRefCode").addClass("is-invalid");
-                e.preventDefault(); // Stop form submission
+            let docRefCode = $('#docRefCode2').val().trim();
+            let requestTypeID = $('#requestTypeID2').val();
+            let errorField = $("#docRefCodeError2");
+
+            if (docRefCode === "") {
+                errorField.text("Document Reference Code is required.");
+                $("#docRefCode2").addClass("is-invalid");
+                return; // Stop form submission
             }
-            else{
-                let isValid = true;
+
+            // Call AJAX validation before proceeding
+            checkDocRefCode(docRefCode, requestTypeID, function(isValid) {
+                if (!isValid) {
+                    return; // Stop form submission if invalid
+                }
+
+                let isValidForm = true;
+                let missingFields = [];
                 let errorMessages = [];
-                let missingFields = []; // ✅ Declare the variable at the start
                 let allowedFileType = ["application/pdf"];
-                
+
+                // Get input values
+                let documentFile = $('#documentFile2')[0].files[0];
+
                 // Clear previous errors
                 $(".is-invalid").removeClass("is-invalid");
                 $(".error-message").remove();
 
-                // Get input values
-                let requestID = $('#requestID2');
-                let docRefCode = $('#docRefCode2');
-                let documentFile = $('#documentFile2')[0].files[0];
-
-                // Validation Rules
+                // File validation
                 if (!documentFile) {
-                    isValid = false;
+                    isValidForm = false;
                     missingFields.push("Uploaded Document");
                     $('#documentFile2').addClass("is-invalid");
                     $('#documentFile2').after("<div class='error-message text-danger'>The Uploaded Document is required.</div>");
                 } else if (!allowedFileType.includes(documentFile.type)) {
-                    isValid = false;
+                    isValidForm = false;
                     errorMessages.push("The Uploaded Document must be a PDF file.");
                     $('#documentFile2').addClass("is-invalid");
                 }
 
-                // If validation fails, show a detailed error message
-                if (!isValid) {
+                // Show error messages if form is invalid
+                if (!isValidForm) {
                     let errorText = "";
 
                     if (missingFields.length > 0) {
@@ -751,8 +772,7 @@
                 }
 
                 // Proceed with form submission via AJAX if all fields are valid
-                let formData = new FormData(this);
-
+                let formData = new FormData($('#register-form')[0]);
                 $.ajax({
                     type: 'POST',
                     url: "{{ url('/documents/register') }}",
@@ -800,14 +820,43 @@
                         }
                     }
                 });
-            }
+            });
         });
+
+        function checkDocRefCode(docRefCode, requestTypeID, callback) {
+            if(requestTypeID == 1){
+                $.ajax({
+                    url: "{{ url('/check-docRefCode') }}",
+                    type: "GET",
+                    data: { docRefCode: docRefCode },
+                    success: function (response) {
+                        if (response.exists) {
+                            $("#docRefCode2").addClass("is-invalid");
+                            $("#docRefCodeError2").text("Document Reference Code already exists.");
+                            callback(false); // Invalid case
+                        } else {
+                            $("#docRefCode2").removeClass("is-invalid");
+                            $("#docRefCodeError2").text("");
+                            callback(true); // Valid case
+                        }
+                    },
+                    error: function () {
+                        $("#docRefCodeError2").text("Error checking document reference code.");
+                        $("#docRefCode2").addClass("is-invalid");
+                        callback(false);
+                    }
+                });
+            }
+            else{
+                callback(true);
+            }
+        }
 
         function cancelRequest(requestID) {
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
-                    confirmButton: 'btn btn-danger',
-                    cancelButton: 'btn btn-default'
+                    confirmButton: 'btn btn-danger mx-2',
+                    cancelButton: 'btn btn-default mx-2'
                 },
                 buttonsStyling: false
             });
@@ -866,8 +915,8 @@
         function reviewedRequest(requestID) {
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
-                confirmButton: 'btn btn-success',
-                cancelButton: 'btn btn-secondary'
+                confirmButton: 'btn btn-success mx-2', // ✅ Green button with margin
+                cancelButton: 'btn btn-secondary mx-2'
                 },
                 buttonsStyling: false
             });
@@ -917,8 +966,8 @@
         function approvedRequest(requestID) {
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
-                confirmButton: 'btn btn-success',
-                cancelButton: 'btn btn-secondary'
+                confirmButton: 'btn btn-success mx-2',
+                cancelButton: 'btn btn-secondary mx-2'
                 },
                 buttonsStyling: false
             });
@@ -968,8 +1017,8 @@
         function forReview(requestID) {
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
-                confirmButton: 'btn btn-success',
-                cancelButton: 'btn btn-secondary'
+                confirmButton: 'btn btn-success mx-2',
+                cancelButton: 'btn btn-secondary mx-2'
                 },
                 buttonsStyling: false
             });
