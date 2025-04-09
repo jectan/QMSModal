@@ -21,7 +21,7 @@ class MasterlistController extends Controller
         $user = Auth::user();
         $documents['qp'] = RequestDocument::where('docTypeID', '6')->where('requestStatus', 'Registered')->count();
         $documents['qm'] = RequestDocument::where('docTypeID', '1')->where('requestStatus', 'Registered')->count();
-        $documents['pm'] = RequestDocument::where('docTypeID', '5')->where('requestStatus', 'Registered')->count();
+        $documents['pm'] = RequestDocument::where('docTypeID', '4')->where('requestStatus', 'Registered')->count();
         $documents['ftg'] = RequestDocument::whereIn('docTypeID', [2,3])->where('requestStatus', 'Registered')->count();
         echo json_encode($documents);
         exit;

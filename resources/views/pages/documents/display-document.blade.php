@@ -76,7 +76,7 @@
                 <!-- Edit Button for Users -->
                 @if(Auth::user()->role_id == 1 || (Auth::user()->id == $document->userID && (!in_array($document->requestStatus, ['For Review', 'For Approval', 'For Registration']))))
                     <div class="expandable-button">
-                        <button class="btn btn-sm btn-info mx-1 btn-icon" id="editButton" href="javascript:void(0)">
+                        <button class="btn btn-sm btn-info mx-1 btn-icon" id="editButton" data-bs-toggle="modal" data-bs-target="#request-modal">
                             <span class="material-icons" style="font-size: 20px;">edit</span>
                             <span class="btn-label">Edit</span>
                         </button>
@@ -125,28 +125,10 @@
                                 <div class="col-md-6">
                                     <label for="requestTypeID" class="form-label"><strong>Request For:</strong></label>
                                     <input type="text" class="form-control" id="requestType" name="requestType" value="{{$document->requestType->requestTypeDesc}}" readonly>
-                                    <!-- <select name="requestTypeID" id="requestTypeID" class="form-control" readonly>
-                                            @foreach($requestType as $row)
-                                                @if($row->requestTypeID == $document->requestTypeID)
-                                                    <option value="{{ $row->requestTypeID }}" selected>{{ $row->requestTypeDesc }}</option>
-                                                @else
-                                                    <option value="{{ $row->requestTypeID }}">{{ $row->requestTypeDesc }}</option>
-                                                @endif
-                                            @endforeach
-                                    </select> -->
                                 </div>
                                 <div class="col-md-6">
                                     <label for="docTypeID" class="form-label"><strong>Document Type:</strong><span class="require">*</span></label>
                                     <input type="text" class="form-control" id="docType" name="docType" value="{{$document->DocumentType->docTypeDesc}}" readonly>
-                                    <!-- <select name="docTypeID" id="docTypeID" class="form-control" readonly>
-                                        @foreach($docType as $row)
-                                            @if($row->docTypeID == $document->docTypeID)
-                                            <option value="{{ $row->docTypeID }}" selected>{{ $row->docTypeDesc }}</option>
-                                            @else
-                                                <option value="{{ $row->docTypeID }}">{{ $row->docTypeDesc }}</option>
-                                            @endif
-                                        @endforeach
-                                    </select> -->
                                 </div>
                             </div>
 
@@ -173,33 +155,6 @@
                             <div class="form-group">
                                 <label for="requestReason" class="form-label"><strong>Reason/s for the Request:</strong><span class="require">*</span></label>
                                 <input type="text" class="form-control" id="requestReason" name="requestReason" value="{{ $document->requestReason }}" readonly>
-                            </div>
-
-                            <!-- File Upload
-                            <div class="form-group">
-                                @if(in_array($document->requestStatus, ['For Registration']))
-                                    <label for="requestFile" class="col-sm-4 control-label">Upload Final Copy (PDF Only):<span class="require">*</span></label>
-                                    <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf">
-                                @else
-                                    <label for="requestFile" class="col-sm-4 control-label">Upload Document (PDF Only):<span class="require">*</span></label>
-                                    <div class="col-sm-12">
-                                        Display existing file
-                                        @if ($document->requestFile)
-                                            <p id="documentLabel">Current File: <a href="{{ asset('storage/' . $document->requestFile) }}" target="_blank">{{ basename($document->requestFile) }}</a></p>
-                                        @endif
-
-                                        Allow uploading a new file
-                                        <input type="file" class="form-control" id="documentFile" name="documentFile" accept=".pdf" value="{{ basename($document->requestFile) }}" hidden>
-                                    </div>
-                                @endif
-                            </div> -->
-
-                            <!-- Submit Button -->
-                            <div class="form-group text-center mt-3">
-                                @if(Auth::check() && !in_array(Auth::user()->role_id, [1, 2]) && (in_array($document->requestStatus, ['For Registration'])))
-                                    <button type="submit" id="submitButton" class="btn btn-primary" hidden>Submit Request</button>
-                                    <button type="button" id="cancelEditButton" class="btn btn-secondary" hidden>Cancel</button>
-                                @endif
                             </div>
                         </form>
                     </div>
@@ -335,6 +290,100 @@
         </div>
     </div>
 
+    <!-- MODAL -->
+    <div class="modal fade" id="request-modal" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style="width: 50%;">
+            <div class="modal-content">
+                <form action="javascript:void(0)" id="request-form" name="request-form" class="form-horizontal" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="request-modal-title">Request Document</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- id -->
+                        <input type="hidden" name="requestIDEdit" id="requestIDEdit" value="{{$document->requestID}}">
+                        <input type="hidden" name="requestFileOldEdit" id="requestFileOldEdit" value="{{$document->requestFile}}">
+                        <input type="hidden" id="docRefCodeEdit2" name="docRefCodeEdit2" value="{{$document->docRefCode}}" readonly required> 
+                        <input type="hidden" name="requestStatusEditEdit" id="requestStatusEdit" value="{{$document->requestStatus}}">
+
+                        <!-- Request/Document Type Dropdown -->
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="requestType" class="form-label"><strong>Request For:</strong><span
+                                class="require">*</span></label>
+                                <select name="requestTypeIDEdit" id="requestTypeIDEdit" class="form-control">
+                                    <option value="">Select Request</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="docType" class="form-label"><strong>Document Type:</strong><span
+                                class="require">*</span></label>
+                                <select name="docTypeIDEdit" id="docTypeIDEdit" class="form-control">
+                                    <option value="">Select Document Type</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- DocRefCode and CurrentRevNum -->
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="docRefCode" class="col-sm-4 control-label">Document Reference Code:<span
+                                class="require">*</span></label>
+                                <div class="col-sm-12">
+                                    
+                                    @if($document->requestTypeID == 1)
+                                        <input type="text" class="form-control" id="docRefCodeEdit" name="docRefCodeEdit" value="{{$document->docRefCode}}" readonly required> 
+                                    @else
+                                        <input type="text" class="form-control" id="docRefCodeEdit" name="docRefCodeEdit" value="{{$document->docRefCode}}" required> 
+                                    @endif
+                                    <span id="docRefCodeErrorEdit" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="currentRevNoEdit" class="col-sm-4 control-label">Current Revision Number:<span
+                                class="require">*</span></label>
+                                <div class="col-sm-12">
+                                    <input type="number" class="form-control" id="currentRevNoEdit" name="currentRevNoEdit" min="0" value="{{$document->currentRevNo}}" required readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Document Title -->
+                        <div class="form-group">
+                            <label for="Document Title" class="col-sm-4 control-label">Document Title:<span
+                                    class="require">*</span></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="docTitleEdit" name="docTitleEdit" value="{{ $document->docTitle }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Reason -->
+                        <div class="form-group">
+                            <label for="Reason" class="col-sm-4 control-label">Reason/s for the Request:<span
+                                    class="require">*</span></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="requestReasonEdit" name="requestReasonEdit" value="{{ $document->requestReason }}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="requestFile" class="col-sm-4 control-label">Update Document (PDF Only):</label>
+                            <div class="col-sm-12">
+                                <input type="file" class="form-control" id="documentFileEdit" name="documentFileEdit" accept=".pdf">
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-info" id="request-btn-save">Save</button>
+                            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- AJAX -->
     <script type="text/javascript">
         $(document).ready(function () {
@@ -345,41 +394,34 @@
                 }
             });
 
-            var isEdit = {{ $isEdit ?? 0 }};
-            if(isEdit == 1){
-                activateFields();
-            }
+            $.ajax({
+                url: "{{ url('/documents/view/review') }}/{{ $document->requestID }}",
+                type: "GET",
+                dataType: "json",
+                success: function (res) {
+                    console.log("API Response:", res); // Debugging step
 
-            $(document).ready(function () {
-                $.ajax({
-                    url: "{{ url('/documents/view/review') }}/{{ $document->requestID }}",
-                    type: "GET",
-                    dataType: "json",
-                    success: function (res) {
-                        console.log("API Response:", res); // Debugging step
+                    // Ensure res is an array
+                    let reviews = Array.isArray(res) ? res : Object.values(res);
+                    
+                    reviews.sort((a, b) => new Date(b.reviewDate) - new Date(a.reviewDate));
 
-                        // Ensure res is an array
-                        let reviews = Array.isArray(res) ? res : Object.values(res);
-                        
-                        reviews.sort((a, b) => new Date(b.reviewDate) - new Date(a.reviewDate));
+                    let timelineHTML = "";
 
-                        let timelineHTML = "";
+                    reviews.forEach(item => {
+                        timelineHTML += `
+                            <li class="timeline-item">
+                                <div class="date">${item.reviewDate}</div>
+                                <div class="status">${item.reviewComment}</div>
+                            </li>
+                        `;
+                    });
 
-                        reviews.forEach(item => {
-                            timelineHTML += `
-                                <li class="timeline-item">
-                                    <div class="date">${item.reviewDate}</div>
-                                    <div class="status">${item.reviewComment}</div>
-                                </li>
-                            `;
-                        });
-
-                        $("#review-timeline").html(timelineHTML);
-                    },
-                    error: function () {
-                        $("#review-timeline").html("<li class='text-danger'>Failed to load review history.</li>");
-                    }
-                });
+                    $("#review-timeline").html(timelineHTML);
+                },
+                error: function () {
+                    $("#review-timeline").html("<li class='text-danger'>Failed to load review history.</li>");
+                }
             });
 
             $('#review-dt').DataTable({
@@ -395,320 +437,477 @@
                 ],
                 order: [[1, 'desc']]
             });
+        });
 
-            //Hide/Unhide DocumentFile
-            $("#editButton").click(function () {
-                //activateFields();
-            });
+        $("#cancelEditButton").click(function () {
+            // Reload the page after 1 second (optional delay for better UX)
+            setTimeout(function () {
+                window.location.href = "{{ url('/documents/view/edit') }}/" + {{ $document->requestID }};
+            }, 1000); // Adjust time as needed
+        });
 
-            $("#cancelEditButton").click(function () {
-                // Reload the page after 1 second (optional delay for better UX)
-                setTimeout(function () {
-                    window.location.href = "{{ url('/documents/view/edit') }}/" + {{ $document->requestID }};
-                }, 1000); // Adjust time as needed
-            });
-            
-            //Enable/Disable DocRefCode
-            $("#requestTypeID").change(function () {
-                var requestType = $(this).val(); // Get selected value
-                var docRefCode = $("#docRefCode");
-                var currentRevNo = $("#currentRevNo");
-                if (requestType == "1") {
-                    alert('lock');
-                    docRefCode.val("For Assigning").prop("readonly", true).removeAttr("required"); // Clear, disable, and remove required
-                    currentRevNo.val("0");
-                } else {
-                    alert('unlock');
-                    docRefCode.val("{{$document->docRefCode}}").prop("readonly", false).attr("required", "required"); // Enable and make required
-                }
-            });
+        //Enable/Disable DocRefCode - Request
+        $("#requestTypeIDEdit").change(function () {
+            console.log("Change RequestType Request");
+            var requestType = $(this).val(); // Get selected value
+            var docRefCode = $("#docRefCodeEdit");
+            var currentRevNo = $("#currentRevNoEdit");
+            var documentType = $("#docTypeIDEdit");
+            if (requestType == "1") {
+                docRefCode.val("For Assigning").prop("readonly", true).removeAttr("required"); // Clear, disable, and remove required
+                currentRevNo.val("0");
+                documentType.prop("disabled", false).attr("required", "required"); 
+            } else {
+                docRefCode.val("").prop("readonly", false).attr("required", "required"); // Enable and make required
+                documentType.prop("disabled", true).removeAttr("required");
+            }
+        });
 
-            //Auto Current Revision Number
-            $("#docRefCode").change(function () {
-                var docRefCode = $(this).val(); // Get entered value
-                var currentRevNo = $("#currentRevNo");
-                var errorField = $("#docRefCodeError"); // Error message span
+        //Auto Current Revision Number - REGISTRATION
+        $("#docRefCode").change(function () {
+            console.log("Change DocRefCode");
+            var docRefCode = $(this).val(); // Get entered value
+            var currentRevNo = $("#currentRevNo");
+            var errorField = $("#docRefCodeError"); // Error message span
 
-                if (docRefCode !== "") {
-                    $.ajax({
-                        url: "{{ url('/check-docRefCode') }}", // Change to your route
-                        type: "GET",
-                        data: { docRefCode: docRefCode },
-                        success: function (response) {
-                            if (response.exists) {
-                                alert("Document Reference Code not found!");
-                                currentRevNo.val(response.currentRevNo ?? ""); // ✅ Prevent undefined errors
-                                errorField.text(""); // Clear error message
-                                $("#docRefCode").removeClass("is-invalid"); // Remove error styling
-                            } else {
-                                currentRevNo.val("0"); 
-                                $("#docRefCode").addClass("is-invalid"); // Add error styling
-                            }
-                        },
-                        error: function () {
-                            errorField.text("Error checking document reference code.");
+            if (docRefCode !== "") {
+                $.ajax({
+                    url: "{{ url('/check-docRefCode') }}", // Change to your route
+                    type: "GET",
+                    data: { docRefCode: docRefCode },
+                    success: function (response) {
+                        if (response.exists) {
+                            alert("Document Reference Code not found!");
+                            currentRevNo.val(response.currentRevNo ?? ""); // ✅ Prevent undefined errors
+                            errorField.text(""); // Clear error message
+                            $("#docRefCode").removeClass("is-invalid"); // Remove error styling
+                        } else {
+                            currentRevNo.val("0"); 
                             $("#docRefCode").addClass("is-invalid"); // Add error styling
                         }
-                    });
-                }
-            });
-
-            // Clear reviewComment field on page refresh
-            $('#reviewComments').val('');
-
-            //Change Document Displayed
-            $("#documentFile").change(function () {
-                var documentFile = this.files[0]; // Get the File object
-                var documentPreview = $("#documentPreview");
-                documentPreview.attr("src", URL.createObjectURL(documentFile));
-            });
-
-            // Submit button event for Review
-            $('#review-form').submit(function (e) {
-                e.preventDefault();
-
-                let isValid = true;
-                let errorMessages = [];
-                let missingFields = [];
-
-                // Clear previous errors
-                $(".is-invalid").removeClass("is-invalid");
-                $(".error-message").remove();
-
-                // Get input values
-                let reviewComment = $('#reviewComments');
-
-                // Validation Rules
-                if (!reviewComment.val().trim()) {
-                    isValid = false;
-                    missingFields.push("Review Comment");
-                    reviewComment.addClass("is-invalid");
-                    reviewComment.after("<div class='error-message text-danger'>The review comments are required.</div>");
-                } else if (reviewComment.val().length > 500) {
-                    isValid = false;
-                    errorMessages.push("The review comment must be at most 500 characters.");
-                    reviewComment.addClass("is-invalid");
-                }
-
-                // Show error messages if validation fails
-                if (!isValid) {
-                    let errorText = "";
-
-                    if (missingFields.length > 0) {
-                        errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
-                    }
-                    if (errorMessages.length > 0) {
-                        errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
-                    }
-
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Invalid Input',
-                        html: errorText,
-                    });
-
-                    return;
-                }
-
-                // Proceed with form submission via AJAX
-                let formData = new FormData(this);
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url('/documents/storeReview') }}",
-                    data: formData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function (res) {
-                        if (res.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: res.success
-                            });
-
-                            // Clear the input field after successful submission
-                            $('#reviewComments').val('');
-                            $('#rejectButton').hide();
-                            $('#reviewedButton').hide();
-
-                            // Optional: Refresh DataTable
-                            if ($.fn.DataTable.isDataTable("#review-dt")) {
-                                $('#review-dt').DataTable().ajax.reload();
-                            }
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                html: res.errors
-                            });
-                        }
                     },
-                    error: function (xhr) {
-                        if (xhr.status === 422) {
-                            let errors = xhr.responseJSON.errors;
-                            let errorMessages = [];
-
-                            $.each(errors, function (key, messages) {
-                                errorMessages.push(messages.join("<br>"));
-                            });
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Invalid Input',
-                                html: errorMessages.join("<br>")
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Something went wrong. Please try again.'
-                            });
-                        }
+                    error: function () {
+                        errorField.text("Error checking document reference code.");
+                        $("#docRefCode").addClass("is-invalid"); // Add error styling
                     }
                 });
-            });
+            }
+        });
 
-            // Submit button event for Approval
-            $('#approve-form').submit(function (e) {
-                e.preventDefault();
+        // Clear reviewComment field on page refresh
+        $('#reviewComments').val('');
 
-                let isValid = true;
-                let errorMessages = [];
-                let missingFields = [];
+        //Change Document Displayed
+        $("#documentFile").change(function () {
+            console.log("Change DocumentFile");
+            var documentFile = this.files[0]; // Get the File object
+            var documentPreview = $("#documentPreview");
+            documentPreview.attr("src", URL.createObjectURL(documentFile));
+        });
+        
+        // Submit button Edit
+        $('#request-form').submit(function (e){
+            e.preventDefault();
 
-                // Clear previous errors
-                $(".is-invalid").removeClass("is-invalid");
-                $(".error-message").remove();
+            let errorField = $("#docRefCodeErrorEdit");
+            let errorMessages = [];
+            let missingFields = []; // ✅ Declare the variable at the start
+            let allowedFileType = ["application/pdf"];
+            let docRefCode = $('#docRefCodeEdit').val().trim();
+            let currentDocRefCode = $('#docRefCodeEdit2').val().trim();
+            let requestTypeID = $('#requestTypeIDEdit').val();
 
-                // Get input values
-                let reviewComment2 = $('#reviewComment2');
+            if (docRefCode === "" || (docRefCode == "For Assigning" && requestTypeID != 1)) {
+                errorField.text("Invalid Document Reference Code. Please check again.");
+                $("#docRefCodeEdit").addClass("is-invalid");
+                return; // Stop form submission
+            }
 
-                // Validation Rules
-                if (!reviewComment2.val().trim()) {
-                    isValid = false;
-                    missingFields.push("Review Comment");
-                    reviewComment2.addClass("is-invalid");
-                    reviewComment2.after("<div class='error-message text-danger'>The comments are required.</div>");
-                } else if (reviewComment2.val().length > 500) {
-                    isValid = false;
-                    errorMessages.push("The review comment must be at most 500 characters.");
-                    reviewComment2.addClass("is-invalid");
-                }
-
-                // Show error messages if validation fails
+            // Call AJAX validation before proceeding
+            checkDuplicateRequest(docRefCode, requestTypeID, currentDocRefCode, function(isValid) {
                 if (!isValid) {
-                    let errorText = "";
-
-                    if (missingFields.length > 0) {
-                        errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
-                    }
-                    if (errorMessages.length > 0) {
-                        errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
-                    }
-
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Invalid Input',
-                        html: errorText,
-                    });
-
-                    return;
+                    return; // Stop form submission if invalid
                 }
 
-                // Proceed with form submission via AJAX
-                let formData = new FormData(this);
-
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url('/documents/storeApprove') }}",
-                    data: formData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function (res) {
-                        if (res.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: res.success
-                            });
-
-                            // Clear the input field after successful submission
-                            $('#reviewComments').val('');
-                            $('#rejectApproveButton').hide();
-                            $('#approvedButton').hide();
-
-                            // Optional: Refresh DataTable
-                            if ($.fn.DataTable.isDataTable("#approve-dt")) {
-                                $('#approve-dt').DataTable().ajax.reload();
-                            }
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                html: res.errors
-                            });
-                        }
-                    },
-                    error: function (xhr) {
-                        if (xhr.status === 422) {
-                            let errors = xhr.responseJSON.errors;
-                            let errorMessages = [];
-
-                            $.each(errors, function (key, messages) {
-                                errorMessages.push(messages.join("<br>"));
-                            });
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Invalid Input',
-                                html: errorMessages.join("<br>")
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Something went wrong. Please try again.'
-                            });
-                        }
+                checkDocRefCode(docRefCode, requestTypeID, function(isValid) {
+                    if (!isValid) {
+                        return; // Stop form submission if invalid
                     }
-                });
-            });
+                    // Get input values
+                    let requestID = $('#requestIDEdit');
+                    let currentRevNo = $('#currentRevNoEdit');
+                    let docTitle = $('#docTitleEdit');
+                    let requestReason = $('#requestReasonEdit');
+                    let documentType = $('#docTypeIDEdit');
+                    let documentFile = $('#documentFileEdit')[0].files[0];
+                    // Clear previous errors
+                    $(".is-invalid").removeClass("is-invalid");
+                    $(".error-message").remove();
 
-            // Lock and Unlock Fields
-            $("#register-modal").on("show.bs.modal", function () {
+                    // Validation Rules
+                    if (!currentRevNo.val()) {
+                        isValid = false;
+                        missingFields.push("Revision Number");
+                        currentRevNo.addClass("is-invalid");
+                        currentRevNo.after("<div class='error-message text-danger'>The Revision Number is required.</div>");
+                    } else if (isNaN(currentRevNo.val()) || currentRevNo.val() < 0) {
+                        isValid = false;
+                        errorMessages.push("The Revision Number must be a number & greater than or equal to 0.");
+                        currentRevNo.addClass("is-invalid");
+                    }
 
-                var modal = $(this);
-                var docRefCode = $("#docRefCode2");
-                var currentRevNo = $("#currentRevNo2");
-                var requestTypeID = $("#requestTypeID2").val();
-                var currentValue = parseInt(currentRevNo.val(), 10) || 0;
+                    if (!docTitle.val()) {
+                        isValid = false;
+                        missingFields.push("Document Title");
+                        docTitle.addClass("is-invalid");
+                        docTitle.after("<div class='error-message text-danger'>The Document Title is required.</div>");
+                    } else if (docTitle.val().length > 255) {
+                        isValid = false;
+                        errorMessages.push("The Document Title must be at most 255 characters.");
+                        docTitle.addClass("is-invalid");
+                    }
 
-                if (requestTypeID === "1") {
-                    docRefCode.val("").prop("readonly", false).attr("required", "required");
-                    currentRevNo.val("0");
-                } else {
-                    docRefCode.prop("readonly", true) .removeAttr("required");
+                    if (!requestReason.val()) {
+                        isValid = false;
+                        missingFields.push("Reason for Request");
+                        requestReason.addClass("is-invalid");
+                        requestReason.after("<div class='error-message text-danger'>The Reason for Request is required.</div>");
+                    } else if (requestReason.val().length > 500) {
+                        isValid = false;
+                        errorMessages.push("The Reason for Request must be at most 500 characters.");
+                        requestReason.addClass("is-invalid");
+                    }
+
+                    // If validation fails, show a detailed error message
+                    if (!isValid) {
+                        let errorText = "";
+
+                        if (missingFields.length > 0) {
+                            errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
+                        }
+                        if (errorMessages.length > 0) {
+                            errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
+                        }
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Invalid Input',
+                            html: errorText,
+                        });
+
+                        return;
+                    }
+
+                    //re-enable Document Type Select
                     
-                    if (!modal.data('opened')) {
-                        currentRevNo.val(currentValue + 1);
-                        modal.data('opened', true);
+                    documentType.prop("disabled", false).attr("required", "required"); 
+
+                    // Proceed with form submission via AJAX if all fields are valid
+                    let formData = new FormData($('#request-form')[0]);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ url('/documents/storeEdit') }}",
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: res.success
+                                }).then((result) => {
+                                    // Check if the user clicked OK
+                                    if (result.isConfirmed) {
+                                        $("#request-modal").modal('hide');
+                                        $("#request-form")[0].reset();
+                                        window.location.reload(); // Refresh the page
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    html: res.errors
+                                });
+                            }
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                let errorMessages = [];
+
+                                $.each(errors, function (key, messages) {
+                                    errorMessages.push(messages.join("<br>"));
+                                });
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Invalid Input',
+                                    html: errorMessages.join("<br>")
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Something went wrong. Please try again.'
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+        });
+
+        // Submit button event for Review
+        $('#review-form').submit(function (e) {
+            console.log("Submit Review");
+            e.preventDefault();
+
+            let isValid = true;
+            let errorMessages = [];
+            let missingFields = [];
+
+            // Clear previous errors
+            $(".is-invalid").removeClass("is-invalid");
+            $(".error-message").remove();
+
+            // Get input values
+            let reviewComment = $('#reviewComments');
+
+            // Validation Rules
+            if (!reviewComment.val().trim()) {
+                isValid = false;
+                missingFields.push("Review Comment");
+                reviewComment.addClass("is-invalid");
+                reviewComment.after("<div class='error-message text-danger'>The review comments are required.</div>");
+            } else if (reviewComment.val().length > 500) {
+                isValid = false;
+                errorMessages.push("The review comment must be at most 500 characters.");
+                reviewComment.addClass("is-invalid");
+            }
+
+            // Show error messages if validation fails
+            if (!isValid) {
+                let errorText = "";
+
+                if (missingFields.length > 0) {
+                    errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
+                }
+                if (errorMessages.length > 0) {
+                    errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
+                }
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Input',
+                    html: errorText,
+                });
+
+                return;
+            }
+
+            // Proceed with form submission via AJAX
+            let formData = new FormData(this);
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('/documents/storeReview') }}",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: res.success
+                        });
+
+                        // Clear the input field after successful submission
+                        $('#reviewComments').val('');
+                        $('#rejectButton').hide();
+                        $('#reviewedButton').hide();
+
+                        // Optional: Refresh DataTable
+                        if ($.fn.DataTable.isDataTable("#review-dt")) {
+                            $('#review-dt').DataTable().ajax.reload();
+                        }
                     } else {
-                        currentRevNo.val(currentValue);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            html: res.errors
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 422) {
+                        let errors = xhr.responseJSON.errors;
+                        let errorMessages = [];
+
+                        $.each(errors, function (key, messages) {
+                            errorMessages.push(messages.join("<br>"));
+                        });
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Input',
+                            html: errorMessages.join("<br>")
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong. Please try again.'
+                        });
                     }
                 }
             });
-            
-            //Remove Error in File Upload
-            $("#documentFile2").change(function () {
-                var documentFile = $(this).val(); // Get entered value
+        });
 
-                $(this).removeClass("is-invalid"); // Remove error styling
-                $(this).next('.error-message').remove();
+        // Submit button event for Approval
+        $('#approve-form').submit(function (e) {
+            console.log("Submit Approve");
+            e.preventDefault();
+
+            let isValid = true;
+            let errorMessages = [];
+            let missingFields = [];
+
+            // Clear previous errors
+            $(".is-invalid").removeClass("is-invalid");
+            $(".error-message").remove();
+
+            // Get input values
+            let reviewComment2 = $('#reviewComment2');
+
+            // Validation Rules
+            if (!reviewComment2.val().trim()) {
+                isValid = false;
+                missingFields.push("Review Comment");
+                reviewComment2.addClass("is-invalid");
+                reviewComment2.after("<div class='error-message text-danger'>The comments are required.</div>");
+            } else if (reviewComment2.val().length > 500) {
+                isValid = false;
+                errorMessages.push("The review comment must be at most 500 characters.");
+                reviewComment2.addClass("is-invalid");
+            }
+
+            // Show error messages if validation fails
+            if (!isValid) {
+                let errorText = "";
+
+                if (missingFields.length > 0) {
+                    errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
+                }
+                if (errorMessages.length > 0) {
+                    errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
+                }
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Input',
+                    html: errorText,
+                });
+
+                return;
+            }
+
+            // Proceed with form submission via AJAX
+            let formData = new FormData(this);
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('/documents/storeApprove') }}",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: res.success
+                        });
+
+                        // Clear the input field after successful submission
+                        $('#reviewComments').val('');
+                        $('#rejectApproveButton').hide();
+                        $('#approvedButton').hide();
+
+                        // Optional: Refresh DataTable
+                        if ($.fn.DataTable.isDataTable("#approve-dt")) {
+                            $('#approve-dt').DataTable().ajax.reload();
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            html: res.errors
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 422) {
+                        let errors = xhr.responseJSON.errors;
+                        let errorMessages = [];
+
+                        $.each(errors, function (key, messages) {
+                            errorMessages.push(messages.join("<br>"));
+                        });
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid Input',
+                            html: errorMessages.join("<br>")
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong. Please try again.'
+                        });
+                    }
+                }
             });
+        });
+
+        // Lock and Unlock Fields
+        $("#register-modal").on("show.bs.modal", function () {
+            console.log("Show Register Modal");
+            var modal = $(this);
+            var docRefCode = $("#docRefCode2");
+            var currentRevNo = $("#currentRevNo2");
+            var requestTypeID = $("#requestTypeID2").val();
+            var currentValue = parseInt(currentRevNo.val(), 10) || 0;
+
+            if (requestTypeID === "1") {
+                docRefCode.val("").prop("readonly", false).attr("required", "required");
+                currentRevNo.val("0");
+            } else {
+                docRefCode.prop("readonly", true) .removeAttr("required");
+                
+                if (!modal.data('opened')) {
+                    currentRevNo.val(currentValue + 1);
+                    modal.data('opened', true);
+                } else {
+                    currentRevNo.val(currentValue);
+                }
+            }
+        });
+            
+        //Remove Error in File Upload - REGISTER
+        $("#documentFile2").change(function () {
+            console.log("Change DocumentFile2");
+            var documentFile = $(this).val(); // Get entered value
+            $(this).removeClass("is-invalid"); // Remove error styling
+            $(this).next('.error-message').remove();
         });
 
         // Submit Register
         $('#register-form').submit(function (e){
+            console.log("Submit Register");
             e.preventDefault();
 
             let docRefCode = $('#docRefCode2').val().trim();
@@ -823,7 +1022,145 @@
             });
         });
 
+        function checkDuplicateRequest(docRefCode, requestTypeID, currentDocRefCode, callback) {
+            console.log("checkDuplicateRequest");
+            if(requestTypeID != 1){
+                $.ajax({
+                    url: "{{ url('/check-docDuplicateRequest') }}",
+                    type: "GET",
+                    data: { docRefCode: docRefCode },
+                    success: function (response) {
+                        if (response.exists && docRefCode != currentDocRefCode) {
+                            $("#docRefCodeErrorEdit").text("A Request with the same Doc Ref Code is already " + response.requestStatus + "!");
+                            $("#currentRevNoEdit").val("0"); 
+                            $("#docRefCodeEdit").addClass("is-invalid"); // Add error styling
+                            callback(false); // Invalid case
+                        } else {
+                            $("#currentRevNoEdit").val(response.currentRevNo ?? ""); // ✅ Prevent undefined errors
+                            $("#docRefCodeEdit").removeClass("is-invalid"); // Remove error styling
+                            $("#docRefCodeErrorEdit").text("");
+                            callback(true); // Valid case
+                        }
+                    },
+                    error: function () {
+                        $("#docRefCodeErrorEdit").text("Error checking document reference code.");
+                        $("#docRefCodeEdit").addClass("is-invalid");
+                        callback(false);
+                    }
+                });
+            }
+            else{
+                callback(true);
+            }
+        }
+
+        //For Modal
+        function checkDocRefCodeEdit(docRefCode, requestTypeID, callback) {
+            console.log("checkDocRefCodeEdit");
+            if(requestTypeID != 1){
+                $.ajax({
+                    url: "{{ url('/check-docRefCode') }}",
+                    type: "GET",
+                    data: { docRefCode: docRefCode },
+                    success: function (response) {
+                        if (response.exists) {
+                            $("#currentRevNoEdit").val(response.currentRevNo ?? ""); // ✅ Prevent undefined errors
+                            $("#docTypeIDEdit").val(response.docTypeID ?? "").trigger('change');; // ✅ Prevent undefined errors
+                            $("#docRefCodeEdit").removeClass("is-invalid"); // Remove error styling
+                            $("#docRefCodeErrorEdit").text("");
+                            callback(true); // Valid case
+                        } else {
+                            $("#docRefCodeErrorEdit").text("Document Reference Code not found!");
+                            $("#currentRevNoEdit").val("0"); 
+                            $("#docRefCodeEdit").addClass("is-invalid"); // Add error styling
+                            callback(false); // Invalid case
+                        }
+                    },
+                    error: function () {
+                        $("#docRefCodeErrorEdit").text("Error checking document reference code.");
+                        $("#docRefCodeEdit").addClass("is-invalid");
+                        callback(false);
+                    }
+                });
+            }
+            else{
+                callback(true);
+            }
+        }
+
+        // Define loadRequestType before using it
+        function loadRequestType(selectedrequestTypeID = null, callback = null) {
+            console.log("loadRequestType");
+            $.ajax({
+                url: "/get-requestType",
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    console.log("Response received:", response);
+
+                    if (response.data && response.data.length > 0) {
+                        let options = '';
+                        let requestTypeID = "{{ $document->requestTypeID }}";
+
+
+                        response.data.forEach(function (requestType) {
+                            let selected = (requestType.requestTypeID == requestTypeID) ? 'selected' : ''; // Check if it matches
+                            options += `<option value="${requestType.requestTypeID}" ${selected}>${requestType.requestTypeDesc}</option>`;
+                        });
+
+                        $("#requestTypeIDEdit").html(options);
+
+                        // Execute callback after setting dropdown options
+                        if (callback) {
+                            callback();
+                        }
+                    } else {
+                        $("#requestTypeIDEdit").html('<option value="">Please Check Libraries</option>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", xhr.responseText);
+                }
+            });
+        }
+
+        // Define loadDocType before using it
+        function loadDocType(selecteddocTypeID = null, callback = null) {
+            console.log("loadDocType");
+            $.ajax({
+                url: "/get-docType",
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    console.log("Response received:", response);
+
+                    if (response.data && response.data.length > 0) {
+                        let options = '';
+                        let docTypeID = "{{ $document->docTypeID }}";
+
+                        response.data.forEach(function (docType) {
+                            let selected = (docType.docTypeID == docTypeID) ? 'selected' : ''; // Check if it matches
+                            options += `<option value="${docType.docTypeID}" ${selected}>${docType.docTypeDesc}</option>`;
+                        });
+
+                        $("#docTypeIDEdit").html(options);
+
+                        // Execute callback after setting dropdown options
+                        if (callback) {
+                            callback();
+                        }
+                    } else {
+                        $("#docTypeIDEdit").html('<option value="">Please Check Libraries</option>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", xhr.responseText);
+                }
+            });
+        }
+
         function checkDocRefCode(docRefCode, requestTypeID, callback) {
+            console.log("checkDocRefCode");
             if(requestTypeID == 1){
                 $.ajax({
                     url: "{{ url('/check-docRefCode') }}",
@@ -1064,5 +1401,11 @@
                 }
             });
         }
+
+        // Load dropdown when modal opens
+        $("#request-modal").on("show.bs.modal", function () {
+            loadRequestType();
+            loadDocType();
+        });
     </script>
 @endsection

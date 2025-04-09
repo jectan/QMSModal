@@ -26,7 +26,7 @@
             <table class="table table-hover" id="accountTable" style="font-size: 14px">
                 <thead>
                 <tr>
-                    <th style="width: 10%">Id</th>
+                    <th style="width: 10%">ID</th>
                     <th style="width: 25%">Name</th>
                     <th style="width: 20%">Unit</th>
                     <th style="width: 20%">User Role</th>
@@ -92,61 +92,76 @@
 
     function deleteAccount(id)
     {
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: 'btn btn-danger mx-2',
-                cancelButton: 'btn btn-default mx-2'
-            },
-            buttonsStyling: false
-        });
-
-        swalWithBootstrapButtons.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, cancel!',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.value) {
-                if (result.isConfirmed){
-
-                    swal.fire({
-                        html: '<h6>Loading... Please wait</h6>',
-                        onRender: function() {
-                            $('.swal2-content').prepend(sweet_loader);
-                        },
-                        showConfirmButton: false
-                    });
-
-                    $.ajax({
-                        type:'DELETE',
-                        url:'{{url("/accounts/delete")}}/' +id,
-                        data:{
-                            "_token": "{{ csrf_token() }}",
-                        },
-                        success:function(res) {
-                            
-                            setTimeout(function() {
-                                swal.fire({
-                                    icon: 'success',
-                                    html: '<h5>Success deleted!</h5>'
-                                }).then(function() {
-                                    window.location = '{{ url('accounts') }}'
-                                });
-                            }, 700);
-                        }
-                    });
-                }
-            } else if (
-                result.dismiss === Swal.DismissReason.cancel
-            ) {
-                toastr.info(
-                    'Your data is safe :)',
-                    'CANCELLED'
-                );
+        checkIfOwner(id, function(canDelete) {
+            if (!canDelete) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Cannot Delete',
+                    html: 'This account owns active documents.<br><strong>Please reassign or cancel them first.</strong>'
+                });
+                return;
             }
+
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-danger mx-2',
+                    cancelButton: 'btn btn-default mx-2'
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    if (result.isConfirmed){
+
+                        Swal.fire({
+                            html: '<h6>Loading... Please wait</h6>',
+                            didOpen: function () {
+                                Swal.showLoading();
+                            },
+                            showConfirmButton: false
+                        });
+
+                        $.ajax({
+                            type: 'DELETE',
+                            url: '{{url("/accounts/delete")}}/' + id,
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function (res) {
+                                setTimeout(function () {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        html: '<h5>Successfully deleted!</h5>'
+                                    }).then(function () {
+                                        window.location = '{{ url('accounts') }}';
+                                    });
+                                }, 700);
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Failed to delete the account. Please try again.'
+                                });
+                            }
+                        });
+                    }
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    toastr.info(
+                        'Your data is safe :)',
+                        'CANCELLED'
+                    );
+                }
+            });
         });
     }
 
@@ -189,6 +204,32 @@
                 });
             }
         })
+    }
+
+    function checkIfOwner(id, callback)
+    {
+        $.ajax({
+            url: "{{ url('/check-ifOwner') }}",
+            type: "GET",
+            data: { userID: id },
+            success: function (response) {
+                if (response.exists) {
+                    // User owns an active document, not allowed to delete
+                    callback(false);
+                } else {
+                    // User has no active documents, allowed to delete
+                    callback(true);
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to check ownership status.'
+                });
+                callback(false);
+            }
+        });
     }
 
   </script>

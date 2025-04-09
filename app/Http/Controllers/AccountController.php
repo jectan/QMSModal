@@ -11,6 +11,7 @@ use App\Models\Role;
 use App\Models\Unit;
 use App\Models\Office;
 use App\Models\Staff;
+use App\Models\RequestDocument;
 use App\Models\UserRole;
 use Exception;
 
@@ -218,5 +219,17 @@ class AccountController extends Controller
         $user_role->delete();
 
         return response()->json(array('success' => true));
+    }
+
+    //Check If Owner of a Document
+    public function checkIfOwner(Request $request)
+    {
+        $userID = $request->userID;
+
+        $document = RequestDocument::where('userID', $userID)
+            ->whereNotIn('requestStatus', ['Cancelled', 'Archived'])
+            ->exists();
+
+        return response()->json(['exists' => $document]);
     }
 }

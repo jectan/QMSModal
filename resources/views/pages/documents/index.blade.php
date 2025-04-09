@@ -55,7 +55,7 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                     <h4 class="h2" style="padding-left: 5px">List of Documents</h4>
-                    @if(in_array(Auth::user()->role_id, [1, 5]))
+                    @if(in_array(Auth::user()->role_id, [1, 4, 5]))
                         <div class="btn-toolbar mb-2 mb-md-0">
                             <div class="btn-group mr-2">
                                 <div class="container-login100-form-btn">
@@ -77,38 +77,29 @@
                     <ul class="nav nav-tabs" id="settings-tab" role="tablist">
 
                         <!-- Only Allow Admin, DMT, and User to View -->
-                        @if(in_array(Auth::user()->role_id, [1, 2, 5]))
+                        @if(in_array(Auth::user()->role_id, [1, 2, 3, 4, 5]))
                             <li class="nav-item">
-                                <a class="nav-link active" id="request" data-toggle="pill" href="#requested-document" role="tab" aria-controls="requested-document" aria-selected="true">Requested</a>
+                                <a class="nav-link {{ in_array(Auth::user()->role->id, [1, 5]) ? 'active' : 'null' }}" id="request" data-toggle="pill" href="#requested-document" role="tab" aria-controls="requested-document" aria-selected="true">Requested</a>
                             </li>
-                        @endif
 
-                        <!-- Only Allow Admin, DMT, QMR, and User to View -->
-                        @if(in_array(Auth::user()->role_id, [1, 2, 4, 5]))
                             <li class="nav-item">
                                 <a class="nav-link {{Auth::user()->role->id == 4 ? 'active' : 'null'}}" id="review" data-toggle="pill" href="#review-document" role="tab" aria-controls="review-document" aria-selected="false">For Review</a>
                             </li>
-                        @endif
 
-                        <!-- Only Allow Admin, DMT, RD, and User to View -->
-                        @if(in_array(Auth::user()->role_id, [1, 2, 3, 5]))
                             <li class="nav-item">
-                                <a class="nav-link " id="approval" data-toggle="pill" href="#approval-document" role="tab" aria-controls="approval-document" aria-selected="false">For Approval</a>
+                                <a class="nav-link {{Auth::user()->role->id == 3 ? 'active' : 'null'}}" id="approval" data-toggle="pill" href="#approval-document" role="tab" aria-controls="approval-document" aria-selected="false">For Approval</a>
                             </li>
-                        @endif
 
-                        <!-- Only Allow Admin, DMT, and User to View -->
-                        @if(in_array(Auth::user()->role_id, [1, 2, 5]))
                             <li class="nav-item">
-                            <a class="nav-link " id="registration" data-toggle="pill" href="#registration-document" role="tab" aria-controls="registration-document" aria-selected="false">For Registration</a>
+                            <a class="nav-link {{Auth::user()->role->id == 2 ? 'active' : 'null'}}" id="registration" data-toggle="pill" href="#registration-document" role="tab" aria-controls="registration-document" aria-selected="false">For Registration</a>
                             </li>
                         @endif
                     </ul>
                 </div>
                 <div class="card-body">
                     <div class="tab-content" id="set-content">
-                        @if(!in_array(Auth::user()->role_id, [3, 4]))
-                            <div class="tab-pane fade show active " id="requested-document" role="tabpanel" aria-labelledby="request-tab">
+                        @if(!in_array(Auth::user()->role_id, [0]))
+                            <div class="tab-pane fade {{ in_array(Auth::user()->role->id, [1, 5]) ? 'show active' : 'null' }} " id="requested-document" role="tabpanel" aria-labelledby="request-tab">
                                 @include('pages.documents.requested-document')
                             </div>
                         @endif
@@ -164,7 +155,8 @@
                         <!-- DocRefCode and CurrentRevNum -->
                         <div class="form-group row">
                             <div class="col-md-6">
-                                <label for="docRefCode" class="form-label"><strong>Document Reference Code:</strong></label>
+                                <label for="docRefCode" class="col-sm-4 control-label">Document Reference Code:<span
+                                class="require">*</span></label>
                                 <div class="col-sm-12">
                                     <input type="text" class="form-control" id="docRefCode" name="docRefCode" value="For Assigning" readonly required>
                                     <span id="docRefCodeError" class="text-danger"></span>
@@ -245,41 +237,14 @@
                 var requestType = $(this).val(); // Get selected value
                 var docRefCode = $("#docRefCode");
                 var currentRevNo = $("#currentRevNo");
+                var documentType = $("#docTypeID");
                 if (requestType == "1") {
                     docRefCode.val("For Assigning").prop("readonly", true).removeAttr("required"); // Clear, disable, and remove required
                     currentRevNo.val("0");
+                    documentType.prop("disabled", false).attr("required", "required"); 
                 } else {
                     docRefCode.val("").prop("readonly", false).attr("required", "required"); // Enable and make required
-                }
-            });
-
-            //Auto Current Revision Number
-            $("#docRefCode").change(function () {
-                var docRefCode = $(this).val(); // Get entered value
-                var currentRevNo = $("#currentRevNo");
-                var errorField = $("#docRefCodeError"); // Error message span
-
-                if (docRefCode !== "") {
-                    $.ajax({
-                        url: "{{ url('/check-docRefCode') }}", // Change to your route
-                        type: "GET",
-                        data: { docRefCode: docRefCode },
-                        success: function (response) {
-                            if (response.exists) {
-                                currentRevNo.val(response.currentRevNo ?? ""); // ✅ Prevent undefined errors
-                                errorField.text(""); // Clear error message
-                                $("#docRefCode").removeClass("is-invalid"); // Remove error styling
-                            } else {
-                                alert("Document Reference Code not found!");
-                                currentRevNo.val("0"); 
-                                $("#docRefCode").addClass("is-invalid"); // Add error styling
-                            }
-                        },
-                        error: function () {
-                            errorField.text("Error checking document reference code.");
-                            $("#docRefCode").addClass("is-invalid"); // Add error styling
-                        }
-                    });
+                    documentType.prop("disabled", true).removeAttr("required");
                 }
             });
         });
@@ -287,163 +252,240 @@
         // Submit button
         $('#request-form').submit(function (e){
             e.preventDefault();
-            var errorField = $("#docRefCodeError");
 
-            if (docRefCode === "" || $("#docRefCode").hasClass("is-invalid")) {
+            let errorField = $("#docRefCodeError");
+            let errorMessages = [];
+            let missingFields = []; // ✅ Declare the variable at the start
+            //let fileSizeLimit = 2 * 1024 * 1024; // 2MB in bytes
+            let allowedFileType = ["application/pdf"];
+
+            let docRefCode = $('#docRefCode').val().trim();
+            let requestTypeID = $('#requestTypeID').val();
+
+            if (docRefCode === "") {
                 errorField.text("Invalid Document Reference Code. Please check again.");
                 $("#docRefCode").addClass("is-invalid");
-                e.preventDefault(); // Stop form submission
+                return; // Stop form submission
             }
-            else{
-                let isValid = true;
-                let errorMessages = [];
-                let missingFields = []; // ✅ Declare the variable at the start
-                let fileSizeLimit = 2 * 1024 * 1024; // 2MB in bytes
-                let allowedFileType = ["application/pdf"];
-                
-                // Clear previous errors
-                $(".is-invalid").removeClass("is-invalid");
-                $(".error-message").remove();
 
-                // Get input values
-                let requestID = $('#requestID');
-                let currentRevNo = $('#currentRevNo');
-                let docTitle = $('#docTitle');
-                let requestReason = $('#requestReason');
-                let documentFile = $('#documentFile')[0].files[0];
-
-                // Validation Rules
-                if (!currentRevNo.val()) {
-                    isValid = false;
-                    missingFields.push("Revision Number");
-                    currentRevNo.addClass("is-invalid");
-                    currentRevNo.after("<div class='error-message text-danger'>The Revision Number is required.</div>");
-                } else if (isNaN(currentRevNo.val()) || currentRevNo.val() < 0) {
-                    isValid = false;
-                    errorMessages.push("The Revision Number must be a number & greater than or equal to 0.");
-                    currentRevNo.addClass("is-invalid");
-                }
-
-                if (!docTitle.val()) {
-                    isValid = false;
-                    missingFields.push("Document Title");
-                    docTitle.addClass("is-invalid");
-                    docTitle.after("<div class='error-message text-danger'>The Document Title is required.</div>");
-                } else if (docTitle.val().length > 255) {
-                    isValid = false;
-                    errorMessages.push("The Document Title must be at most 255 characters.");
-                    docTitle.addClass("is-invalid");
-                }
-
-                if (!requestReason.val()) {
-                    isValid = false;
-                    missingFields.push("Reason for Request");
-                    requestReason.addClass("is-invalid");
-                    requestReason.after("<div class='error-message text-danger'>The Reason for Request is required.</div>");
-                } else if (requestReason.val().length > 500) {
-                    isValid = false;
-                    errorMessages.push("The Reason for Request must be at most 500 characters.");
-                    requestReason.addClass("is-invalid");
-                }
-
-                if(!requestID.val()){
-                    if (!documentFile) {
-                        isValid = false;
-                        missingFields.push("Uploaded Document");
-                        $('#documentFile').addClass("is-invalid");
-                        $('#documentFile').after("<div class='error-message text-danger'>The Uploaded Document is required.</div>");
-                    } else if (!allowedFileType.includes(documentFile.type)) {
-                        isValid = false;
-                        errorMessages.push("The Uploaded Document must be a PDF file.");
-                        $('#documentFile').addClass("is-invalid");
-                    } else if (documentFile.size > fileSizeLimit) {
-                        isValid = false;
-                        errorMessages.push("The Uploaded Document must not exceed 2MB.");
-                        $('#documentFile').addClass("is-invalid");
-                    } 
-                }
-
-                // If validation fails, show a detailed error message
+            // Call AJAX validation before proceeding
+            checkDuplicateRequest(docRefCode, requestTypeID, function(isValid) {
                 if (!isValid) {
-                    let errorText = "";
-
-                    if (missingFields.length > 0) {
-                        errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
-                    }
-                    if (errorMessages.length > 0) {
-                        errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
-                    }
-
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Invalid Input',
-                        html: errorText,
-                    });
-
-                    return;
+                    return; // Stop form submission if invalid
                 }
 
-                // Proceed with form submission via AJAX if all fields are valid
-                let formData = new FormData(this);
+                checkDocRefCode(docRefCode, requestTypeID, function(isValid) {
+                    if (!isValid) {
+                        return; // Stop form submission if invalid
+                    }
 
+                    // Get input values
+                    let requestID = $('#requestID');
+                    let currentRevNo = $('#currentRevNo');
+                    let docTitle = $('#docTitle');
+                    let requestReason = $('#requestReason');
+                    let documentType = $('#docTypeID');
+                    let documentFile = $('#documentFile')[0].files[0];
+                    // Clear previous errors
+                    $(".is-invalid").removeClass("is-invalid");
+                    $(".error-message").remove();
+
+                    // Validation Rules
+                    if (!currentRevNo.val()) {
+                        isValid = false;
+                        missingFields.push("Revision Number");
+                        currentRevNo.addClass("is-invalid");
+                        currentRevNo.after("<div class='error-message text-danger'>The Revision Number is required.</div>");
+                    } else if (isNaN(currentRevNo.val()) || currentRevNo.val() < 0) {
+                        isValid = false;
+                        errorMessages.push("The Revision Number must be a number & greater than or equal to 0.");
+                        currentRevNo.addClass("is-invalid");
+                    }
+
+                    if (!docTitle.val()) {
+                        isValid = false;
+                        missingFields.push("Document Title");
+                        docTitle.addClass("is-invalid");
+                        docTitle.after("<div class='error-message text-danger'>The Document Title is required.</div>");
+                    } else if (docTitle.val().length > 255) {
+                        isValid = false;
+                        errorMessages.push("The Document Title must be at most 255 characters.");
+                        docTitle.addClass("is-invalid");
+                    }
+
+                    if (!requestReason.val()) {
+                        isValid = false;
+                        missingFields.push("Reason for Request");
+                        requestReason.addClass("is-invalid");
+                        requestReason.after("<div class='error-message text-danger'>The Reason for Request is required.</div>");
+                    } else if (requestReason.val().length > 500) {
+                        isValid = false;
+                        errorMessages.push("The Reason for Request must be at most 500 characters.");
+                        requestReason.addClass("is-invalid");
+                    }
+
+                    if(!requestID.val()){
+                        if (!documentFile) {
+                            isValid = false;
+                            missingFields.push("Uploaded Document");
+                            $('#documentFile').addClass("is-invalid");
+                            $('#documentFile').after("<div class='error-message text-danger'>The Uploaded Document is required.</div>");
+                        } else if (!allowedFileType.includes(documentFile.type)) {
+                            isValid = false;
+                            errorMessages.push("The Uploaded Document must be a PDF file.");
+                            $('#documentFile').addClass("is-invalid");
+                        }
+                    }
+
+                    // If validation fails, show a detailed error message
+                    if (!isValid) {
+                        let errorText = "";
+
+                        if (missingFields.length > 0) {
+                            errorText += `<strong>Missing Fields:</strong><br>• ${missingFields.join("<br>• ")}<br><br>`;
+                        }
+                        if (errorMessages.length > 0) {
+                            errorText += `<strong>Errors:</strong><br>• ${errorMessages.join("<br>• ")}`;
+                        }
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Invalid Input',
+                            html: errorText,
+                        });
+
+                        return;
+                    }
+
+                    //re-enable Document Type Select
+                    
+                    documentType.prop("disabled", false).attr("required", "required"); 
+
+                    // Proceed with form submission via AJAX if all fields are valid
+                    let formData = new FormData($('#request-form')[0]);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ url('/documents/store') }}",
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: res.success
+                                });
+
+                                $("#request-modal").modal('hide');
+
+                                // Refresh DataTable after saving
+                                $('#request-dt').DataTable().ajax.reload(null, false);
+                                $('#review-dt').DataTable().ajax.reload(null, false);
+                                $('#approval-dt').DataTable().ajax.reload(null, false);
+                                $('#registration-dt').DataTable().ajax.reload(null, false);
+
+                                //$("#request-btn-save").html('Save Changes');
+                                //$("#request-btn-save").attr("disabled", false);
+                                $("#request-form")[0].reset();
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    html: res.errors
+                                });
+                            }
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                let errorMessages = [];
+
+                                $.each(errors, function (key, messages) {
+                                    errorMessages.push(messages.join("<br>"));
+                                });
+
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Invalid Input',
+                                    html: errorMessages.join("<br>")
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Something went wrong. Please try again.'
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+        });
+
+        function checkDuplicateRequest(docRefCode, requestTypeID, callback) {
+            if(requestTypeID != 1){
                 $.ajax({
-                    type: 'POST',
-                    url: "{{ url('/documents/store') }}",
-                    data: formData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function (res) {
-                        if (res.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: res.success
-                            });
-
-                            $("#request-modal").modal('hide');
-
-                            // Refresh DataTable after saving
-                            $('#request-dt').DataTable().ajax.reload(null, false);
-                            $('#review-dt').DataTable().ajax.reload(null, false);
-                            $('#approval-dt').DataTable().ajax.reload(null, false);
-                            $('#registration-dt').DataTable().ajax.reload(null, false);
-
-                            //$("#request-btn-save").html('Save Changes');
-                            //$("#request-btn-save").attr("disabled", false);
-                            $("#request-form")[0].reset();
+                    url: "{{ url('/check-docDuplicateRequest') }}",
+                    type: "GET",
+                    data: { docRefCode: docRefCode },
+                    success: function (response) {
+                        if (response.exists) {
+                            $("#docRefCodeError").text("A Request with the same Doc Ref Code is already " + response.requestStatus + "!");
+                            $("#currentRevNo").val("0"); 
+                            $("#docRefCode").addClass("is-invalid"); // Add error styling
+                            callback(false); // Invalid case
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                html: res.errors
-                            });
+                            $("#currentRevNo").val(response.currentRevNo ?? ""); // ✅ Prevent undefined errors
+                            $("#docRefCode").removeClass("is-invalid"); // Remove error styling
+                            $("#docRefCodeError").text("");
+                            callback(true); // Valid case
                         }
                     },
-                    error: function (xhr) {
-                        if (xhr.status === 422) {
-                            let errors = xhr.responseJSON.errors;
-                            let errorMessages = [];
-
-                            $.each(errors, function (key, messages) {
-                                errorMessages.push(messages.join("<br>"));
-                            });
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Invalid Input',
-                                html: errorMessages.join("<br>")
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Something went wrong. Please try again.'
-                            });
-                        }
+                    error: function () {
+                        $("#docRefCodeError").text("Error checking document reference code.");
+                        $("#docRefCode").addClass("is-invalid");
+                        callback(false);
                     }
                 });
             }
-        });
+            else{
+                callback(true);
+            }
+        }
+
+        function checkDocRefCode(docRefCode, requestTypeID, callback) {
+            if(requestTypeID != 1){
+                $.ajax({
+                    url: "{{ url('/check-docRefCode') }}",
+                    type: "GET",
+                    data: { docRefCode: docRefCode },
+                    success: function (response) {
+                        if (response.exists) {
+                            $("#currentRevNo").val(response.currentRevNo ?? ""); // ✅ Prevent undefined errors
+                            $("#docTypeID").val(response.docTypeID ?? "").trigger('change');; // ✅ Prevent undefined errors
+                            $("#docRefCode").removeClass("is-invalid"); // Remove error styling
+                            $("#docRefCodeError").text("");
+                            callback(true); // Valid case
+                        } else {
+                            $("#docRefCodeError").text("Document Reference Code not found!");
+                            $("#currentRevNo").val("0"); 
+                            $("#docRefCode").addClass("is-invalid"); // Add error styling
+                            callback(false); // Invalid case
+                        }
+                    },
+                    error: function () {
+                        $("#docRefCodeError").text("Error checking document reference code.");
+                        $("#docRefCode").addClass("is-invalid");
+                        callback(false);
+                    }
+                });
+            }
+            else{
+                callback(true);
+            }
+        }
 
         // Define loadRequestType before using it
         function loadRequestType(selectedrequestTypeID = null, callback = null) {

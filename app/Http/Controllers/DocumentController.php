@@ -40,7 +40,7 @@ class DocumentController extends Controller
         'currentRevNo' => 'required|numeric|min:0',
         'docTitle' => 'required|string|max:255',
         'requestReason' => 'required|string|max:500',
-        'documentFile' => 'nullable|mimes:pdf|max:2048',
+        'documentFile' => 'nullable|mimes:pdf',
         ], [
             'currentRevNo.required' => 'The Revision Number is required.',
             'docTitle.required' => 'The Document Title is required.',
@@ -50,6 +50,7 @@ class DocumentController extends Controller
 
         // Initialize file path variable
         $filePath = null;
+        $status = 'Requested';
 
         // Check if a file is uploaded
         if ($request->hasFile('documentFile')) {
@@ -59,6 +60,10 @@ class DocumentController extends Controller
         }
         else{
             $filePath = $request->requestFileOld;
+        }
+
+        if (Auth::user() && Auth::user()->role_id == 4){
+            $status = 'For Approval';
         }
 
         $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
@@ -72,7 +77,7 @@ class DocumentController extends Controller
             'userID' => Auth::id(),
             'requestFile' => $filePath, // Save file path in DB
             'requestDate' => Carbon::now(),
-            'requestStatus' => 'Requested',                  
+            'requestStatus' => $status,
         ]);
 
         return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
@@ -81,69 +86,59 @@ class DocumentController extends Controller
     public function storeEdit(Request $request)
     {
         $request->validate([
-        'currentRevNo' => 'required|numeric|min:0',
-        'docTitle' => 'required|string|max:255',
-        'requestReason' => 'required|string|max:500',
-        'documentFile' => 'nullable|mimes:pdf|max:2048',
+        'currentRevNoEdit' => 'required|numeric|min:0',
+        'docTitleEdit' => 'required|string|max:255',
+        'requestReasonEdit' => 'required|string|max:500',
         ], [
-            'currentRevNo.required' => 'The Revision Number is required.',
-            'docTitle.required' => 'The Document Title is required.',
-            'requestReason.required' => 'The Reason for Request is required.',
-            'documentFile.required' => 'The Uploaded Document is required.',
+            'currentRevNoEdit.required' => 'The Revision Number is required.',
+            'docTitleEdit.required' => 'The Document Title is required.',
+            'requestReasonEdit.required' => 'The Reason for Request is required.',
         ]);
 
         // Initialize file path variable
         $filePath = null;
+        // Retrieve the old file path
+        $oldFilePath = $request->requestFileOldEdit;
+        $status = 'Requested';
 
-        if(empty($request->requestID)){
-            $isNew = true;
-        }
-        else{
-            $isNew = false;
-        }
 
-        if($request->requestStatus == 'For Review'){
-            
-            $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
-            [
-                'requestID' => $request->requestID,
-                'reviewComment' => 'Submitted for Review by ' . Auth::user()->staff->fullname,
-                'userID' => Auth::id(),
-                'reviewStatus' => 'Active',                  
-            ]);
+        if (Auth::user() && Auth::user()->role_id == 4){
+            $status = 'For Approval';
         }
-
+        
         // Check if a file is uploaded
-        if ($request->hasFile('documentFile')) {
-            $file = $request->file('documentFile');
+        if ($request->hasFile('documentFileEdit')) {
+            $file = $request->file('documentFileEdit');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('documents', $fileName, 'public'); // Store in storage/app/public/documents
-            
-            // Delete the old file if it exists
-            $oldFile = $request->requestFileOld;
-            if ($oldFile && Storage::exists($oldFile)) {
-                Storage::delete($oldFile);
+
+            // Delete the old file if it exists and is different from the new one
+            if ($oldFilePath && $oldFilePath != $filePath) {
+                $oldFilePathFull = public_path('storage/' . $oldFilePath);
+                if (file_exists($oldFilePathFull)) {
+                    unlink($oldFilePathFull);
+                }
             }
         }
         else{
-            $filePath = $request->requestFileOld;
+            $filePath = $request->requestFileOldEdit;
         }
 
-        $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+        $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestIDEdit],
         [
-            'requestTypeID' => $request->requestTypeID,
-            'docTypeID' => $request->docTypeID,
-            'docRefCode' => $request->docRefCode,
-            'currentRevNo' => $request->currentRevNo,
-            'docTitle' => $request->docTitle,
-            'requestReason' => $request->requestReason,
+            'requestTypeID' => $request->requestTypeIDEdit,
+            'docTypeID' => $request->docTypeIDEdit,
+            'docRefCode' => $request->docRefCodeEdit,
+            'currentRevNo' => $request->currentRevNoEdit,
+            'docTitle' => $request->docTitleEdit,
+            'requestReason' => $request->requestReasonEdit,
             'userID' => Auth::id(),
             'requestFile' => $filePath, // Save file path in DB
             'requestDate' => Carbon::now(),
-            'requestStatus'  => $request->requestStatus,                  
+            'requestStatus' => $status,                  
         ]);
-        
-        return redirect()->back()->with('success', 'Successfully saved.');
+
+        return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
     }
 
     public function storeReview(Request $request)
@@ -373,7 +368,8 @@ class DocumentController extends Controller
             })
             ->addColumn('action', function ($row) {
                 $onClickFunction = "editRequest({$row->requestID})";
-                $isHidden = "";
+                $isHidden = "hidden";
+                $isHidden2 = "hidden";
 
                 if ((in_array($row->requestStatus, ['For Review', 'For Approval', 'For Registration', 'Registered']) || $row->userID !== Auth::id()) 
                     && Auth::user()->role_id !== 1) {
@@ -384,8 +380,18 @@ class DocumentController extends Controller
                     && Auth::user()->role_id !== 1) {
                     $isHidden2 = "";
                 }
-        
+
+                
                 return '<button class="btn btn-sm btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
+                            <span class="material-icons" style="font-size: 20px;">visibility</span>
+                        </button>
+
+                        <button class="btn btn-sm btn-danger mx-1" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
+                            <span class="material-icons" style="font-size: 20px;">delete</span>
+                        </button>
+                        ';
+        
+                /* return '<button class="btn btn-sm btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
 
@@ -393,14 +399,14 @@ class DocumentController extends Controller
                             <span class="material-icons" style="font-size: 20px;">edit</span>
                         </button>
 
-                        <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="registerDocument(' . $onClickFunction . ')"' . $isHidden2 .'>
-                            <span class="material-icons" style="font-size: 20px;">far fa-calendar-check</span>
-                        </button>
+                        <!-- <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="registerDocument(' . $onClickFunction . ')"' . $isHidden2 .'>
+                            <span class="material-icons" style="font-size: 20px;">check_box</span>
+                        </button> -->
 
                         <button class="btn btn-sm btn-danger mx-1" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">delete</span>
                         </button>
-                        ';
+                        '; */
             })
             ->rawColumns(['action'])
             ->make(true);
@@ -444,7 +450,7 @@ class DocumentController extends Controller
 
     public function checkDocRefCode(Request $request)
     {
-        $document = RequestDocument::select('requestID', 'docRefCode', 'currentRevNo')
+        $document = RequestDocument::select('requestID', 'docRefCode', 'currentRevNo', 'docTypeID')
             ->where('docRefCode', $request->docRefCode)
             ->where('requestStatus', 'Registered')
             ->first();
@@ -452,7 +458,28 @@ class DocumentController extends Controller
         if ($document) {
             return response()->json([
                 'exists' => true,
-                'currentRevNo' => $document->currentRevNo, // ✅ Return the specific revision number
+                'currentRevNo' => $document->currentRevNo,
+                'docTypeID' => $document->docTypeID, // ✅ Return the specific revision number
+            ]);
+        } else {
+            return response()->json([
+                'exists' => false,
+                'currentRevNo' => null, // ✅ Ensure this key always exists
+            ]);
+        }
+    }
+
+    public function checkDuplicateRequest(Request $request)
+    {
+        $document = RequestDocument::select('requestID', 'docRefCode', 'requestStatus')
+            ->where('docRefCode', $request->docRefCode)
+            ->whereNotIn('requestStatus', ['Registered', 'Obsolete', 'Cancelled'])
+            ->first();
+
+        if ($document) {
+            return response()->json([
+                'exists' => true,
+                'requestStatus' => $document->requestStatus,
             ]);
         } else {
             return response()->json([
@@ -510,267 +537,5 @@ class DocumentController extends Controller
         ]);
         
         return response()->json(array('success' => 'Successfully Cancelled Request'));
-    }
-
-
-
-//TO REMOVE
-
-    public function closeticket(Request $request)
-    {
-        // dd($request->id);
-        
-        $id = $request->id;
-        $document = Ticket::find($id);
-        $document->status = 'closed';
-        $document->updated_by_id     =  Auth::id();
-        $document->status_updated_at=Carbon::now();
-        $document->update();
-
-        $document_log = new TicketLog();
-        $document_log->ticket_id = $document->id;
-        $document_log->status = "closed";
-        $document_log->assigned_by_id =Auth::id();
-        $document_log-> remarks =$request->remarks;
-       
-        $document_log->save();
-        
-        return redirect('/documents/view/' . $id)->with(['success' => 'Successfully Updated!', 'ticket' => $document, 'id' => $id, ]);
-    }
-
-    public function assignedOffice(Request $request)
-    {
-        try {
-            // $document_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $request->ticket_id)->first();
-
-            $office_exist = OfficeAssignedTicket::where("office_id", $request->office_id)->where("ticket_id", $request->ticket_id)->first();
-            // $document_exist = OfficeAssignedTicket::where("ticket_id", $request->ticket_id)->first();
-
-            if ($office_exist) {
-                return response()->json(array('success' => false, "message" => "Office already exist"));
-            }
-
-            DB::beginTransaction();
-            $assigned_office = OfficeAssignedTicket::create([
-                'office_id' => $request->office_id,
-                'ticket_id' => $request->ticket_id,
-                'assigned_by_id' => Auth::id()
-            ]);
-            $document_log = new OfficeAssignedTicketLog();
-            $document_log->assigned_office_ticket_id = $assigned_office->id;
-            $document_log->status = "pending";
-            $document_log->assigned_by_id =Auth::id();
-            $document_log-> remarks =$request->remarks;
-            $document_log-> office_id =$request->office_id;
-            $document_log->save();
-            $assigned_office->save();
-
-            $document = Ticket::where("id",  $request->ticket_id)->first();
-            if ($document->status == 'created') {
-                $document->status = 'assigned';
-                $document->update();
-
-                $document_log = new TicketLog();
-                $document_log->ticket_id = $document->id;
-                $document_log->status = "assigned";
-                $document_log->assigned_by_id =Auth::id();
-                $document_log-> remarks =$request->remarks;    
-                $document_log->save();
-            }
-            
-    
-            DB::commit();
-            return response()->json(array('success' => true));
-        } catch (Exception $ex) {
-            // dd($ex);
-            DB::rollback();
-            return response()->json(array('success' => false));
-        }
-    }
-
-    public function startWorking(Request $request)
-    {
-        try {
-            $office_id = Auth::user()->staff->office_id;
-            $document_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $request->ticket_id)->first();
-            
-            DB::beginTransaction();
-            $document_action->status = 'working';
-            $document_action->status_updated_by_id = Auth::id();
-            $document_action->status_updated_at = Carbon::now();
-            $document_action->estimated_date = $request->estimated_date;
-            $document_action->remarks = $request->remarks;
-            $document_action->update();
-            
-            $document_log = new OfficeAssignedTicketLog();
-            $document_log->assigned_office_ticket_id = $document_action->id;
-            $document_log->status = "working";
-            $document_log->assigned_by_id =Auth::id();
-            $document_log-> remarks = $request->remarks;
-            $document_log-> office_id =$office_id;
-            $document_log->save();
-
-            $document_actions = OfficeAssignedTicket::where("ticket_id", $request->ticket_id)->get();
-
-            $to_update_status = true;
-            foreach ($document_actions as $action) {
-                if ($action->status != 'working') {
-                    $to_update_status = false;
-                    break;
-                }
-               
-            }
-
-            if ($to_update_status) {
-                $document = Ticket::where("id",  $request->ticket_id)->first();
-                $document->status = 'working';
-                $document->status_updated_at = Carbon::now();
-                $document->update();
-
-                $document_log = new TicketLog();
-                $document_log->ticket_id = $document->id;
-                $document_log->status = "working";
-                $document_log->assigned_by_id =Auth::id();
-                $document_log-> remarks = $request->remarks;
-                $document_log->save();
-                
-            }
-
-            
-
-            DB::commit();
-            return redirect('/documents/view/' . $request->ticket_id)->with('success', "successfully Updated");
-        } catch (Exception $ex) {
-            DB::rollback();
-            return redirect('/documents/view/' . $request->ticket_id)->with('error', $ex->getMessage());
-        }
-    }
-
-    public function ticketProcessed(Request $request)
-    {
-        try {
-            $office_id = Auth::user()->staff->office_id;
-            $document_id = $request->ticket_id;
-            $document_action = OfficeAssignedTicket::where("office_id", $office_id)->where("ticket_id", $document_id)->first();
-
-            DB::beginTransaction();
-            $document_action->status = $request->status;
-            $document_action->status_updated_by_id = Auth::id();
-            $document_action->actual_date = Carbon::now();
-            $document_action->work_done = $request->work_done;
-            $document_action->update();
-
-            $document_log = new OfficeAssignedTicketLog();
-            $document_log->assigned_office_ticket_id = $document_action->id;
-            $document_log->status =  $document_action->status;
-            $document_log->assigned_by_id =Auth::id();
-            $document_log->remarks = $request->remarks;
-            $document_log->office_id =$office_id;
-            $document_log->save();
-
-            $document_actions = OfficeAssignedTicket::where("ticket_id", $document_id)->get();
-            $to_update_status = true;
-            foreach ($document_actions as $action) {
-                if (!($action->status == 'resolved' || $action->status == 'unresolved')) {
-                    $to_update_status = false;
-                    break;
-                }
-           
-               
-            }
-
-            if ($to_update_status) {
-                $document = Ticket::where("id", $document_id)->first();
-                $document->status = 'for-closing';
-                $document->status_updated_at = Carbon::now();
-                $document->update();
-
-                $document_log = new TicketLog();
-                $document_log->ticket_id = $document->id;
-                $document_log->status = 'for-closing';
-                $document_log->assigned_by_id =Auth::id();
-                $document_log-> remarks = $request->remarks;
-                $document_log->save();
-            }
-
-          
-            DB::commit();
-            return redirect('/documents/view/' . $request->ticket_id)->with('success', "successfully Updated");
-        } catch (Exception $ex) {
-            DB::rollback();
-            return redirect('/documents/view/' . $request->ticket_id)->with('error', $ex->getMessage());
-        }
-    }
-
-    // Display Office
-    public function getOffice($id)
-    {
-        if (request()->ajax()) {
-
-            $assigned_office = OfficeAssignedTicket::where('ticket_id', $id)->get();
-
-            return datatables()->of($assigned_office)
-                ->addColumn('action',  '<a href="javascript:void(0)" id="removebtn" onClick="removeUserOffice({{ $id }})" data-toggle="tooltip" data-original-title="Edit" class="btn btn-outline-danger btn-sm"><i class="fas fa-minus"></i></a>')
-                //  ->addColumn('action',  '<a href="javascript:void(0)" id="removeUserOffice" data-toggle="tooltip" data-original-title="Edit" class="btn btn-outline-danger btn-sm"><i class="fas fa-minus"></i></a>')
-                ->rawColumns(['action'])
-                ->addColumn('office', function (OfficeAssignedTicket $document) {
-                    return $document->office->name;
-                })
-                ->addIndexColumn()
-                ->make(true);
-        }
-    }
-
-    //display assigned
-    public function assigned($id)
-    {
-        if (request()->ajax()) {
-
-            $assigned_office = OfficeAssignedTicket::where('ticket_id', $id)->get();
-            return datatables()->of($assigned_office)
-                ->addColumn('action',  '<a href="javascript:void(0)" data-target="#mdl-timeline-office{{$id}}" data-toggle="modal"  class="btn btn-outline-danger btn-sm"><i class="fas fa-eye"></i></a>')
-                ->rawColumns(['action'])
-                ->addColumn('office', function (OfficeAssignedTicket $document) {
-                    return $document->office->name;
-                })
-                ->addColumn('assignedBy', function (OfficeAssignedTicket $document) {
-                    return $document->assignedBy->staff->fullname;
-                })
-                ->addColumn('assignedAt', function (OfficeAssignedTicket $document) {
-                    return $document->created_at;
-                })
-                ->addIndexColumn()
-                ->make(true);
-        }
-        return view('pages.documents.display-ticket');
-    }
-
-    public function actionStatus($id)
-    {
-        if (request()->ajax()) {
-
-            $assigned_office = OfficeAssignedTicket::where('ticket_id', $id)->get();
-            return datatables()->of($assigned_office)
-                //  ->addColumn('action',  '<a href="javascript:void(0)" id="removebtn" data-toggle="tooltip" data-original-title="Edit" class="btn btn-outline-danger btn-sm"><i class="fas fa-minus"></i></a>')
-                //  ->rawColumns(['action'])
-                ->addColumn('office', function (OfficeAssignedTicket $document) {
-                    return $document->office->name;
-                })
-
-                ->addIndexColumn()
-                ->make(true);
-        }
-
-        return view('pages.documents.display-ticket');
-    }
-
-    // Remove Office
-    public function removeUserOffice($id)
-    {
-        $office_id = $id;
-        $user_office = OfficeAssignedTicket::find($office_id);
-        $user_office->delete();
-
-        return response()->json(array('success' => true));
     }
 }

@@ -11,36 +11,14 @@
                 <div class="container-login100-form-btn">
                     <div class="wrap-login100-form-btn">
                         <div class="login100-form-bgbtn"></div>
-                        <button class="login100-form-btn" data-toggle="modal" data-target="#docType-modal"><i
+                        <button class="login100-form-btn" data-bs-toggle="modal" data-bs-target="#docType-modal"><i
                                 class="fa fa-plus pr-2"></i>DocType</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- DATATABLE -->
-    <!-- <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body table-responsive">
-                    <table class="table table-striped w-100" id="office-dt" style="font-size: 14px">
-                        <thead>
-                            <tr>
-                                {{-- <th style="width: 5%">id</th> --}}
-                                <th style="width: 10%">Code</th>
-                                <th style="width: 35%">Office Name</th>
-                                <th style="width: 35%">Head Name</th>
 
-                                {{-- <th style="width: 10%">Province</th> --}}
-                                {{-- <th style="width: 5%">Region</th> --}}
-                                <th style="width: 15%">Action</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div> -->
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -71,8 +49,8 @@
             <div class="modal-content">
                 <form action="javascript:void(0)" id="docType-form" name="docType-form" class="form-horizontal" method="POST">
                     @csrf
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="docType-modal-title"></h4>
+                    <div class="modal-header" style="background-color:#17366f; color: white;">
+                        <h4 class="modal-title" id="docType-modal-title">Document Type</h4>
                     </div>
                     <div class="modal-body">
 
@@ -81,7 +59,7 @@
 
                         <!-- DocType Name -->
                         <div class="form-group">
-                            <label for="DocType name" class="col-sm-4 control-label">Document Type<span
+                            <label for="DocType name" class="col-sm-4 control-label"><strong>Document Type</strong><span
                                     class="require">*</span></label>
                             <div class="col-sm-12">
                                 <input type="text" class="form-control" id="docTypeDesc" name="docTypeDesc"
@@ -91,18 +69,18 @@
 
                         <!-- Status -->
                         <div class="form-group">
-                            <label for="inputcontent" class="form-label"><strong>Status</strong></label>
-                            <select name="status" id="status">
-                                <option value=1>Active</option>
-                                <option value=0>Inactive</option>
-                            </select>
+                            <label for="inputcontent" class="col-sm-4 control-label"><strong>Status</strong></label>
+                            <div class="col-sm-12">
+                                <select name="status" id="status">
+                                    <option value=1>Active</option>
+                                    <option value=0>Inactive</option>
+                                </select>
+                            </div>
                         </div>
-
-
 
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-info" id="docType-btn-save">Save</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </div>
                 </form>
@@ -151,8 +129,12 @@
                     [0, 'asc']
                 ]
             });
-
-
+            
+            $('#docType-modal').on('hidden.bs.modal', function (e) {
+                $("#docType-form")[0].reset();
+                $('#docTypeID').val(''); // Clear the hidden ID field
+                $('#docType-modal-title').text('Document Type');
+            });
         });
 
         // Submit button
@@ -208,7 +190,7 @@
                 "token": "{{ csrf_token() }}",
                 dataType: 'json',
                 success: function(res) {
-                    $('#docType-modal-title').html("Edit DocType");
+                    $('#docType-modal-title').html("Edit Document Type");
                     $('#docType-modal').modal('show');
                     $('#docTypeID').val(res.docTypeID);
                     $('#docTypeDesc').val(res.docTypeDesc);
@@ -225,65 +207,95 @@
         //DELETE DATA
         function deleteDocType(e) {
             let id = e.getAttribute('data-id');
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-danger mx-2',
-                    cancelButton: 'btn btn-default mx-2'
-                },
-                buttonsStyling: false
-            });
 
-            swalWithBootstrapButtons.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No, cancel!',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-                    if (result.isConfirmed) {
+            checkHasDoc(id, function(canDelete) {
+                if (!canDelete) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cannot Delete',
+                        html: 'There are Documents with this Type.'
+                    });
+                    return;
+                }
 
-                        swal.fire({
-                            html: '<h6>Loading... Please wait</h6>',
-                            onRender: function() {
-                                $('.swal2-content').prepend(sweet_loader);
-                            },
-                            showConfirmButton: false
-                        });
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-danger mx-2',
+                        cancelButton: 'btn btn-default mx-2'
+                    },
+                    buttonsStyling: false
+                });
 
-                        $.ajax({
-                            type: 'DELETE',
-                            url: '{{ url('/docTypes/delete') }}/' + id,
-                            data: {
-                                "_token": "{{ csrf_token() }}",
-                            },
-                            success: function(res) {
+                swalWithBootstrapButtons.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.value) {
+                        if (result.isConfirmed) {
 
-                                setTimeout(function() {
-                                    swal.fire({
-                                        icon: 'success',
-                                        html: '<h5>Success deleted!</h5>'
-                                    });
+                            swal.fire({
+                                html: '<h6>Loading... Please wait</h6>',
+                                onRender: function() {
+                                    $('.swal2-content').prepend(sweet_loader);
+                                },
+                                showConfirmButton: false
+                            });
 
-                                }, 700);
+                            $.ajax({
+                                type: 'DELETE',
+                                url: '{{ url('/docTypes/delete') }}/' + id,
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                },
+                                success: function(res) {
 
-                                var oTable = $('#docType-dt').dataTable();
-                                oTable.fnDraw(false);
-                            }
-                        });
+                                    setTimeout(function() {
+                                        swal.fire({
+                                            icon: 'success',
+                                            html: '<h5>Success deleted!</h5>'
+                                        });
+
+                                    }, 700);
+
+                                    var oTable = $('#docType-dt').dataTable();
+                                    oTable.fnDraw(false);
+                                }
+                            });
+                        }
+                    } else if (
+                        result.dismiss === Swal.DismissReason.cancel
+                    ) {
+                        toastr.info(
+                            'Your data is safe :)',
+                            'CANCELLED'
+                        );
                     }
-                } else if (
-                    result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    toastr.info(
-                        'Your data is safe :)',
-                        'CANCELLED'
-                    );
+                });
+            });
+        }
+
+        function checkHasDoc(id, callback) {
+            $.ajax({
+                url: "{{ url('/check-hasDoc') }}",
+                type: "GET",
+                data: { docTypeID: id },
+                success: function (response) {
+                    callback(!response.exists); // true = deletable
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to check document type status.'
+                    });
+                    callback(false);
                 }
             });
-        
         }
     </script>
 @endsection

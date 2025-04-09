@@ -11,13 +11,13 @@
                 <div class="container-login100-form-btn">
                     <div class="wrap-login100-form-btn">
                         <div class="login100-form-bgbtn"></div>
-                        <button class="login100-form-btn" data-toggle="modal" data-target="#unit-modal"><i
-                                class="fa fa-plus pr-2"></i>Add Unit</button>
+                        <button class="login100-form-btn" data-bs-toggle="modal" data-bs-target="#unit-modal"><i class="fa fa-plus pr-2"></i>Add Unit</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -49,8 +49,8 @@
             <div class="modal-content">
                 <form action="javascript:void(0)" id="unit-form" name="unit-form" class="form-horizontal" method="POST">
                     @csrf
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="unit-modal-title"></h4>
+                    <div class="modal-header" style="background-color:#17366f; color: white;">
+                        <h4 class="modal-title" id="unit-modal-title">Unit</h4>
                     </div>
                     <div class="modal-body">
 
@@ -59,7 +59,7 @@
 
                         <!-- Unit Name -->
                         <div class="form-group">
-                            <label for="Unit name" class="col-sm-4 control-label">Unit Name<span
+                            <label for="unitName" class="col-sm-4 control-label"><strong>Unit Name</strong><span
                                     class="require">*</span></label>
                             <div class="col-sm-12">
                                 <input type="text" class="form-control" id="unitName" name="unitName"
@@ -69,19 +69,23 @@
 
                         <!-- Division Dropdown -->
                         <div class="form-group">
-                            <label for="division" class="form-label"><strong>Division</strong></label>
-                            <select name="divID" id="divID" class="form-control">
-                                <option value="">Select Division</option>
-                            </select>
+                            <label for="divID" class="col-sm-4 control-label"><strong>Division</strong></label>
+                            <div class="col-sm-12">
+                                <select name="divID" id="divID" class="form-control">
+                                    <option value="">Select Division</option>
+                                </select>
+                            </div>
                         </div>
 
                         <!-- Status -->
                         <div class="form-group">
-                            <label for="inputcontent" class="form-label"><strong>Status</strong></label>
-                            <select name="status" id="status">
-                                <option value=1>Active</option>
-                                <option value=0>Inactive</option>
-                            </select>
+                            <label for="status" class="col-sm-4 control-label"><strong>Status</strong></label>
+                            <div class="col-sm-12">
+                                <select name="status" id="status">
+                                    <option value=1>Active</option>
+                                    <option value=0>Inactive</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="modal-footer">
@@ -96,13 +100,14 @@
 
     <!-- AJAX -->
     <script type="text/javascript">
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
 
         $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
             $('#unit-dt').DataTable({
                 processing: true,
                 serverSide: true,
@@ -137,12 +142,18 @@
                     [0, 'asc']
                 ]
             });
+            
+            $('#unit-modal').on('hidden.bs.modal', function (e) {
+                $("#unit-form")[0].reset();
+                $('#unitID').val(''); // Clear the hidden ID field
+                $('#unit-modal-title').text('Unit');
+            });
         });
 
         // Submit button
         $('#unit-form').submit(function(e) {
             e.preventDefault();
-            var formData = new FormData(this);
+            let formData = new FormData($('#unit-form')[0]);
 
             $.ajax({
                 type: 'POST',
@@ -152,7 +163,6 @@
                 contentType: false,
                 processData: false,
                 success: function(res) {
-
                     if (res.success) {
                         Swal.fire({
                             icon: 'success',
@@ -160,14 +170,14 @@
                         });
 
                         $("#unit-modal").modal('hide');
+                        
                         var oTable = $('#unit-dt').dataTable();
                         oTable.fnDraw(false);
 
-                        $("#unit-btn-save").html('Save Changes');
-                        $("#unit-btn-save").attr("disabled", false);
                         $("#unit-form")[0].reset();
+
                     } else {
-                        swal.fire({
+                        Swal.fire({
                             icon: 'error',
                             html: res.errors
                         });
@@ -245,29 +255,38 @@
         //DELETE DATA
         function deleteUnit(e) {
             let id = e.getAttribute('data-id');
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-danger',
-                    cancelButton: 'btn btn-default'
-                },
-                buttonsStyling: false
-            });
 
-            swalWithBootstrapButtons.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No, cancel!',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-                    if (result.isConfirmed) {
+            checkHasStaff(id, function(canDelete) {
+                if (!canDelete) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cannot Delete',
+                        html: 'There are Staff under this Unit.<br><strong>Please reassign them first before deleting.</strong>'
+                    });
+                    return;
+                }
 
+                const swalWithBootstrapButtons = Swal.mixin({
+                    customClass: {
+                        confirmButton: 'btn btn-danger mx-2',
+                        cancelButton: 'btn btn-default mx-2'
+                    },
+                    buttonsStyling: false
+                });
+
+                swalWithBootstrapButtons.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.value && result.isConfirmed) {
                         swal.fire({
                             html: '<h6>Loading... Please wait</h6>',
-                            onRender: function() {
+                            onRender: function () {
                                 $('.swal2-content').prepend(sweet_loader);
                             },
                             showConfirmButton: false
@@ -280,7 +299,6 @@
                                 "_token": "{{ csrf_token() }}",
                             },
                             success: function(res) {
-
                                 setTimeout(function() {
                                     swal.fire({
                                         icon: 'success',
@@ -293,14 +311,31 @@
                                 oTable.fnDraw(false);
                             }
                         });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        toastr.info(
+                            'Your data is safe :)',
+                            'CANCELLED'
+                        );
                     }
-                } else if (
-                    result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    toastr.info(
-                        'Your data is safe :)',
-                        'CANCELLED'
-                    );
+                });
+            });
+        }
+
+        function checkHasStaff(id, callback) {
+            $.ajax({
+                url: "{{ url('/check-hasStaff') }}",
+                type: "GET",
+                data: { unitID: id },
+                success: function (response) {
+                    callback(!response.exists); // true = deletable
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to check division status.'
+                    });
+                    callback(false);
                 }
             });
         }

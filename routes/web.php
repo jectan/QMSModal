@@ -83,6 +83,7 @@ Route::post('/accounts',[AccountController::class, 'store']);
 Route::get('/accounts/{id}',[AccountController::class, 'show']);
 Route::post('/accounts/update',[AccountController::class, 'update']);
 Route::delete('/accounts/delete/{id}',[AccountController::class, 'destroy']);
+Route::get('/check-ifOwner', [AccountController::class, 'checkIfOwner']); //Check to prevent active doc owners from being deleted
 Route::post('/accounts/users/deactivate',[AccountController::class, 'deactivate']);
 Route::post('/accounts/users/status',[AccountController::class, 'status']);
 Route::get('/accounts/users/reset-password/{id}',[AccountController::class, 'resetPassword']);
@@ -103,12 +104,14 @@ Route::get('/roles', [RoleController::class, 'index']);
 Route::post('/roles/store', [RoleController::class, 'store']);
 Route::post('/roles/edit', [RoleController::class, 'edit']);
 Route::delete('/roles/delete/{id}', [RoleController::class, 'destroy']);
+Route::get('/check-hasUser', [RoleController::class, 'checkHasUser']); //Check to prevent roles with users from deletion
 
 //Division
 Route::get('/divisions', [DivisionController::class, 'index']);
 Route::post('/divisions/store', [DivisionController::class, 'store']);
 Route::post('/divisions/update', [DivisionController::class, 'edit']);
 Route::delete('/divisions/delete/{id}', [DivisionController::class, 'destroy']);
+Route::get('/check-hasUnit', [DivisionController::class, 'checkHasUnit']); //Check to prevent division with units from deletion
 
 //Unit
 Route::get('/units', [UnitController::class, 'index']);
@@ -116,21 +119,24 @@ Route::get('/get-divisions', [UnitController::class, 'getDivisions']);
 Route::post('/units/store', [UnitController::class, 'store']);
 Route::post('/units/update', [UnitController::class, 'edit']);
 Route::delete('/units/delete/{id}', [UnitController::class, 'destroy']);
+Route::get('/check-hasStaff', [UnitController::class, 'checkHasStaff']); //Check to prevent units with staff from deletion
 
 //DocType
 Route::get('/docTypes', [DocTypeController::class, 'index']);
 Route::post('/docTypes/store', [DocTypeController::class, 'store']);
 Route::post('/docTypes/update', [DocTypeController::class, 'edit']);
 Route::delete('/docTypes/delete/{id}', [DocTypeController::class, 'destroy']);
+Route::get('/check-hasDoc', [DocTypeController::class, 'checkHasDoc']); //Check to prevent doctype with documents from deletion
 
 //RequestType
 Route::get('/requestTypes', [RequestTypeController::class, 'index']);
 Route::post('/requestTypes/store', [RequestTypeController::class, 'store']);
 Route::post('/requestTypes/update', [RequestTypeController::class, 'edit']);
 Route::delete('/requestTypes/delete/{id}', [RequestTypeController::class, 'destroy']);
+Route::get('/check-hasDocs', [RequestTypeController::class, 'checkHasDoc']); //Check to prevent requestype with documents from deletion
 });
 
-Route::group(['middleware' => 'role:1,2'], function (){
+/* Route::group(['middleware' => 'role:1,2'], function (){
 //Caller
 Route::get('/caller', [CallerController::class, 'index']);
 Route::get('/caller/create', [CallerController::class, 'create']);
@@ -140,7 +146,7 @@ Route::get('/caller/view/{id}', [CallerController::class, 'view']);
 Route::post('/caller/update', [CallerController::class, 'update']);
 Route::delete('/caller/delete/{id}', [CallerController::class, 'destroy']);
 Route::get('/feedback',[FeedbackController::class, 'index']);
-});
+}); */
 
     // Admin staffS
     Route::group(['middleware' => 'role:1,2,3,4,5'], function (){
@@ -164,6 +170,7 @@ Route::post('/documents/cancel', [DocumentController::class, 'cancel']); //This 
 Route::get('/get-requestType', [DocumentController::class, 'getRequestType']);
 Route::get('/get-docType', [DocumentController::class, 'getDocType']);
 Route::get('/check-docRefCode', [DocumentController::class, 'checkDocRefCode']); //called from index to check if exist
+Route::get('/check-docDuplicateRequest', [DocumentController::class, 'checkDuplicateRequest']); //called from index to check if exist
 Route::get('/documents/show/{id}', [DocumentController::class, 'show']); //delete this soon
 Route::post('/documents/update', [DocumentController::class, 'update']); //delete this soon
 Route::get('/documents/test/{id}', [DocumentController::class, 'test']); // delete this soon
