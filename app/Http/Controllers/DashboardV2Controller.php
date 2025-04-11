@@ -52,21 +52,22 @@ class DashboardV2Controller extends Controller
     
         if ($dataTable == '1') {
             $requestDocuments->where('docTypeID', 1);
+            $requestDocuments->where('docTypeID', 4);
         }
         elseif($dataTable == '2'){
-            $requestDocuments->where('docTypeID', 1)
+            $requestDocuments->where('docTypeID', 5)
                 ->whereHas('createdBy.staff.unit.getDivision', function ($query){
                     $query->where('divID', '3');
                 });
         }
         elseif($dataTable == '3'){
-            $requestDocuments->where('docTypeID', 1)
+            $requestDocuments->where('docTypeID', 5)
                 ->whereHas('createdBy.staff.unit.getDivision', function ($query){
                     $query->where('divID', '2');
                 });
         }
         elseif($dataTable == '4'){
-            $requestDocuments->where('docTypeID', 1)
+            $requestDocuments->where('docTypeID', 5)
                 ->whereHas('createdBy.staff.unit.getDivision', function ($query){
                     $query->where('divID', '1');
                 });

@@ -66,21 +66,46 @@ class DocumentController extends Controller
             $status = 'For Approval';
         }
 
-        $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
-        [
-            'requestTypeID' => $request->requestTypeID,
-            'docTypeID' => $request->docTypeID,
-            'docRefCode' => $request->docRefCode,
-            'currentRevNo' => $request->currentRevNo,
-            'docTitle' => $request->docTitle,
-            'requestReason' => $request->requestReason,
-            'userID' => Auth::id(),
-            'requestFile' => $filePath, // Save file path in DB
-            'requestDate' => Carbon::now(),
-            'requestStatus' => $status,
-        ]);
+        try {
+            DB::beginTransaction(); // Start transaction
+    
+            $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+            [
+                'requestTypeID' => $request->requestTypeID,
+                'docTypeID' => $request->docTypeID,
+                'docRefCode' => $request->docRefCode,
+                'currentRevNo' => $request->currentRevNo,
+                'docTitle' => $request->docTitle,
+                'requestReason' => $request->requestReason,
+                'userID' => Auth::id(),
+                'requestFile' => $filePath, // Save file path in DB
+                'requestDate' => Carbon::now(),
+                'requestStatus' => $status,
+            ]);
 
-        return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
+            if (Auth::user() && Auth::user()->role_id == 4){
+
+                $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
+                [
+                    'requestID' => $requestDocument->requestID,
+                    'reviewComment' => 'Submitted for Approval by ' . Auth::user()->staff->fullname,
+                    'userID' => Auth::id(),
+                    'reviewStatus' => 'Active',                  
+                ]);
+            }
+    
+            DB::commit(); // Commit transaction if all queries succeed
+    
+            return response()->json(['success'=> 'Successfully saved.', 'RequestDocument' => $requestDocument]);
+    
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction if any query fails
+    
+            return response()->json([
+                'error' => 'Failed to process the request. Please try again.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
     
     public function storeEdit(Request $request)
@@ -152,7 +177,7 @@ class DocumentController extends Controller
         $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
         [
             'requestID' => $request->requestID,
-            'reviewComment' => $request->reviewComments . ' by: ' . Auth::user()->staff->fullname,
+            'reviewComment' => '"' . $request->reviewComments . '" by: ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
             'reviewStatus' => 'Active',                  
         ]);
@@ -176,7 +201,7 @@ class DocumentController extends Controller
         $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->approveID],
         [
             'requestID' => $request->requestID,
-            'reviewComment' => $request->reviewComment2 . ' by: ' . Auth::user()->staff->fullname,
+            'reviewComment' => '"' . $request->reviewComment2 . '" by: ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
             'reviewStatus' => 'Active',                  
         ]);
@@ -191,20 +216,34 @@ class DocumentController extends Controller
 
     public function forReview(Request $request)
     {
-        $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
-        [
-            'requestID' => $request->requestID,
-            'reviewComment' => 'Submitted for Review by ' . Auth::user()->staff->fullname,
-            'userID' => Auth::id(),
-            'reviewStatus' => 'Active',                  
-        ]);
+        try {
+            DB::beginTransaction(); // Start transaction
+    
+            $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
+            [
+                'requestID' => $request->requestID,
+                'reviewComment' => 'Submitted for Review by ' . Auth::user()->staff->fullname,
+                'userID' => Auth::id(),
+                'reviewStatus' => 'Active',                  
+            ]);
 
-        $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
-        [
-            'requestStatus' => 'For Review',
-        ]);
-        
-        return response()->json(['success'=> 'Document Endorsed For Review.', 'RequestDocument' => $requestDocument]);
+            $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+            [
+                'requestStatus' => 'For Review',
+            ]);
+    
+            DB::commit(); // Commit transaction if all queries succeed
+    
+            return response()->json(['success'=> 'Document Endorsed For Review.', 'RequestDocument' => $requestDocument]);
+    
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction if any query fails
+    
+            return response()->json([
+                'error' => 'Failed to process the request. Please try again.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function reviewed(Request $request)
@@ -349,6 +388,7 @@ class DocumentController extends Controller
         }
         else{
             $requestDocuments->where('requestStatus', '!=', 'Cancelled');
+            $requestDocuments->where('requestStatus', '!=', 'Obsolete');
         }
 
         if (!in_array(Auth::user()->role_id, [1, 2, 3, 4])) {
@@ -368,25 +408,34 @@ class DocumentController extends Controller
             })
             ->addColumn('action', function ($row) {
                 $onClickFunction = "editRequest({$row->requestID})";
-                $isHidden = "hidden";
-                $isHidden2 = "hidden";
+                $isHidden = "";
+                $isHidden2 = "";
 
-                if ((in_array($row->requestStatus, ['For Review', 'For Approval', 'For Registration', 'Registered']) || $row->userID !== Auth::id()) 
+                if ((in_array($row->requestStatus, ['For Review', 'For Approval', 'For Registration', 'Registered', 'Obsolete', 'Cancelled']) || $row->userID !== Auth::id()) 
                     && Auth::user()->role_id !== 1) {
                     $isHidden = "hidden";
                 }
+                
+                if ((in_array($row->requestStatus, ['For Registration', 'Registered', 'Obsolete']) || $row->userID !== Auth::id()) 
+                    && Auth::user()->role_id !== 1) {
+                    $isHidden2 = "hidden";
+                }
 
-                if ((in_array($row->requestStatus, ['For Registration']) || $row->userID !== Auth::id()) 
+                /* if ((in_array($row->requestStatus, ['For Registration']) || $row->userID !== Auth::id()) 
                     && Auth::user()->role_id !== 1) {
                     $isHidden2 = "";
-                }
+                } */
 
                 
                 return '<button class="btn btn-sm btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
+                        
+                        <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '"' . $isHidden .'>
+                            <span class="material-icons" style="font-size: 20px;">edit</span>
+                        </button>
 
-                        <button class="btn btn-sm btn-danger mx-1" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')">
+                        <button class="btn btn-sm btn-danger mx-1" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')"' . $isHidden2 .'>
                             <span class="material-icons" style="font-size: 20px;">delete</span>
                         </button>
                         ';
@@ -499,8 +548,9 @@ class DocumentController extends Controller
         $document = RequestDocument::where('requestID', $requestID)->firstOrFail();
         $requestType = RequestType::all();
         $docType = DocType::all();
+        $isEdit = 0;
     
-        return view('pages.documents.display-document', compact('document', 'requestType', 'docType'));
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit'));
     }
     
     public function viewEdit($requestID)

@@ -91,7 +91,7 @@
                             </li>
 
                             <li class="nav-item">
-                            <a class="nav-link {{Auth::user()->role->id == 2 ? 'active' : 'null'}}" id="registration" data-toggle="pill" href="#registration-document" role="tab" aria-controls="registration-document" aria-selected="false">For Registration</a>
+                                <a class="nav-link {{Auth::user()->role->id == 2 ? 'active' : 'null'}}" id="registration" data-toggle="pill" href="#registration-document" role="tab" aria-controls="registration-document" aria-selected="false">For Registration</a>
                             </li>
                         @endif
                     </ul>
@@ -109,7 +109,7 @@
                         <div class="tab-pane fade {{Auth::user()->role->id == 3 ? 'show active' : 'null'}}" id="approval-document" role="tabpanel" aria-labelledby="approval-tab">
                             @include('pages.documents.approval-document')
                         </div>
-                        <div class="tab-pane fade" id="registration-document" role="tabpanel" aria-labelledby="registration-tab">
+                        <div class="tab-pane fade {{Auth::user()->role->id == 2 ? 'show active' : 'null'}}" id="registration-document" role="tabpanel" aria-labelledby="registration-tab">
                             @include('pages.documents.registration-document')
                         </div>
                     </div>

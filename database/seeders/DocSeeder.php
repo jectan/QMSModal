@@ -18,7 +18,7 @@ class DocSeeder extends Seeder
             ['docTypeDesc' => 'Forms', 'status' => true],
             ['docTypeDesc' => 'Template', 'status' => true],
             ['docTypeDesc' => 'Operations Manual', 'status' => true],
-            ['docTypeDesc' => 'Procedures Manual', 'status' => true],
+            ['docTypeDesc' => 'Procedure Manual', 'status' => true],
             ['docTypeDesc' => 'Quality Procedure', 'status' => true],
         ]);
         
