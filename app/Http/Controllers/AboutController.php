@@ -8,7 +8,7 @@ class AboutController extends Controller
 {
     public function index()
     {
-        $page = 'About'; // for active nav highlighting
+        $page = 'About'; // for active nav highlightings
         return view('pages.aboutus.index', compact('page'));
     }
 }
