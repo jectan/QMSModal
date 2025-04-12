@@ -31,6 +31,7 @@ Route::get('/aboutus', [App\Http\Controllers\AboutController::class, 'index']);
 Route::get('/masterlist', [MasterlistController::class, 'index'])->name('masterlist.index');
 Route::get('/masterlist/data-request/{dataTable}', [MasterlistController::class, 'getDataRequest']); //called by masterlist data tables
 Route::get('/masterlist/computeTotal',[MasterlistController::class, 'documentTally']);
+Route::get('/masterlist/view/{id}',[MasterlistController::class, 'view']);
 
 Route::get('/', [FeedbackController::class, 'publichome']);
 Route::get('/about-us', [FeedbackController::class, 'about']);

@@ -310,7 +310,7 @@ class DocumentController extends Controller
         $request->validate([
         'currentRevNo2' => 'required|numeric|min:0',
         'docRefCode2' => 'required|string|max:255',
-        'documentFile2' => 'nullable|mimes:pdf|max:2048',
+        'documentFile2' => 'nullable|mimes:pdf',
         ], [
             'currentRevNo2.required' => 'The Revision Number is required.',
             'docRefCode2.required' => 'The Document Reference Code is required.',

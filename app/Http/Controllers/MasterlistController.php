@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use App\Models\RequestDocument;
 use App\Models\RegisteredDoc;
+use App\Models\RequestType;
+use App\Models\DocType;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -14,6 +16,16 @@ class MasterlistController extends Controller
     public function index()
     {
         return view('pages.masterlist.index');
+    }
+    
+    public function view($requestID)
+    {
+        $document = RequestDocument::where('requestID', $requestID)->firstOrFail();
+        $requestType = RequestType::all();
+        $docType = DocType::all();
+        $isEdit = 0;
+    
+        return view('pages.documents.display-registereddocument', compact('document', 'requestType', 'docType', 'isEdit'));
     }
 
     public function documentTally(){

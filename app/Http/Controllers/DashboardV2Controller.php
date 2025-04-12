@@ -84,7 +84,7 @@ class DashboardV2Controller extends Controller
                 return $row->docTitle ? $row->docTitle : "";
             })
             ->addColumn('currentRevNo', function ($row) {
-                return $row->currentRevNo ? $row->currentRevNo : "";
+                return $row->currentRevNo ? $row->currentRevNo : "0";
             })
             ->make(true);
     }    

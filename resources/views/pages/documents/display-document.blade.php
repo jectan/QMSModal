@@ -980,14 +980,19 @@
                     contentType: false,
                     processData: false,
                     success: function (res) {
-                        if (res.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: res.success
-                            });
-                            $("#register-modal").modal('hide');
-                            $("#register-form")[0].reset();
-                            window.location.href = "{{ url('/documents') }}/";
+                    if (res.success) {
+                        // Clear the input field after successful submission
+                        $("#register-modal").modal('hide');
+                        $("#register-form")[0].reset();
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: res.success
+                        }).then((result) => { // Added .then() to handle after the alert
+                            if (result.isConfirmed) { // Check if the user confirmed (clicked OK)
+                                window.location.href = "{{ url('/documents') }}/";
+                            }
+                        });
                         } else {
                             Swal.fire({
                                 icon: 'error',
