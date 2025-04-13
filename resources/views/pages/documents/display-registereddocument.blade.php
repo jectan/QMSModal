@@ -18,6 +18,28 @@
                     </a>
                 </div>
 
+                <!-- Buttons for Document Manager -->
+                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 2]) && (in_array($document->requestStatus, ['For Registration'])))
+                    <div class="expandable-button">
+                        <button type="button" class="btn btn-sm btn-success mx-1+ btn-icon" data-bs-toggle="modal" data-bs-target="#register-modal" data-id='{{ $document->requestID }}' data-requestTypeID='{{ $document->requestTypeID }}'>
+                            <span class="material-icons" style="font-size: 20px;">check_circle</span>
+                            <span class="btn-label">Register</span>
+                        </button>
+                    </div>
+                @endif
+
+                <!-- Edit Button for Users -->
+                @if(Auth::user()->role_id == 1 && (in_array($document->requestStatus, ['Registered', 'Obsolete'])))
+                    <div class="expandable-button">
+                        <button class="btn btn-sm btn-info mx-1 btn-icon" id="editButton" data-bs-toggle="modal" data-bs-target="#request-modal">
+                            <span class="material-icons" style="font-size: 20px;">edit</span>
+                            <span class="btn-label">Edit</span>
+                        </button>
+                    </div>
+                @endif
+            </div>
+        </div>
+
         <!-- Content Section -->
         <div class="row">
             <!-- Left Side: Document Details -->
@@ -88,42 +110,6 @@
             <!-- Right Side: PDF Preview -->
             <div class="col-md-8 mb-3">
                 <div class="card">
-                    <!-- Collapsible Comment Section -->
-                    <!-- Review Comments -->
-                    <div class="collapse" id="reviewComment">
-                        <div class="card border-warning m-3">
-                            <div class="card-header bg-warning text-white">
-                                <strong>Comments for Revision</strong>
-                            </div>
-                            <div class="card-body">
-                                <form action="javascript:void(0)" id="review-form" name="review-form" class="form-horizontal" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="requestID" id="requestID" value="{{ $document->requestID }}">
-                                    <textarea class="form-control" rows="3" id="reviewComments" name="reviewComments" placeholder="Add your comment..."></textarea>
-                                    <button class="btn btn-sm btn-warning mt-2">Submit Comments</button>
-                                    <button type="button" class="btn btn-sm btn-secondary mt-2" data-bs-toggle="collapse" data-bs-target="#reviewComment">Cancel</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Approval Comments -->
-                    <div class="collapse" id="approvalComment">
-                        <div class="card border-warning m-3">
-                            <div class="card-header bg-warning text-white">
-                                <strong>Comments for Revision (Approval)</strong>
-                            </div>
-                            <div class="card-body">
-                                <form action="javascript:void(0)" id="approve-form" name="approve-form" class="form-horizontal" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="requestID" id="requestID" value="{{ $document->requestID }}">
-                                    <textarea class="form-control" rows="3" id="reviewComment2" name="reviewComment2" placeholder="Add your comment..."></textarea>
-                                    <button class="btn btn-sm btn-warning mt-2">Submit Comments</button>
-                                    <button type="button" class="btn btn-sm btn-secondary mt-2" data-bs-toggle="collapse" data-bs-target="#approvalComment">Cancel</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- PDF Viewer -->
                     <div class="card-body text-center">
@@ -322,7 +308,7 @@
                 dataType: "json",
                 success: function (res) {
                     console.log("API Response:", res); // Debugging step
-
+                    
                     // Ensure res is an array
                     let reviews = Array.isArray(res) ? res : Object.values(res);
                     
