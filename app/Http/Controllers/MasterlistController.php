@@ -95,17 +95,17 @@ class MasterlistController extends Controller
         $requestDocuments->whereHas('document', function ($query) {
             $query->where('docTypeID', 1);
         });
-    } elseif ($dataTable == '6') {
+    } elseif ($dataTable == '4') {
         $requestDocuments->whereHas('document', function ($query) {
-            $query->where('docTypeID', 6);
+            $query->where('docTypeID', 4);
         });
     } elseif ($dataTable == '5') {
         $requestDocuments->whereHas('document', function ($query) {
             $query->where('docTypeID', 5);
         });
-    } elseif ($dataTable == '4') {
+    } elseif ($dataTable == '6') {
         $requestDocuments->whereHas('document', function ($query) {
-            $query->where('docTypeID', 1);
+            $query->where('docTypeID', 6);
         });
     } else {
         $requestDocuments->whereHas('document', function ($query) {

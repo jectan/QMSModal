@@ -12,7 +12,7 @@
       <span class="info-box-icon elevation-1" style="background-color: white; color: green">
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">Registered Documents</span>
+        <span class="info-box-text"><strong>Registered Documents</strong></span>
         <span class="info-box-number register"></span>
       </div>
     </div>
@@ -23,7 +23,7 @@
       <span class="info-box-icon elevation-1" style="background-color: white; color: #dc3545">
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">For Review</span>
+        <span class="info-box-text"><strong>For Review</strong></span>
         <span class="info-box-number review"></span>
       </div>
     </div>
@@ -34,7 +34,7 @@
       <span class="info-box-icon elevation-1" style="background-color: white; color: #ffc107">
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">For Approval</span>
+        <span class="info-box-text"><strong>For Approval</strong></span>
         <span class="info-box-number approval"></span>
       </div>
     </div>
@@ -45,7 +45,7 @@
       <span class="info-box-icon elevation-1" style="background-color: white; color: gray">
       <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">Archived Documents</span>
+        <span class="info-box-text"><strong>Archived Documents</strong></span>
         <span class="info-box-number archive"></span>
       </div>
     </div>
@@ -62,7 +62,7 @@
       <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">Quality Procedure</span>
+        <span class="info-box-text"><strong>Quality Procedure</strong></span>
         <span class="info-box-number qpt"></span>
       </div>
     </div>
@@ -73,7 +73,7 @@
       <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">Procedure Manuals</span>
+        <span class="info-box-text"><strong>Procedure Manuals</strong></span>
         <span class="info-box-number pmt"></span>
       </div>
     </div>
@@ -84,7 +84,7 @@
       <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
       <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
       <div class="info-box-content ">
-        <span class="info-box-text word-wrap">Forms,Templates & Guidelines</span>
+        <span class="info-box-text word-wrap"><strong>Forms & Templates</strong></span>
         <span class="info-box-number ftg"></span>
       </div>
     </div>
@@ -97,7 +97,7 @@
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
-          <h6 class="card-title">Quality Manuals & Procedures</h6>
+          <h6 class="card-title"><strong>Quality Manuals & Procedures</strong></h6>
         </div>
             <div class="card-body table-responsive">
                 <table class="table table-striped table-sm" id="QMQPs" style="font-size: 14px">
@@ -117,7 +117,7 @@
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
-          <h6 class="card-title">ORD Procedure Manuals</h6>
+          <h6 class="card-title"><strong>ORD Procedure Manuals</strong></h6>
         </div>
             <div class="card-body table-responsive">
                 <table class="table table-striped table-sm" id="OPMs" style="font-size: 14px">
@@ -138,7 +138,7 @@
    <div class="col-md-6">
       <div class="card">
         <div class="card-header">
-          <h6 class="card-title">TOD Procedure Manuals</h6>
+          <h6 class="card-title"><strong>TOD Procedure Manuals</strong></h6>
         </div>
             <div class="card-body table-responsive">
                 <table class="table table-striped table-sm" id="TPMs" style="font-size: 14px">
@@ -157,7 +157,7 @@
   <div class="col-md-6">
       <div class="card">
         <div class="card-header">
-          <h6 class="card-title">AFD Procedure Manuals</h6>
+          <h6 class="card-title"><strong>AFD Procedure Manuals</strong></h6>
         </div>
             <div class="card-body table-responsive">
                 <table class="table table-striped table-sm" id="APMs" style="font-size: 14px">
@@ -204,7 +204,10 @@
               { data: 'docRefCode', name: 'docRefCode' },
               { data: 'docTitle', name: 'docTitle' },
               { data: 'currentRevNo', name: 'currentRevNo' }
-          ]
+          ],
+            language: {
+                emptyTable: 'There are no registered Quality Manuals & Procedures'
+            }
       });
 
       //LoadDataTable2
@@ -218,7 +221,10 @@
               { data: 'docRefCode', name: 'docRefCode' },
               { data: 'docTitle', name: 'docTitle' },
               { data: 'currentRevNo', name: 'currentRevNo' }
-          ]
+          ],
+            language: {
+                emptyTable: 'There are no registered ORD Procedure Manuals'
+            }
       });
 
       //LoadDataTable3
@@ -232,7 +238,10 @@
               { data: 'docRefCode', name: 'docRefCode' },
               { data: 'docTitle', name: 'docTitle' },
               { data: 'currentRevNo', name: 'currentRevNo' }
-          ]
+          ],
+            language: {
+                emptyTable: 'There are no registered TOD Procedure Manuals'
+            }
       });
 
       //LoadDataTable4
@@ -246,7 +255,10 @@
               { data: 'docRefCode', name: 'docRefCode' },
               { data: 'docTitle', name: 'docTitle' },
               { data: 'currentRevNo', name: 'currentRevNo' }
-          ]
+          ],
+            language: {
+                emptyTable: 'There are no registered AFD Procedure Manuals'
+            }
       });
 
     });

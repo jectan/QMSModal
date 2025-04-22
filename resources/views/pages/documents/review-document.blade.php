@@ -36,7 +36,10 @@
                 { data: "unitName", name: "unitName" },
                 { data: "requestStatus", name: "requestStatus" },
                 { data: "action", name: "action", orderable: false, searchable: false }
-            ]
+            ],
+            language: {
+                emptyTable: 'There are no documents for Review'
+            }
         });
     });
 </script>

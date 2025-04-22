@@ -35,7 +35,10 @@
                 { data: "unitName", name: "unitName" },
                 { data: "effectivityDate", name: "effectivityDate" },
                 { data: "action", name: "action" },
-            ]
+            ],
+            language: {
+                emptyTable: 'There are no registered Forms/Templates'
+            }
         });
     });
 </script>

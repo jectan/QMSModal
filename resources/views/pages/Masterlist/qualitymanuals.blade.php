@@ -22,7 +22,6 @@
 </div>
 
 <script type="text/javascript">
- 
     $(document).ready(function () {
         $('#qm-dt').DataTable({
             processing: true,
@@ -35,7 +34,10 @@
                 { data: "unitName", name: "unitName" },
                 { data: "effectivityDate", name: "effectivityDate" },
                 { data: "action", name: "action" },
-            ]
+            ],
+            language: {
+                emptyTable: 'There is no registered Quality Manual'
+            }
         });
     });
 </script>

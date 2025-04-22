@@ -436,8 +436,13 @@
                 order: [[1, 'desc']]
             });
 
-            if ("{{ $isEdit }}" == 1){
+            const isEdit = parseInt("{{ $isEdit }}", 10);
+            const isRegister = parseInt("{{ $isRegister }}", 10);
+            if (isEdit === 1) {
                 $('#request-modal').modal('toggle');
+            }
+            else if (isRegister === 1) {
+                $('#register-modal').modal('toggle');
             }
         });
 

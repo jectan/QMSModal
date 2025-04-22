@@ -12,7 +12,7 @@
             <div class="d-flex justify-content-end mt-2 mb-3">
                 <!-- Back Button -->
                 <div class="expandable-button">
-                    <a href="{{ url('/documents') }}" class="btn btn-sm btn-secondary mx-1 btn-icon" data-bs-toggle="tooltip">
+                    <a href="{{ url('/masterlist') }}" class="btn btn-sm btn-secondary mx-1 btn-icon" data-bs-toggle="tooltip">
                         <span class="material-icons" style="font-size: 20px;">chevron_left</span>
                         <span class="btn-label">Back</span>
                     </a>

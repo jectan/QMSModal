@@ -4,7 +4,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-body table-responsive">
-        <table class="table table-striped w-100" id="qp-dt" style="font-size: 14px">
+        <table class="table table-striped w-100" id="om-dt" style="font-size: 14px">
             <thead>
                 <tr>
                     <th style="width: 15%">Document Ref Code</th>
@@ -24,10 +24,10 @@
 <script type="text/javascript">
  
     $(document).ready(function () {
-        $('#qp-dt').DataTable({
+        $('#om-dt').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('/masterlist/data-request/6') }}", // Fetch data from this route
+            ajax: "{{ url('/masterlist/data-request/4') }}", // Fetch data from this route
             columns: [
                 { data: "docRefCode", name: "docRefCode" },
                 { data: "docTitle", name: "docTitle" },
@@ -37,7 +37,7 @@
                 { data: "action", name: "action" },
             ],
             language: {
-                emptyTable: 'There are no registered Quality Procedures'
+                emptyTable: 'There is no registered Operations Manual'
             }
         });
     });

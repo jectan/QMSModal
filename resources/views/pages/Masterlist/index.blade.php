@@ -12,7 +12,7 @@
         <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
         <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
         <div class="info-box-content">
-          <span class="info-box-text">Quality Manual</span>
+          <span class="info-box-text"><strong>Quality Manual</strong></span>
           <span class="info-box-number qm"></span>
         </div>
       </div>
@@ -23,7 +23,7 @@
         <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
         <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
         <div class="info-box-content">
-          <span class="info-box-text">Quality Procedure</span>
+          <span class="info-box-text"><strong>Quality Procedure</strong></span>
           <span class="info-box-number qp"></span>
         </div>
       </div>
@@ -34,7 +34,7 @@
         <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
         <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
         <div class="info-box-content">
-          <span class="info-box-text">Procedure Manuals</span>
+          <span class="info-box-text"><strong>Procedure Manuals</strong></span>
           <span class="info-box-number pm"></span>
         </div>
       </div>
@@ -45,7 +45,7 @@
         <span class="info-box-icon elevation-1" style="background-color: white; color: #1f488f">
         <i class='fas fa-file-alt' style='font-size:40px;'></i></span>
         <div class="info-box-content ">
-          <span class="info-box-text word-wrap">Forms,Templates & Guidelines</span>
+          <span class="info-box-text word-wrap"><strong>Forms & Templates</strong></span>
           <span class="info-box-number ftg"></span>
         </div>
       </div>
@@ -61,13 +61,14 @@
   <div class="card card-primary card-tabs" style="margin: 10px">
       <div class="card-header p-0 pt-1 bg-dblue">
           <ul class="nav nav-tabs" id="settings-tab" role="tablist">
-            @if(Auth::user()->role->id!=4)
               <li class="nav-item">
                 <a class="nav-link active" id="qualityManual" data-toggle="pill" href="#quality-manual" role="tab" aria-controls="quality-manual" aria-selected="true">Quality Manual</a>
               </li>
-            @endif
               <li class="nav-item">
-                  <a class="nav-link {{Auth::user()->role->id == 4 ? 'active' : 'null'}}" id="qualityProcedure" data-toggle="pill" href="#quality-procedure" role="tab" aria-controls="quality-procedure" aria-selected="false">Quality Procedure</a>
+                  <a class="nav-link" id="qualityProcedure" data-toggle="pill" href="#quality-procedure" role="tab" aria-controls="quality-procedure" aria-selected="false">Quality Procedure</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" id="operationsManual" data-toggle="pill" href="#operations-manual" role="tab" aria-controls="operations-manual" aria-selected="false">Operations Manual</a>
               </li>
             <li class="nav-item">
               <a class="nav-link " id="procedureManual" data-toggle="pill" href="#procedure-manual" role="tab" aria-controls="procedure-manual" aria-selected="false">Procedure Manuals</a>
@@ -79,19 +80,20 @@
         </div>
         <div class="card-body">
           <div class="tab-content" id="set-content">
-            @if(Auth::user()->role->id!=4)
-            <div class="tab-pane fade show active " id="quality-manual" role="tabpanel" aria-labelledby="quality-manual">
+            <div class="tab-pane fade show active" id="quality-manual" role="tabpanel" aria-labelledby="quality-manual">
               @include('pages.masterlist.qualitymanuals')
             </div>
-            @endif
-            <div class="tab-pane fade {{Auth::user()->role->id == 4 ? 'show active' : 'null'}}" id="quality-procedure" role="tabpanel" aria-labelledby="quality-procedure">
-            @include('pages.masterlist.qualityprocedures')
-          </div>
+            <div class="tab-pane fade" id="quality-procedure" role="tabpanel" aria-labelledby="quality-procedure">
+              @include('pages.masterlist.qualityprocedures')
+            </div>
+            <div class="tab-pane fade" id="operations-manual" role="tabpanel" aria-labelledby="operations-manual">
+              @include('pages.masterlist.operationsmanual')
+            </div>
             <div class="tab-pane fade" id="procedure-manual" role="tabpanel" aria-labelledby="procedure-manual">
               @include('pages.masterlist.proceduremanuals')
             </div>
             <div class="tab-pane fade" id="forms-templates-guidelines" role="tabpanel" aria-labelledby="forms-templates-guidelines">
-            @include('pages.masterlist.formstemplatesguidelines')
+              @include('pages.masterlist.formstemplatesguidelines')
             </div>
             <div class="tab-pane fade" id="closed-content" role="tabpanel" aria-labelledby="closed-tab">
               

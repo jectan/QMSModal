@@ -9,7 +9,7 @@
 			<div style="text-align: center">
 				<h2 class="header">Login</h2>
 			</div>
-			<form method="POST" action="{{ route('login') }}">
+			<form method="POST" action="{{ url('/login') }}">
                 @csrf
 				<div class="inputbox">
 					<span class="spn">Username</span>

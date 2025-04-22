@@ -11,6 +11,12 @@ use App\Models\User;
 class AuthController extends Controller
 {
     public function login(){
+
+        if (Auth::check()) {
+            // Redirect authenticated user to dashboard (or wherever you want)
+            return redirect('/dashboard');
+        }
+        
         return view('auth.login',['show' =>  true]);
     }
 

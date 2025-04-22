@@ -11,7 +11,7 @@
                     <span class="info-box-icon elevation-1" style="background-color: white; color: green">
                         <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">Registered Documents</span>
+                        <span class="info-box-text"><strong>Registered Documents</strong></span>
                         <span class="info-box-number register"></span>
                     </div>
                 </div>
@@ -22,7 +22,7 @@
                     <span class="info-box-icon elevation-1" style="background-color: white; color: #dc3545">
                         <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">For Review</span>
+                        <span class="info-box-text"><strong>For Review</strong></span>
                         <span class="info-box-number review"></span>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                     <span class="info-box-icon elevation-1" style="background-color: white; color: #ffc107">
                         <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">For Approval</span>
+                        <span class="info-box-text"><strong>For Approval</strong></span>
                         <span class="info-box-number approval"></span>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                     <span class="info-box-icon elevation-1" style="background-color: white; color: gray">
                         <i class='fas fa-file-alt' style='font-size:48px;'></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">Archived Documents</span>
+                        <span class="info-box-text"><strong>Archived Documents</strong></span>
                         <span class="info-box-number archive"></span>
                     </div>
                 </div>
@@ -561,67 +561,114 @@
             window.location.href = "{{ url('/documents/view/edit') }}/" + requestID;
         }
 
-        /* function editRequest(requestID) {
-            $.ajax({
-                type: "POST",
-                url: "{{ url('/documents/edit') }}",
-                data: { requestID: requestID, 
-                    _token: "{{ csrf_token() }}"},
-                dataType: 'json',
-                success: function(res) {
-                    let requestStatus = 'Requested';
-                    if(res.requestStatus === 'For Review' || res.requestStatus === 'For Approval'){
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Document cannot be edited while being checked!'
-                        });
-                    }
-                    else if(res.requestStatus === 'For Registration'){
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Document is already for Registration!'
-                        });
-                    }
-                    else{
-                        
-                        if(res.requestStatus === 'For Revision'){
-                            let requestStatus = 'For Review';
-                        }
-                        else if(res.requestStatus === 'For Revision (Approval)'){
-                            let requestStatus = 'For Approval';
-                        }
-
-                        $('#request-modal-title').html("Request Document");
-                        $('#request-modal').modal('show');
-                        $('#requestID').val(res.requestID);
-                        $('#docRefCode').val(res.docRefCode);
-                        $('#currentRevNo').val(res.currentRevNo);
-                        $('#docTitle').val(res.docTitle);
-                        $('#requestReason').val(res.requestReason);
-                        $('#requestFileOld').val(res.requestFile);
-                        $('#requestStatus').val(requestStatus);
-
-                        // Load data first, then set the selected value in a callback
-                        loadRequestType(res.requestTypeID, function () {
-                            $("#requestTypeID").val(res.requestTypeID).change(); // Ensure the correct selection
-                        });
-                        
-                        loadDocType(res.docTypeID, function () {
-                            $("#docTypeID").val(res.docTypeID).change(); // Ensure the correct selection
-                        });
-
-                        // Refresh DataTable immediately after saving
-                        $('#request-dt').DataTable().ajax.reload(null, false);
-                        $('#review-dt').DataTable().ajax.reload(null, false);
-                        $('#approval-dt').DataTable().ajax.reload(null, false);
-                        $('#registration-dt').DataTable().ajax.reload(null, false);
-                    }
+        // reviewRequest function
+        function reviewRequest(requestID){
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                confirmButton: 'btn btn-success mx-2', // ✅ Green button with margin
+                cancelButton: 'btn btn-secondary mx-2'
                 },
-                error: function(data) {
-                    console.log(data);
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: 'Confirm Review?',
+                text: "This document will be marked as reviewed.",
+                icon: 'info', // ℹ️ Changed from warning to info
+                showCancelButton: true,
+                confirmButtonText: 'Yes, mark as reviewed',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    swal.fire({
+                        html: '<h6>Processing... Please wait</h6>',
+                        showConfirmButton: false
+                    });
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/documents/reviewed",
+                        data: {
+                            requestID: requestID,
+                            _token: @json(csrf_token())
+                        },
+                        success: function(res) {
+                            setTimeout(function() {
+                                Swal.fire({
+                                    icon: 'success', // 👍 Changed from success to thumbs-up
+                                    html: '<h5>Successfully Marked as Reviewed!</h5>'
+                                }).then(() => {
+                                    window.location.href = "{{ url('/documents') }}/";
+                                });
+                            }, 700);
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    toastr.info(
+                        'Action is cancelled',
+                        'Document remains pending'
+                    );
                 }
             });
-        } */
+        }
+
+        // approveRequest function
+        function approveRequest(requestID){
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                confirmButton: 'btn btn-success mx-2',
+                cancelButton: 'btn btn-secondary mx-2'
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: 'Confirm Approval?',
+                text: "This document will be marked as approved.",
+                icon: 'info', // ℹ️ Changed from warning to info
+                showCancelButton: true,
+                confirmButtonText: 'Yes, mark as approved',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    swal.fire({
+                        html: '<h6>Processing... Please wait</h6>',
+                        showConfirmButton: false
+                    });
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/documents/approved",
+                        data: {
+                            requestID: requestID,
+                            _token: @json(csrf_token())
+                        },
+                        success: function(res) {
+                            setTimeout(function() {
+                                Swal.fire({
+                                    icon: 'success', // 👍 Changed from success to thumbs-up
+                                    html: '<h5>Successfully Marked as Approved!</h5>'
+                                }).then(() => {
+                                    window.location.href = "{{ url('/documents') }}/";
+                                });
+                            }, 700);
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    toastr.info(
+                        'Action is cancelled',
+                        'Document remains   pending'
+                    );
+                }
+            });
+        }
+
+        // registerRequest function
+        function registerRequest(requestID){
+            window.location.href = "{{ url('/documents/view/register') }}/" + requestID;
+        }
 
         function cancelRequest(requestID) {
             const swalWithBootstrapButtons = Swal.mixin({

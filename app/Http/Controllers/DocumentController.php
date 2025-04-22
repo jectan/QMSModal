@@ -408,34 +408,56 @@ class DocumentController extends Controller
             })
             ->addColumn('action', function ($row) {
                 $onClickFunction = "editRequest({$row->requestID})";
-                $isHidden = "";
-                $isHidden2 = "";
+                $isEditHidden = "";
+                $isDeleteHidden = "";
+                $isApproveHidden = "Hidden";
+                $isReviewHidden = "Hidden";
+                $isRegisterHidden = "Hidden";
 
                 if ((in_array($row->requestStatus, ['For Review', 'For Approval', 'For Registration', 'Registered', 'Obsolete', 'Cancelled']) || $row->userID !== Auth::id()) 
                     && Auth::user()->role_id !== 1) {
-                    $isHidden = "hidden";
+                    $isEditHidden = "hidden";
                 }
                 
                 if ((in_array($row->requestStatus, ['For Registration', 'Registered', 'Obsolete']) || $row->userID !== Auth::id()) 
                     && Auth::user()->role_id !== 1) {
-                    $isHidden2 = "hidden";
+                    $isDeleteHidden = "hidden";
                 }
 
-                /* if ((in_array($row->requestStatus, ['For Registration']) || $row->userID !== Auth::id()) 
-                    && Auth::user()->role_id !== 1) {
-                    $isHidden2 = "";
-                } */
-
+                if ($row->requestStatus =='For Review' && (in_array(Auth::user()->role_id, [1,4])))
+                {
+                    $isReviewHidden = "";
+                }
+                elseif ($row->requestStatus =='For Approval' && (in_array(Auth::user()->role_id, [1,3])))
+                {
+                    $isApproveHidden = "";
+                }
+                elseif ($row->requestStatus =='For Registration' && (in_array(Auth::user()->role_id, [1,2])))
+                {
+                    $isRegisterHidden = "";
+                }
                 
                 return '<button class="btn btn-sm btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
                         
-                        <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '"' . $isHidden .'>
+                        <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="reviewRequest(' . $row->requestID . ')"' . $isReviewHidden .'>
+                            <span class="material-icons" style="font-size: 20px;">check_box</span>
+                        </button>
+                        
+                        <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="approveRequest(' . $row->requestID . ')"' . $isApproveHidden .'>
+                            <span class="material-icons" style="font-size: 20px;">check_box</span>
+                        </button>
+                        
+                        <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="registerRequest(' . $row->requestID . ')"' . $isRegisterHidden .'>
+                            <span class="material-icons" style="font-size: 20px;">check_box</span>
+                        </button>
+                        
+                        <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '"' . $isEditHidden .'>
                             <span class="material-icons" style="font-size: 20px;">edit</span>
                         </button>
 
-                        <button class="btn btn-sm btn-danger mx-1" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')"' . $isHidden2 .'>
+                        <button class="btn btn-sm btn-danger mx-1" href="javascript:void(0)" onClick="cancelRequest(' . $row->requestID . ')"' . $isDeleteHidden .'>
                             <span class="material-icons" style="font-size: 20px;">delete</span>
                         </button>
                         ';
@@ -444,11 +466,11 @@ class DocumentController extends Controller
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
                         </button>
 
-                        <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '"' . $isHidden .'>
+                        <button class="btn btn-sm btn-info mx-1" href="javascript:void(0)" onClick="' . $onClickFunction . '"' . $isEditHidden .'>
                             <span class="material-icons" style="font-size: 20px;">edit</span>
                         </button>
 
-                        <!-- <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="registerDocument(' . $onClickFunction . ')"' . $isHidden2 .'>
+                        <!-- <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="registerDocument(' . $onClickFunction . ')"' . $isDeleteHidden .'>
                             <span class="material-icons" style="font-size: 20px;">check_box</span>
                         </button> -->
 
@@ -549,8 +571,9 @@ class DocumentController extends Controller
         $requestType = RequestType::all();
         $docType = DocType::all();
         $isEdit = 0;
+        $isRegister = 0;
     
-        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit'));
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister'));
     }
     
     public function viewEdit($requestID)
@@ -559,8 +582,20 @@ class DocumentController extends Controller
         $requestType = RequestType::all();
         $docType = DocType::all();
         $isEdit = 1;
+        $isRegister = 0;
     
-        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit'));
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister'));
+    }
+    
+    public function viewRegister($requestID)
+    {
+        $document = RequestDocument::where('requestID', $requestID)->firstOrFail();
+        $requestType = RequestType::all();
+        $docType = DocType::all();
+        $isEdit = 0;
+        $isRegister = 1;
+    
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister'));
     }
 
     public function update(Request $request)
