@@ -54,6 +54,7 @@ class DocumentController extends Controller
             'docTitle.required' => 'The Document Title is required.',
             'docTitle.unique' => 'A similar document request already exist.',
             'requestReason.required' => 'The Reason for Request is required.',
+            'requestReason.required' => 'The Reason for Request is required.',
             'documentFile.required' => 'The Uploaded Document is required.',
         ]);
 
