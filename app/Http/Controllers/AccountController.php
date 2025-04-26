@@ -56,7 +56,14 @@ class AccountController extends Controller
             'unitID'  => 'required',
             'role_id'    => 'required',
             'email'      => 'nullable|email',
-            'username'   => 'required|string|max:255|unique:users',
+            'username'   => [
+                'required',
+                'string',
+                'max:255',
+                'unique:users',
+                'email',  // Add email validation
+                'regex:/^[^@]+@dict\.gov\.ph$/i', // Custom regex for @dict.gov.ph
+            ],
         ]);
         
         try {

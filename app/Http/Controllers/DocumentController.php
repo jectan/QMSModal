@@ -23,6 +23,7 @@ use App\Models\RequestType;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;
@@ -38,7 +39,14 @@ class DocumentController extends Controller
     {
         $request->validate([
         'currentRevNo' => 'required|numeric|min:0',
-        'docTitle' => 'required|string|max:255',
+        'docTitle' => [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('RequestDocument')->where(function ($query) {
+                return $query->where('requestStatus', 'Requested');
+            }),
+        ],
         'requestReason' => 'required|string|max:500',
         'documentFile' => 'nullable|mimes:pdf',
         ], [
@@ -112,7 +120,14 @@ class DocumentController extends Controller
     {
         $request->validate([
         'currentRevNoEdit' => 'required|numeric|min:0',
-        'docTitleEdit' => 'required|string|max:255',
+        'docTitleEdit' => [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('RequestDocument', 'docTitle')->where(function ($query) {
+                return $query->where('requestStatus', 'Requested');
+            }),
+        ],
         'requestReasonEdit' => 'required|string|max:500',
         ], [
             'currentRevNoEdit.required' => 'The Revision Number is required.',

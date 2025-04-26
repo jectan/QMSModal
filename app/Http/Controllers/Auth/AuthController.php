@@ -30,14 +30,17 @@ class AuthController extends Controller
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
-            if(Auth::user()->isNew == true){
+            $user = Auth::user(); // Get the authenticated user
+    
+            if ($user->isActive != true) { // Check for account activity *before* isNew
+                Auth::logout(); // Log the user out since the attempt was successful
+                return redirect('login')->with('error', 'Sorry, your account was deactivated.');
+            }
+    
+            if ($user->isNew == true) {
                 return redirect('setpassword');
-            } else{
-                if(Auth::user()->isActive == true){
-                    return redirect()->intended('/dashboard');
-                } else{
-                    return redirect('login')->with('error', 'Sorry, your account was deactivated.');
-                }
+            } else {
+                return redirect()->intended('/dashboard');
             }
         }
 
