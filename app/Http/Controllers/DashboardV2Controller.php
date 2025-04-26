@@ -31,10 +31,13 @@ class DashboardV2Controller extends Controller
         $documents['register'] = RequestDocument::where('requestStatus', 'Registered')->count();
         $documents['review'] = RequestDocument::where('requestStatus', 'For Review')->count();
         $documents['approval'] = RequestDocument::where('requestStatus', 'For Approval')->count();
-        $documents['archive'] = RequestDocument::where('requestStatus', 'Archive')->count();
-        $documents['qpt'] = RequestDocument::where('docTypeID', '1')->count();
-        $documents['pmt'] = RequestDocument::where('docTypeID', '4')->count();
-        $documents['ftg'] = RequestDocument::whereIn('docTypeID', [2,3])->count();
+        $documents['archive'] = RequestDocument::where('requestStatus', 'Obsolete')->count();
+        $documents['qpt'] = RequestDocument::where('docTypeID', '6')
+                                            ->where('requestStatus', 'Registered')->count();
+        $documents['pmt'] = RequestDocument::where('docTypeID', '5')
+                                            ->where('requestStatus', 'Registered')->count();
+        $documents['ftg'] = RequestDocument::whereIn('docTypeID', [2,3])
+                                            ->where('requestStatus', 'Registered')->count();
         echo json_encode($documents);
         exit;
     }
@@ -51,8 +54,11 @@ class DashboardV2Controller extends Controller
             ->where('requestStatus', 'Registered');
     
         if ($dataTable == '1') {
-            $requestDocuments->where('docTypeID', 1);
-            $requestDocuments->where('docTypeID', 4);
+            $requestDocuments->where(function ($query) {
+                $query->where('docTypeID', 1)
+                    ->orWhere('docTypeID', 4)
+                      ->orWhere('docTypeID', 6);
+            });
         }
         elseif($dataTable == '2'){
             $requestDocuments->where('docTypeID', 5)

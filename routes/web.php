@@ -125,4 +125,5 @@ Route::group(['middleware' => 'role:1,2,3,4,5'], function (){
     Route::get('/masterlist/data-request/{dataTable}', [MasterlistController::class, 'getDataRequest']); //called by masterlist data tables
     Route::get('/masterlist/computeTotal',[MasterlistController::class, 'documentTally']);
     Route::get('/masterlist/view/{id}',[MasterlistController::class, 'view']);
+    Route::get('/masterlist/view/revision/{docRefCode}',[MasterlistController::class, 'getRevisionHistory']);
 });

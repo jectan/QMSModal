@@ -76,6 +76,9 @@
             <li class="nav-item">
               <a class="nav-link " id="formsTemplatesGuidelines" data-toggle="pill" href="#forms-templates-guidelines" role="tab" aria-controls="forms-templates-guidelines" aria-selected="false">Forms, Templates & Guidelines</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link " id="archivedDocuments" data-toggle="pill" href="#archived-documents" role="tab" aria-controls="archived-documents" aria-selected="false">Archived Documents</a>
+            </li>
           </ul>
         </div>
         <div class="card-body">
@@ -95,14 +98,9 @@
             <div class="tab-pane fade" id="forms-templates-guidelines" role="tabpanel" aria-labelledby="forms-templates-guidelines">
               @include('pages.masterlist.formstemplatesguidelines')
             </div>
-            <div class="tab-pane fade" id="closed-content" role="tabpanel" aria-labelledby="closed-tab">
-              
+            <div class="tab-pane fade" id="archived-documents" role="tabpanel" aria-labelledby="archived-documents">
+              @include('pages.masterlist.archiveddocuments')
             </div>
-            <div class="tab-pane fade" id="with-feedback-content" role="tabpanel" aria-labelledby="with-feedback-tab">
-              
-            </div>
-            <div class="tab-pane fade" id="cancelled-content" role="tabpanel" aria-labelledby="cancelled-tab">
-          
             </div>
           </div>
         </div>

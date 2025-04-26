@@ -93,7 +93,6 @@
 
 
   <div class="row">
-    <!--Top Ten Offices Tables-->
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
@@ -113,7 +112,6 @@
       </div>
     </div>
 
-    <!--Top Low  Offices Tables-->
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
@@ -134,7 +132,7 @@
     </div>
 </div>
 <div class="row">
-   <!--Top 5 Offices Unresolve Tables-->
+
    <div class="col-md-6">
       <div class="card">
         <div class="card-header">
@@ -153,7 +151,7 @@
             </div>
       </div>
     </div>
-  <!--Top 5 Offices Resolved within 1 day and 3 days Tables-->
+
   <div class="col-md-6">
       <div class="card">
         <div class="card-header">

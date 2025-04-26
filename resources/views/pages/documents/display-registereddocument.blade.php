@@ -148,6 +148,39 @@
         </div>
     </div>
 
+    <!-- Revision History Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card border-warning">
+                        <div class="card-header bg-dblue text-white">
+                            <strong>Document Revision History</strong>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card-body table-responsive">
+                                    <table class="table table-striped w-100" id="rh-dt" style="font-size: 14px">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 10%">Doc Ref Code</th>
+                                                <th style="width: 10%">Doc Title</th>
+                                                <th style="width: 10%">Revision No</th>
+                                                <th style="width: 10%">Effectivity Date</th>
+                                                <th style="width: 20%">Reason</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
     <!-- MODAL -->
     <div class="modal fade" id="register-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
@@ -344,6 +377,26 @@
                     { data: 'reviewDate', name: 'reviewDate' }
                 ],
                 order: [[1, 'desc']]
+            });
+
+            $('#rh-dt').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                lengthChange: false,
+                searching: false,
+                ajax: "{{ url('/masterlist/view/revision') }}/{{ $document->docRefCode }}",
+                columns: [
+                    { data: 'docRefCode', name: 'docRefCode' },
+                    { data: 'docTitle', name: 'docTitle' },
+                    { data: 'currentRevNo', name: 'currentRevNo' },
+                    { data: 'effectivityDate', name: 'effectivityDate' },
+                    { data: 'requestReason', name: 'requestReason' }
+                ],
+                order: [[1, 'desc']],
+                language: {
+                    emptyTable: 'There are no Revision History yet'
+                }
             });
 
             if ("{{ $isEdit }}" == 1){
