@@ -52,6 +52,7 @@ class DocumentController extends Controller
         ], [
             'currentRevNo.required' => 'The Revision Number is required.',
             'docTitle.required' => 'The Document Title is required.',
+            'docTitle.unique' => 'A similar document request already exist.',
             'requestReason.required' => 'The Reason for Request is required.',
             'documentFile.required' => 'The Uploaded Document is required.',
         ]);
@@ -132,6 +133,7 @@ class DocumentController extends Controller
         ], [
             'currentRevNoEdit.required' => 'The Revision Number is required.',
             'docTitleEdit.required' => 'The Document Title is required.',
+            'docTitleEdit.unique' => 'A similar Document Request already exist.',
             'requestReasonEdit.required' => 'The Reason for Request is required.',
         ]);
 
@@ -184,7 +186,7 @@ class DocumentController extends Controller
     public function storeReview(Request $request)
     {
         $request->validate([
-        'reviewComments' => 'required|string|max:255',
+        'reviewComments' => 'required|string',
         ], [
             'reviewComments.required' => 'The Review Comments are required.',
         ]);
@@ -208,7 +210,7 @@ class DocumentController extends Controller
     public function storeApprove(Request $request)
     {
         $request->validate([
-        'reviewComment2' => 'required|string|max:255',
+        'reviewComment2' => 'required|string',
         ], [
             'reviewComment2.required' => 'The Comments are requireds.',
         ]);
