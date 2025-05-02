@@ -17,7 +17,7 @@ class AccountSeeder extends Seeder {
         DB::table('users')->delete();
         DB::table('staff')->delete();
         DB::table('offices')->delete();
-        $password = Hash::make('jec');
+        $password = Hash::make('*1234#');
         $Role =  Role::create(array('name' => 'Administrator'));
         Role::create(array('name' => 'Document Management Team'));
         Role::create(array('name' => 'Regional Director'));
@@ -72,5 +72,7 @@ class AccountSeeder extends Seeder {
         Staff::create(array('firstname' => 'Aris', 'middlename' =>'B.', 'lastname' => 'Austria','user_id' => '4', 'unitID' => '17'));
         $User =   User::create(array('username' => 'jerico.tan@dict.gov.ph', 'password' => $password, 'role_id' => '5', 'isNew' => '0'));
         Staff::create(array('firstname' => 'Jerico', 'middlename' =>'B.', 'lastname' => 'Tan','user_id' => '5', 'unitID' => '7'));
+        $User =   User::create(array('username' => 'miss.region9basulta@dict.gov.ph', 'password' => $password, 'role_id' => '1', 'isNew' => '0'));
+        Staff::create(array('firstname' => 'MISS', 'middlename' =>'Team', 'lastname' => 'Region IX & BASULTA','user_id' => '6', 'unitID' => '8'));
     }
 }

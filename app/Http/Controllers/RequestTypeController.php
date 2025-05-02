@@ -32,7 +32,7 @@ class RequestTypeController extends Controller
     public function store(Request $request)
     { 
         $validator = Validator::make($request->all(), [
-            'requestTypeDesc' => 'required|unique:requestType,requestTypeDesc,' . $request->requestTypeID . ',requestTypeID',],
+            'requestTypeDesc' => 'required|unique:RequestType,requestTypeDesc,' . $request->requestTypeID . ',requestTypeID',],
             [ 'requestTypeDesc.unique' => 'This Document Type already Exist. Please choose a different name.',
             'requestTypeDesc.required' => 'The Document Type is required.'
         ]);

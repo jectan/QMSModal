@@ -14,8 +14,8 @@ class UnitController extends Controller
     public function index()
     {
         if(request()->ajax()) {
-            return datatables()->of(Unit::select('unit.*', 'division.divName')
-                ->leftJoin('division', 'unit.divID', '=', 'division.divID'))
+            return datatables()->of(Unit::select('Unit.*', 'Division.divName')
+                ->leftJoin('Division', 'Unit.divID', '=', 'Division.divID'))
             ->addColumn('action', 
             '<div class="btn-group">
                 <button type="button" class="btn btn-sm btn-info mx-2" href="javascript:void(0)" onClick="editUnit({{ $unitID }})" data-toggle="tooltip" data-original-title="Edit">
@@ -35,7 +35,7 @@ class UnitController extends Controller
     public function store(Request $request)
     { 
         $validator = Validator::make($request->all(), [
-            'unitName' => 'required|unique:unit,unitName,' . $request->id . ',unitID',],
+            'unitName' => 'required|unique:Unit,unitName,' . $request->id . ',unitID',],
             [ 'unitName.unique' => 'This Unit already Exist. Please choose a different name.',
             'unitName.required' => 'The Unit Name is required.'
         ]);

@@ -33,13 +33,13 @@ class CreateCallersTable extends Migration
             $table->unsignedBigInteger('created_by_id')->unsigned()->nullable();
             $table->foreign('created_by_id')
                     ->references('id')
-                    ->on('Users')
+                    ->on('users')
                     ->onDelete('cascade');
 
             $table->unsignedBigInteger('updated_by_id')->unsigned()->nullable();
             $table->foreign('updated_by_id')
                     ->references('id')
-                    ->on('Users')
+                    ->on('users')
                     ->onDelete('cascade');
         });
     }  

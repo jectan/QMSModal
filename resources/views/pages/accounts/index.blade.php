@@ -54,14 +54,14 @@
                         </button>
                         <div class="dropdown-menu" role="menu">                
                             @if($user->isActive == true)
-                                <button class="dropdown-item" onclick="location.href='/accounts/{{ $user->id }}'"><i class="fas fa-edit mr-1"></i>{{ _('Edit') }}</button>
-                                <button class="dropdown-item" onclick="activeAccount({{ $user->id }}, 0)"><i class="fas fa-lock mr-1"></i>{{ _('Deactivate') }}</button>
-                                <button class="dropdown-item" onclick="resetPassword({{ $user->id }})"><i class="fas fa-key mr-1"></i>{{ _('Reset Password') }}</button>
+                                <button class="dropdown-item" onclick="location.href='/accounts/{{ $user->id }}'"><i class="fas fa-edit mr-1"></i>{{ Lang::get('Edit') }}</button>
+                                <button class="dropdown-item" onclick="activeAccount({{ $user->id }}, 0)"><i class="fas fa-lock mr-1"></i>{{ Lang::get('Deactivate') }}</button>
+                                <button class="dropdown-item" onclick="resetPassword({{ $user->id }})"><i class="fas fa-key mr-1"></i>{{ Lang::get('Reset Password') }}</button>
                             @else
-                                <button class="dropdown-item" onclick="activeAccount({{ $user->id }}, 1)"><i class="fas fa-unlock mr-1"></i>{{ _('Activate') }}</button>
+                                <button class="dropdown-item" onclick="activeAccount({{ $user->id }}, 1)"><i class="fas fa-unlock mr-1"></i>{{ Lang::get('Activate') }}</button>
                             @endif
                             <div class="dropdown-divider"></div>
-                            <button class="dropdown-item text-red" onclick="deleteAccount({{ $user->id }})"><i class="fas fa-trash mr-1"></i>{{ _('Delete') }}</button>
+                            <button class="dropdown-item text-red" onclick="deleteAccount({{ $user->id }})"><i class="fas fa-trash mr-1"></i>{{ Lang::get('Delete') }}</button>
                         </div>
                     </div>
                     </td>

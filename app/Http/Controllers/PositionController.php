@@ -30,7 +30,7 @@ class PositionController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'position_name' => 'required|unique:positions,position_name,' . $request->position_id . ',id',
+            'position_name' => 'required|unique:Positions,position_name,' . $request->position_id . ',id',
         ]);
 
         if ($validator->fails()) {

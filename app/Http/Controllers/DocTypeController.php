@@ -32,7 +32,7 @@ class DocTypeController extends Controller
     public function store(Request $request)
     { 
         $validator = Validator::make($request->all(), [
-            'docTypeDesc' => 'required|unique:docType,docTypeDesc,' . $request->docTypeID . ',docTypeID',],
+            'docTypeDesc' => 'required|unique:DocType,docTypeDesc,' . $request->docTypeID . ',docTypeID',],
             [ 'docTypeDesc.unique' => 'This Document Type already Exist. Please choose a different name.',
             'docTypeDesc.required' => 'The Document Type is required.'
         ]);

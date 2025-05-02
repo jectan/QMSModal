@@ -32,7 +32,7 @@ class DivisionController extends Controller
     public function store(Request $request)
     { 
         $validator = Validator::make($request->all(), [
-            'divName' => 'required|unique:division,divName,' . $request->divID . ',divID',],
+            'divName' => 'required|unique:Division,divName,' . $request->divID . ',divID',],
             [ 'divName.unique' => 'This Division Name already Exist. Please choose a different name.',
             'divName.required' => 'The Division Name is required.'
         ]);
