@@ -8,6 +8,7 @@
             <thead>
                 <tr>
                     <th style="width: 15%">Document Ref Code</th>
+                    <th style="width: 10%">Request Type</th>
                     <th style="width: 20%">Doc Title</th>
                     <th style="width: 10%">Document Type</th>
                     <th style="width: 10%">Unit</th>
@@ -30,6 +31,7 @@
             ajax: "{{ url('/masterlist/data-request/7') }}", // Fetch data from this route
             columns: [
                 { data: "docRefCode", name: "docRefCode" },
+                { data: "requestType", name: "requestType" },
                 { data: "docTitle", name: "docTitle" },
                 { data: "docTypeDesc", name: "docTypeDesc" },
                 { data: "unitName", name: "unitName" },

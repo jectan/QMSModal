@@ -163,6 +163,7 @@
                                             <thead>
                                                 <tr>
                                                     <th style="width: 10%">Doc Ref Code</th>
+                                                    <th style="width: 10%">Request Type</th>
                                                     <th style="width: 10%">Doc Title</th>
                                                     <th style="width: 10%">Revision No</th>
                                                     <th style="width: 10%">Effectivity Date</th>
@@ -387,6 +388,7 @@
                 ajax: "{{ url('/masterlist/view/revision') }}/{{ $document->docRefCode }}",
                 columns: [
                     { data: 'docRefCode', name: 'docRefCode' },
+                    { data: 'requestType', name: 'requestType' },
                     { data: 'docTitle', name: 'docTitle' },
                     { data: 'currentRevNo', name: 'currentRevNo' },
                     { data: 'effectivityDate', name: 'effectivityDate' },

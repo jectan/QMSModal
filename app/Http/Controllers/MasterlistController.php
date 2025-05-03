@@ -96,6 +96,9 @@ class MasterlistController extends Controller
             ->addColumn('docTitle', function ($row) {
                 return $row->document ? $row->document->docTitle : "";
             })
+            ->addColumn('requestType', function ($row) {
+                return $row->document ? $row->document->requestType->requestTypeDesc : "";
+            })
             ->addColumn('currentRevNo', function ($row) {
                 return $row->document ? $row->document->currentRevNo : "";
             })
@@ -125,6 +128,9 @@ class MasterlistController extends Controller
         return DataTables::of($revisionHistory)
             ->addColumn('docRefCode', function ($row) {
                 return $row->document ? $row->document->docRefCode : "";
+            })
+            ->addColumn('requestType', function ($row) {
+                return $row->document ? $row->document->requestType->requestTypeDesc : "";
             })
             ->addColumn('docTitle', function ($row) {
                 return $row->document ? $row->document->docTitle : "";
