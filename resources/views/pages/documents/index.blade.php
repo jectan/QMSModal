@@ -91,7 +91,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link {{Auth::user()->role->id == 2 ? 'active' : 'null'}}" id="registration" data-toggle="pill" href="#registration-document" role="tab" aria-controls="registration-document" aria-selected="false">For Registration</a>
+                                <a class="nav-link {{Auth::user()->role->id == 2 ? 'active' : 'null'}}" id="registration" data-toggle="pill" href="#registration-document" role="tab" aria-controls="registration-document" aria-selected="false">For Registration/Archiving</a>
                             </li>
                         @endif
                     </ul>
@@ -133,6 +133,7 @@
                         <!-- id -->
                         <input type="hidden" name="requestID" id="requestID">
                         <input type="hidden" name="requestFileOld" id="requestFileOld">
+                        <input type="hidden" name="docTitleOld" id="docTitleOld">
 
                         <!-- Request/Document Type Dropdown -->
                         <div class="form-group row">
@@ -238,13 +239,26 @@
                 var docRefCode = $("#docRefCode");
                 var currentRevNo = $("#currentRevNo");
                 var documentType = $("#docTypeID");
+                var docTitle = $("#docTitle");
+                var documentFile = $("#documentFile");
                 if (requestType == "1") {
                     docRefCode.val("For Assigning").prop("readonly", true).removeAttr("required"); // Clear, disable, and remove required
                     currentRevNo.val("0");
-                    documentType.prop("disabled", false).attr("required", "required"); 
-                } else {
+                    documentType.prop("disabled", false).attr("required", "required");
+                    docTitle.prop("disabled", false).attr("required", "required");
+                    documentFile.prop("disabled", false).attr("required", "required"); 
+                } 
+                else if(requestType == "3"){
                     docRefCode.val("").prop("readonly", false).attr("required", "required"); // Enable and make required
                     documentType.prop("disabled", true).removeAttr("required");
+                    docTitle.val("").prop("disabled", true).removeAttr("required");
+                    documentFile.prop("disabled", true).removeAttr("required");
+                }
+                else {
+                    docRefCode.val("").prop("readonly", false).attr("required", "required"); // Enable and make required
+                    documentType.prop("disabled", true).removeAttr("required");
+                    docTitle.prop("disabled", false).attr("required", "required");
+                    documentFile.prop("disabled", false).attr("required", "required"); 
                 }
             });
         });
@@ -285,6 +299,7 @@
                     let docTitle = $('#docTitle');
                     let requestReason = $('#requestReason');
                     let documentType = $('#docTypeID');
+                    let requestType = $('#requestTypeID');
                     let documentFile = $('#documentFile')[0].files[0];
                     // Clear previous errors
                     $(".is-invalid").removeClass("is-invalid");
@@ -301,16 +316,18 @@
                         errorMessages.push("The Revision Number must be a number & greater than or equal to 0.");
                         currentRevNo.addClass("is-invalid");
                     }
-
-                    if (!docTitle.val()) {
+                    if(requestType.val() !=3)
+                    {
+                        if (!docTitle.val()) {
                         isValid = false;
                         missingFields.push("Document Title");
                         docTitle.addClass("is-invalid");
                         docTitle.after("<div class='error-message text-danger'>The Document Title is required.</div>");
-                    } else if (docTitle.val().length > 255) {
-                        isValid = false;
-                        errorMessages.push("The Document Title must be at most 255 characters.");
-                        docTitle.addClass("is-invalid");
+                        } else if (docTitle.val().length > 255) {
+                            isValid = false;
+                            errorMessages.push("The Document Title must be at most 255 characters.");
+                            docTitle.addClass("is-invalid");
+                        }
                     }
 
                     if (!requestReason.val()) {
@@ -324,7 +341,7 @@
                         requestReason.addClass("is-invalid");
                     }
 
-                    if(!requestID.val()){
+                    if(!requestID.val() && requestType.val() != 3){
                         if (!documentFile) {
                             isValid = false;
                             missingFields.push("Uploaded Document");
@@ -467,6 +484,12 @@
                             $("#docTypeID").val(response.docTypeID ?? "").trigger('change');; // ✅ Prevent undefined errors
                             $("#docRefCode").removeClass("is-invalid"); // Remove error styling
                             $("#docRefCodeError").text("");
+                            if(requestTypeID == 3)
+                            {
+                                $("#docTitleOld").val(response.docTitle ?? ""); // ✅ Prevent undefined errors
+                                $("#requestFileOld").val(response.requestFile ?? "");
+                                console.log($("#docTitleOld").val());
+                            }
                             callback(true); // Valid case
                         } else {
                             $("#docRefCodeError").text("Document Reference Code not found!");
@@ -614,7 +637,7 @@
         }
 
         // approveRequest function
-        function approveRequest(requestID){
+        function approveRequest(requestID, requestTypeID){console.log(requestTypeID);
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
                 confirmButton: 'btn btn-success mx-2',
@@ -643,6 +666,7 @@
                         url: "/documents/approved",
                         data: {
                             requestID: requestID,
+                            requestTypeID: requestTypeID,
                             _token: @json(csrf_token())
                         },
                         success: function(res) {
@@ -668,6 +692,10 @@
         // registerRequest function
         function registerRequest(requestID){
             window.location.href = "{{ url('/documents/view/register') }}/" + requestID;
+        }
+
+        function archiveRequest(requestID){
+            window.location.href = "{{ url('/documents/view/archive') }}/" + requestID;
         }
 
         function cancelRequest(requestID) {

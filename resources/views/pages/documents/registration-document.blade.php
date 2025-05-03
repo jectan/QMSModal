@@ -28,7 +28,7 @@
         $('#registration-dt').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('documents.data-request', ['status' => 'For Registration']) }}", // Fetch data from this route
+            ajax: "{{ route('documents.data-request', ['status' => '1']) }}", // Fetch data from this route
             columns: [
                 { data: "docRefCode", name: "docRefCode" },
                 { data: "docTitle", name: "docTitle" },

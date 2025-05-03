@@ -48,7 +48,7 @@
                 <!-- Buttons for Approving Authority -->
                 @if(Auth::check() && in_array(Auth::user()->role_id, [1, 3]) && (in_array($document->requestStatus, ['For Approval'])))
                     <div class="expandable-button">
-                        <button type="button" class="btn btn-sm btn-success mx-1 btn-icon" id="approvedButton" href="javascript:void(0)"  onClick="approvedRequest('{{ $document->requestID }}')">
+                        <button type="button" class="btn btn-sm btn-success mx-1 btn-icon" id="approvedButton" href="javascript:void(0)"  onClick="approvedRequest('{{ $document->requestID }}', '{{ $document->requestTypeID }}')">
                             <span class="material-icons" style="font-size: 20px;">check_circle</span>
                             <span class="btn-label">Approved</span>
                         </button>
@@ -238,7 +238,7 @@
         </div>
     </div>
 
-    <!-- MODAL -->
+    <!-- REGISTER MODAL -->
     <div class="modal fade" id="register-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
             <div class="modal-content">
@@ -288,7 +288,7 @@
         </div>
     </div>
 
-    <!-- MODAL -->
+    <!-- REQUEST MODAL -->
     <div class="modal fade" id="request-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="width: 50%;">
             <div class="modal-content">
@@ -352,7 +352,11 @@
                             <label for="Document Title" class="col-sm-4 control-label">Document Title:<span
                                     class="require">*</span></label>
                             <div class="col-sm-12">
-                                <input type="text" class="form-control" id="docTitleEdit" name="docTitleEdit" value="{{ $document->docTitle }}" required>
+                                @if($document->requestTypeID == 3)
+                                    <input type="text" class="form-control" id="docTitleEdit" name="docTitleEdit" value="{{ $document->docTitle }}" readonly required>
+                                @else
+                                    <input type="text" class="form-control" id="docTitleEdit" name="docTitleEdit" value="{{ $document->docTitle }}" required>
+                                @endif
                             </div>
                         </div>
 
@@ -368,7 +372,11 @@
                         <div class="form-group">
                             <label for="requestFile" class="col-sm-4 control-label">Update Document (PDF Only):</label>
                             <div class="col-sm-12">
-                                <input type="file" class="form-control" id="documentFileEdit" name="documentFileEdit" accept=".pdf">
+                                @if($document->requestTypeID == 3)
+                                    <input type="file" class="form-control" id="documentFileEdit" name="documentFileEdit" accept=".pdf" readonly>
+                                @else
+                                    <input type="file" class="form-control" id="documentFileEdit" name="documentFileEdit" accept=".pdf">
+                                @endif
                             </div>
                         </div>
 
@@ -438,11 +446,15 @@
 
             const isEdit = parseInt("{{ $isEdit }}", 10);
             const isRegister = parseInt("{{ $isRegister }}", 10);
+            const isObsolete = parseInt("{{ $isObsolete }}", 10);
             if (isEdit === 1) {
                 $('#request-modal').modal('toggle');
             }
             else if (isRegister === 1) {
                 $('#register-modal').modal('toggle');
+            }
+            else if (isObsolete === 1) {
+                archiveDocument('{{ $document->requestID }}', '{{ $document->requestFile }}', '{{ $document->docRefCode }}');
             }
         });
 
@@ -460,13 +472,36 @@
             var docRefCode = $("#docRefCodeEdit");
             var currentRevNo = $("#currentRevNoEdit");
             var documentType = $("#docTypeIDEdit");
+            var docTitle = $("#docTitleEdit");
+            var documentFile = $("#documentFileEdit");
             if (requestType == "1") {
                 docRefCode.val("For Assigning").prop("readonly", true).removeAttr("required"); // Clear, disable, and remove required
                 currentRevNo.val("0");
-                documentType.prop("disabled", false).attr("required", "required"); 
-            } else {
-                docRefCode.val("").prop("readonly", false).attr("required", "required"); // Enable and make required
-                documentType.prop("disabled", true).removeAttr("required");
+                documentType.prop("disabled", false).attr("required", "required");
+                docTitle.prop("readonly", false).attr("required", "required");
+                documentFile.prop("readonly", false); 
+            } 
+            else if(requestType == "3"){
+                if($initialRequestTypeID != 1){
+                    docRefCode.val("{{ $document->docRefCode ?? "" }}").prop("readonly", false).attr("required", "required"); // Enable and make required
+                }
+                else{
+                    docRefCode.val("").prop("readonly", false).attr("required", "required"); // Enable and make required
+                }
+                documentType.val("{{ $document->docTypeID }}").prop("disabled", true).removeAttr("required");
+                docTitle.val("{{ $document->docTitle }}").prop("readonly", true).removeAttr("required");
+                documentFile.prop("readonly", true);
+            }
+            else {
+                if($initialRequestTypeID != 1){
+                    docRefCode.val("{{ $document->docRefCode ?? "" }}").prop("readonly", false).attr("required", "required"); // Enable and make required
+                }
+                else{
+                    docRefCode.val("").prop("readonly", false).attr("required", "required"); // Enable and make required
+                }
+                documentType.val("{{ $document->docTypeID }}").prop("disabled", true).removeAttr("required");
+                docTitle.prop("readonly", false).attr("required", "required");
+                documentFile.prop("readonly", false); 
             }
         });
 
@@ -1079,6 +1114,10 @@
                             $("#docRefCodeEdit").removeClass("is-invalid"); // Remove error styling
                             $("#docRefCodeErrorEdit").text("");
                             callback(true); // Valid case
+                            if(requestTypeID == 3)
+                            {
+                                $("#docTitleEdit").val(response.docTitle ?? ""); // ✅ Prevent undefined errors
+                            }
                         } else {
                             $("#docRefCodeErrorEdit").text("Document Reference Code not found!");
                             $("#currentRevNoEdit").val("0"); 
@@ -1119,7 +1158,7 @@
                         });
 
                         $("#requestTypeIDEdit").html(options);
-
+                        $initialRequestTypeID = "{{ $document->requestTypeID }}";
                         // Execute callback after setting dropdown options
                         if (callback) {
                             callback();
@@ -1310,7 +1349,7 @@
             });
         }
 
-        function approvedRequest(requestID) {
+        function approvedRequest(requestID, requestTypeID) {
             const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
                 confirmButton: 'btn btn-success mx-2',
@@ -1339,6 +1378,7 @@
                         url: "/documents/approved",
                         data: {
                             requestID: requestID,
+                            requestTypeID: requestTypeID,
                             _token: @json(csrf_token())
                         },
                         success: function(res) {
@@ -1355,7 +1395,7 @@
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     toastr.info(
                         'Action is cancelled',
-                        'Document remains   pending'
+                        'Document remains pending'
                     );
                 }
             });
@@ -1407,6 +1447,59 @@
                     toastr.info(
                         'Action is cancelled',
                         'Document pending submission'
+                    );
+                }
+            });
+        }
+
+        function archiveDocument(requestID, documentFile, docRefCode) {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                confirmButton: 'btn btn-success mx-2',
+                cancelButton: 'btn btn-secondary mx-2'
+                },
+                buttonsStyling: false
+            });
+
+            swalWithBootstrapButtons.fire({
+                title: 'Confirm Approval?',
+                text: "This document will be marked as obsolete.",
+                icon: 'info', // ℹ️ Changed from warning to info
+                showCancelButton: true,
+                confirmButtonText: 'Yes, mark as obsolete',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    swal.fire({
+                        html: '<h6>Processing... Please wait</h6>',
+                        showConfirmButton: false
+                    });
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/documents/archive",
+                        data: {
+                            requestID: requestID,
+                            documentFile: documentFile,
+                            docRefCode: docRefCode,
+                            _token: @json(csrf_token())
+                        },
+                        success: function(res) {
+                            setTimeout(function() {
+                                Swal.fire({
+                                    icon: 'success', // 👍 Changed from success to thumbs-up
+                                    html: '<h5>Successfully Marked as Obsolete!</h5>'
+                                }).then(() => {
+                                    window.location.href = "{{ url('/documents') }}/";
+                                });
+                            }, 700);
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    toastr.info(
+                        'Action is cancelled',
+                        'Document remains pending'
                     );
                 }
             });

@@ -146,31 +146,31 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Revision History Section -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="card border-warning">
-                        <div class="card-header bg-dblue text-white">
-                            <strong>Document Revision History</strong>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card-body table-responsive">
-                                    <table class="table table-striped w-100" id="rh-dt" style="font-size: 14px">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 10%">Doc Ref Code</th>
-                                                <th style="width: 10%">Doc Title</th>
-                                                <th style="width: 10%">Revision No</th>
-                                                <th style="width: 10%">Effectivity Date</th>
-                                                <th style="width: 20%">Reason</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
+        <!-- Revision History Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card border-warning">
+                            <div class="card-header bg-dblue text-white">
+                                <strong>Document Revision History</strong>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card-body table-responsive">
+                                        <table class="table table-striped w-100" id="rh-dt" style="font-size: 14px">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 10%">Doc Ref Code</th>
+                                                    <th style="width: 10%">Doc Title</th>
+                                                    <th style="width: 10%">Revision No</th>
+                                                    <th style="width: 10%">Effectivity Date</th>
+                                                    <th style="width: 20%">Reason</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -178,7 +178,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
     <!-- MODAL -->
@@ -393,7 +392,7 @@
                     { data: 'effectivityDate', name: 'effectivityDate' },
                     { data: 'requestReason', name: 'requestReason' }
                 ],
-                order: [[1, 'desc']],
+                order: [[3, 'desc']],
                 language: {
                     emptyTable: 'There are no Revision History yet'
                 }

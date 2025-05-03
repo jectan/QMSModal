@@ -118,7 +118,8 @@ class MasterlistController extends Controller
                           $subQuery->where('requestStatus', 'Obsolete')
                                    ->orWhere('requestStatus', 'Registered');
                       });
-            });
+            })
+            ->orderBy('effectivityDate', 'desc');
 
         // Return data for DataTables
         return DataTables::of($revisionHistory)

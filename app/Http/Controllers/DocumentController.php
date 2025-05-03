@@ -37,30 +37,38 @@ class DocumentController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-        'currentRevNo' => 'required|numeric|min:0',
-        'docTitle' => [
-            'required',
-            'string',
-            'max:255',
-            Rule::unique('RequestDocument')->where(function ($query) {
-                return $query->where('requestStatus', 'Requested');
-            }),
-        ],
-        'requestReason' => 'required|string|max:500',
-        'documentFile' => 'nullable|mimes:pdf',
-        ], [
+        $rules = [
+            'currentRevNo' => 'required|numeric|min:0',
+            'requestReason' => 'required|string|max:500',
+            'documentFile' => 'nullable|mimes:pdf',
+        ];
+        
+        $messages = [
             'currentRevNo.required' => 'The Revision Number is required.',
-            'docTitle.required' => 'The Document Title is required.',
-            'docTitle.unique' => 'A similar document request already exist.',
             'requestReason.required' => 'The Reason for Request is required.',
-            'requestReason.required' => 'The Reason for Request is required.',
+            'requestReason.max' => 'The Reason for Request must not exceed 500 characters.',
             'documentFile.required' => 'The Uploaded Document is required.',
-        ]);
+        ];
+        
+        if ($request->requestTypeID != 3) {
+            $rules['docTitle'] = [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('RequestDocument')->where(function ($query) {
+                    return $query->where('requestStatus', 'Requested');
+                }),
+            ];
+            $messages['docTitle.required'] = 'The Document Title is required.';
+            $messages['docTitle.unique'] = 'A similar document request already exist.';
+        }
+        
+        $request->validate($rules, $messages);
 
         // Initialize file path variable
         $filePath = null;
         $status = 'Requested';
+        $docTitle = null;
 
         // Check if a file is uploaded
         if ($request->hasFile('documentFile')) {
@@ -70,6 +78,13 @@ class DocumentController extends Controller
         }
         else{
             $filePath = $request->requestFileOld;
+        }
+
+        if ($request->requestTypeID == 3) {
+            $docTitle = $request->docTitleOld;
+        }
+        else{
+            $docTitle = $request->docTitle;
         }
 
         if (Auth::user() && Auth::user()->role_id == 4){
@@ -85,7 +100,7 @@ class DocumentController extends Controller
                 'docTypeID' => $request->docTypeID,
                 'docRefCode' => $request->docRefCode,
                 'currentRevNo' => $request->currentRevNo,
-                'docTitle' => $request->docTitle,
+                'docTitle' => $docTitle,
                 'requestReason' => $request->requestReason,
                 'userID' => Auth::id(),
                 'requestFile' => $filePath, // Save file path in DB
@@ -307,6 +322,13 @@ class DocumentController extends Controller
 
     public function approved(Request $request)
     {
+        if($request->requestTypeID == 3){
+            $nextStatus = "For Obsoletion";
+        }
+        else{
+            $nextStatus = "For Registration";
+        }
+
         $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->approveID],
         [
             'requestID' => $request->requestID,
@@ -317,7 +339,7 @@ class DocumentController extends Controller
 
         $requestDocumment = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
         [
-            'requestStatus' => 'For Registration',
+            'requestStatus' => $nextStatus,
         ]);
         
         return response()->json(['success'=> 'Document Endorsed For Registration.', 'ReviewDocument' => $reviewDocument]);
@@ -380,6 +402,49 @@ class DocumentController extends Controller
         }
     }
 
+    public function archive(Request $request)
+    {
+        $filePath = $request->documentFile;
+
+        DB::beginTransaction();
+
+        try {
+            $updatedRows = RequestDocument::where('docRefCode', $request->docRefCode)
+            ->where('requestStatus', 'Registered')
+            ->update([
+                'requestStatus' => 'Obsolete',
+            ]);
+
+            $requestDocument = RequestDocument::updateOrCreate(['requestID' => $request->requestID],
+            [
+                'requestStatus' => 'Obsolete',
+            ]);
+
+            $registerDocument = RegisteredDoc::updateOrCreate(['regDocID' => $request->regDocID],
+            [
+                'requestID' => $request->requestID,
+                'docFile' => $filePath, // Save file path in DB
+                'effectivityDate' => Carbon::now(), 
+            ]);
+
+            $reviewDocument = ReviewDocument::updateOrCreate(['reviewID' => $request->reviewID],
+            [
+                'requestID' => $request->requestID,
+                'reviewComment' => 'Marked as Obsolete by ' . Auth::user()->staff->fullname,
+                'userID' => Auth::id(),
+                'reviewStatus' => 'Active',                  
+            ]);
+
+            DB::commit();
+
+            return response()->json(['success' => 'Successfully saved.', 'RegisterDocument' => $registerDocument]);
+        } catch (\Exception $e) {
+            
+            DB::rollback();
+            return response()->json(['error' => 'Failed to save. Error: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function validateRequest(Request $request)
     {
         try {
@@ -400,9 +465,15 @@ class DocumentController extends Controller
     public function getDataRequest($status)
     {
         $requestDocuments = RequestDocument::with(['DocumentType'])
-            ->select('requestID', 'docTitle', 'docTypeID', 'requestStatus', 'userID', 'docRefCode');
+            ->select('requestID', 'requestTypeID', 'docTitle', 'docTypeID', 'requestStatus', 'userID', 'docRefCode');
         if ($status !== '0') {
-            $requestDocuments->where('requestStatus', $status);
+            if($status == '1'){
+                $requestDocuments->where('requestStatus', 'For Registration')
+                ->orWhere('requestStatus', 'For Obsoletion');
+            }
+            else{
+                $requestDocuments->where('requestStatus', $status);
+            }
         }
         else{
             $requestDocuments->where('requestStatus', '!=', 'Cancelled');
@@ -431,6 +502,7 @@ class DocumentController extends Controller
                 $isApproveHidden = "Hidden";
                 $isReviewHidden = "Hidden";
                 $isRegisterHidden = "Hidden";
+                $isArchiveHidden = "Hidden";
 
                 if ((in_array($row->requestStatus, ['For Review', 'For Approval', 'For Registration', 'Registered', 'Obsolete', 'Cancelled']) || $row->userID !== Auth::id()) 
                     && Auth::user()->role_id !== 1) {
@@ -454,6 +526,10 @@ class DocumentController extends Controller
                 {
                     $isRegisterHidden = "";
                 }
+                elseif ($row->requestStatus =='For Obsoletion' && (in_array(Auth::user()->role_id, [1,2])))
+                {
+                    $isArchiveHidden = "";
+                }
                 
                 return '<button class="btn btn-sm btn-secondary btn" href="javascript:void(0)" onClick="displayRequest(' . $row->requestID . ')">
                             <span class="material-icons" style="font-size: 20px;">visibility</span>
@@ -463,11 +539,15 @@ class DocumentController extends Controller
                             <span class="material-icons" style="font-size: 20px;">check_box</span>
                         </button>
                         
-                        <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="approveRequest(' . $row->requestID . ')"' . $isApproveHidden .'>
+                        <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="approveRequest(' . $row->requestID . ', ' . $row->requestTypeID . ')"' . $isApproveHidden .'>
                             <span class="material-icons" style="font-size: 20px;">check_box</span>
                         </button>
                         
                         <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="registerRequest(' . $row->requestID . ')"' . $isRegisterHidden .'>
+                            <span class="material-icons" style="font-size: 20px;">check_box</span>
+                        </button>
+                        
+                        <button class="btn btn-sm btn-success mx-1" href="javascript:void(0)" onClick="archiveRequest(' . $row->requestID . ')"' . $isArchiveHidden .'>
                             <span class="material-icons" style="font-size: 20px;">check_box</span>
                         </button>
                         
@@ -539,7 +619,7 @@ class DocumentController extends Controller
 
     public function checkDocRefCode(Request $request)
     {
-        $document = RequestDocument::select('requestID', 'docRefCode', 'currentRevNo', 'docTypeID')
+        $document = RequestDocument::select('requestID', 'docRefCode', 'currentRevNo', 'docTypeID', 'docTitle', 'requestFile')
             ->where('docRefCode', $request->docRefCode)
             ->where('requestStatus', 'Registered')
             ->first();
@@ -549,6 +629,8 @@ class DocumentController extends Controller
                 'exists' => true,
                 'currentRevNo' => $document->currentRevNo,
                 'docTypeID' => $document->docTypeID, // ✅ Return the specific revision number
+                'docTitle' => $document->docTitle,
+                'requestFile' => $document->requestFile,
             ]);
         } else {
             return response()->json([
@@ -601,8 +683,9 @@ class DocumentController extends Controller
         $docType = DocType::all();
         $isEdit = 1;
         $isRegister = 0;
+        $isObsolete = 0;
     
-        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister'));
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister', 'isObsolete'));
     }
     
     public function viewRegister($requestID)
@@ -612,8 +695,21 @@ class DocumentController extends Controller
         $docType = DocType::all();
         $isEdit = 0;
         $isRegister = 1;
+        $isObsolete = 0;
     
-        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister'));
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister', 'isObsolete'));
+    }
+    
+    public function viewArchive($requestID)
+    {
+        $document = RequestDocument::where('requestID', $requestID)->firstOrFail();
+        $requestType = RequestType::all();
+        $docType = DocType::all();
+        $isEdit = 0;
+        $isRegister = 0;
+        $isObsolete = 1;
+    
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister', 'isObsolete'));
     }
 
     public function update(Request $request)

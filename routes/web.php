@@ -98,9 +98,11 @@ Route::group(['middleware' => 'role:1,2,3,4,5'], function (){
     Route::post('/documents/approved', [DocumentController::class, 'approved']); //called from display-document
     Route::post('/documents/forReview', [DocumentController::class, 'forReview']); //called from display-document
     Route::post('/documents/register', [DocumentController::class, 'register']); //called from display-document
+    Route::post('/documents/archive', [DocumentController::class, 'archive']); //called from display-document
     Route::get('/documents/view/{id}', [DocumentController::class, 'view']); //called from display-document
     Route::get('/documents/view/edit/{id}', [DocumentController::class, 'viewEdit']); //called from display-document
     Route::get('/documents/view/register/{id}', [DocumentController::class, 'viewRegister']); //called from display-document
+    Route::get('/documents/view/archive/{id}', [DocumentController::class, 'viewArchive']); //called from display-document
     Route::get('/documents/data-request{status?}', [DocumentController::class, 'getDataRequest'])->name('documents.data-request'); //called by tabs
     Route::post('/documents/cancel', [DocumentController::class, 'cancel']); //This is it!
     Route::get('/get-requestType', [DocumentController::class, 'getRequestType']);
