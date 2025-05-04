@@ -21,11 +21,12 @@ class MasterlistController extends Controller
     public function view($requestID)
     {
         $document = RequestDocument::where('requestID', $requestID)->firstOrFail();
+        $regDoc = RegisteredDoc::where('requestID', $requestID)->firstOrFail();
         $requestType = RequestType::all();
         $docType = DocType::all();
         $isEdit = 0;
     
-        return view('pages.documents.display-registereddocument', compact('document', 'requestType', 'docType', 'isEdit'));
+        return view('pages.documents.display-registereddocument', compact('document', 'requestType', 'docType', 'regDoc', 'isEdit'));
     }
 
     public function documentTally(){

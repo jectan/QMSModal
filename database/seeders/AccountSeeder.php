@@ -3,7 +3,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Staff;
-use App\Models\Office;
 use App\Models\Unit;
 use App\Models\Role;
 
@@ -16,51 +15,12 @@ class AccountSeeder extends Seeder {
     {
         DB::table('users')->delete();
         DB::table('staff')->delete();
-        DB::table('offices')->delete();
         $password = Hash::make('*1234#');
         $Role =  Role::create(array('name' => 'Administrator'));
         Role::create(array('name' => 'Document Management Team'));
         Role::create(array('name' => 'Regional Director'));
         Role::create(array('name' => 'Quality Management Representative'));
         Role::create(array('name' => 'Staff'));
-
-        Office::create(array('name' => "City Accountant's Office"));
-        Office::create(array('name' => "City Administrator's Office"));
-        Office::create(array('name' => "City Agriculture Office"));
-        Office::create(array('name' => "City Assessor Office"));
-        Office::create(array('name' => "City Budget Office"));
-        Office::create(array('name' => "City Civil Registrar Office"));
-        Office::create(array('name' => "City Disaster and Risk Reduction Management Office"));
-        Office::create(array('name' => "City Environment and Natural Resources Office"));
-        Office::create(array('name' => "City Engineer's Office"));
-        Office::create(array('name' => "City General Services Office"));
-        Office::create(array('name' => "City Health Office"));
-        Office::create(array('name' => "City Human Resource Management Office"));
-        Office::create(array('name' => "City Legal Office"));
-        Office::create(array('name' => "City Mayor's Office"));
-        Office::create(array('name' => "City Mayor's Office - Barangay Affairs"));
-        Office::create(array('name' => "City Mayor's Office - Bids and Awards Committee"));
-        Office::create(array('name' => "City Mayor's Office - Business and Permit Licensing Office"));
-       
-        // $User =   User::create(array('username' => 'SuperAdmin', 'password' => $password, 'role_id' => '1'));
-        // $Unit = Unit::create(array('unitName' => "Management Information Systems Service", 'divID' => '1', 'status' => '1'));
-        Office::create(array('name' => "City Mayor's Office - GAD"));
-        Office::create(array('name' => "City Mayor's Office - Housing and Land Management Division"));
-        Office::create(array('name' => "City Mayor's Office - Internal Audit Unit"));
-        Office::create(array('name' => "City Mayor's Office - Investment"));
-        Office::create(array('name' => "City Mayor's Office - Museum")); 
-        Office::create(array('name' => "City Mayor's Office - Personal Staff")); 
-        Office::create(array('name' => "City Mayor's Office - Protected Area Management Unit"));
-        Office::create(array('name' => "City Mayor's Office - Public Information Office"));
-        Office::create(array('name' => "City Mayor's Office - Secretary to the Mayor"));
-        Office::create(array('name' => "City Mayor's Office - Security and Surveillance Coordinating Office"));
-        Office::create(array('name' => "City Mayor's Office - Sports Development Office")); 
-        Office::create(array('name' => "City Mayor's Office - Tourism Promotions Development Services Division"));
-        Office::create(array('name' => "City Planning and Development Office"));
-        Office::create(array('name' => "City Secretary / Sanguniang Panglungsod"));
-        Office::create(array('name' => "City Social Welfare and Development Office"));
-        Office::create(array('name' => "City Treasurer Office"));
-        Office::create(array('name' => "City Veterinarian Office"));
 
         $User =   User::create(array('username' => 'kryztle.evangelista@dict.gov.ph', 'password' => $password, 'role_id' => '1', 'isNew' => '0'));
         Staff::create(array('firstname' => 'Kryztle Love', 'middlename' =>'N.', 'lastname' => 'Evengelista','user_id' => '1', 'unitID' => '8'));

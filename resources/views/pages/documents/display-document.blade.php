@@ -73,6 +73,16 @@
                     </div>
                 @endif
 
+                <!-- Buttons for Document Manager -->
+                @if(Auth::check() && in_array(Auth::user()->role_id, [1, 2]) && (in_array($document->requestStatus, ['For Obsoletion'])))
+                    <div class="expandable-button">
+                        <button type="button" class="btn btn-sm btn-success mx-1+ btn-icon" href="javascript:void(0)" onClick="archiveDocument('{{ $document->requestID }}', '{{ $document->requestFile }}', '{{ $document->docRefCode }}')">
+                            <span class="material-icons" style="font-size: 20px;">check_circle</span>
+                            <span class="btn-label">Archive</span>
+                        </button>
+                    </div>
+                @endif
+
                 <!-- Edit Button for Users -->
                 @if(Auth::user()->role_id == 1 || (Auth::user()->id == $document->userID && (!in_array($document->requestStatus, ['For Review', 'For Approval', 'For Registration']))))
                     <div class="expandable-button">
@@ -82,6 +92,7 @@
                         </button>
                     </div>
                 @endif
+
                 <!-- Delete Button for Users -->
                 @if(Auth::user()->id == $document->userID || Auth::user()->role_id == 1)
                     <div class="expandable-button">
@@ -204,9 +215,9 @@
                     <!-- PDF Viewer -->
                     <div class="card-body text-center">
                         @if($document->requestFile)
-                            <iframe id="documentPreview" src="{{ asset('storage/' . $document->requestFile) }}" 
-                                width="100%" height="700px" style="border: none;">
-                            </iframe>
+                        <object data="{{ asset('storage/' . $document->requestFile) }}" type="application/pdf" width="100%" height="700px">
+    <p>Your browser does not support PDF embedding. <a href="{{ asset('storage/' . $document->requestFile) }}">Download the PDF</a>.</p>
+</object>
                         @else
                             <p>No File Uploaded</p>
                         @endif
@@ -1462,7 +1473,7 @@
             });
 
             swalWithBootstrapButtons.fire({
-                title: 'Confirm Approval?',
+                title: 'Confirm Archiving?',
                 text: "This document will be marked as obsolete.",
                 icon: 'info', // ℹ️ Changed from warning to info
                 showCancelButton: true,

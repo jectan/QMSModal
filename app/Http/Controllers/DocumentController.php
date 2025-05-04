@@ -358,7 +358,7 @@ class DocumentController extends Controller
         ]);
 
         $file = $request->file('documentFile2');
-        $fileName = time() . '_' . $file->getClientOriginalName();
+        $fileName = $request->docRefCode2 . '-r' . $request->currentRevNo2;
         $filePath = $file->storeAs('documents', $fileName, 'public'); // Store in storage/app/public/documents
 
         DB::beginTransaction();
@@ -672,8 +672,9 @@ class DocumentController extends Controller
         $docType = DocType::all();
         $isEdit = 0;
         $isRegister = 0;
+        $isObsolete = 0;
     
-        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister'));
+        return view('pages.documents.display-document', compact('document', 'requestType', 'docType', 'isEdit', 'isRegister', 'isObsolete'));
     }
     
     public function viewEdit($requestID)

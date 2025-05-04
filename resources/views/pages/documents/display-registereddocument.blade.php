@@ -114,7 +114,7 @@
                     <!-- PDF Viewer -->
                     <div class="card-body text-center">
                         @if($document->requestFile)
-                            <iframe id="documentPreview" src="{{ asset('storage/' . $document->requestFile) }}" 
+                            <iframe id="documentPreview" src="{{ asset('storage/' . $regDoc->docFile) }}" 
                                 width="100%" height="700px" style="border: none;">
                             </iframe>
                         @else
