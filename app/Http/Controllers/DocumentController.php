@@ -115,6 +115,7 @@ class DocumentController extends Controller
                     'requestID' => $requestDocument->requestID,
                     'reviewComment' => 'Submitted for Approval by ' . Auth::user()->staff->fullname,
                     'userID' => Auth::id(),
+                    'reviewDate' => Carbon::now(),
                     'reviewStatus' => 'Active',                  
                 ]);
             }
@@ -212,6 +213,7 @@ class DocumentController extends Controller
             'requestID' => $request->requestID,
             'reviewComment' => '"' . $request->reviewComments . '" by: ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
+            'reviewDate' => Carbon::now(),
             'reviewStatus' => 'Active',                  
         ]);
 
@@ -236,6 +238,7 @@ class DocumentController extends Controller
             'requestID' => $request->requestID,
             'reviewComment' => '"' . $request->reviewComment2 . '" by: ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
+            'reviewDate' => Carbon::now(),
             'reviewStatus' => 'Active',                  
         ]);
 
@@ -257,6 +260,7 @@ class DocumentController extends Controller
                 'requestID' => $request->requestID,
                 'reviewComment' => 'Submitted for Review by ' . Auth::user()->staff->fullname,
                 'userID' => Auth::id(),
+                'reviewDate' => Carbon::now(),
                 'reviewStatus' => 'Active',                  
             ]);
 
@@ -291,6 +295,7 @@ class DocumentController extends Controller
                     'requestID' => $request->requestID,
                     'reviewComment' => 'Reviewed by ' . Auth::user()->staff->fullname,
                     'userID' => Auth::id(),
+                    'reviewDate' => Carbon::now(),
                     'reviewStatus' => 'Active',                  
                 ]
             );
@@ -334,6 +339,7 @@ class DocumentController extends Controller
             'requestID' => $request->requestID,
             'reviewComment' => 'Approved by ' . Auth::user()->staff->fullname,
             'userID' => Auth::id(),
+            'reviewDate' => Carbon::now(),
             'reviewStatus' => 'Active',                  
         ]);
 
@@ -389,6 +395,7 @@ class DocumentController extends Controller
                 'requestID' => $request->requestID2,
                 'reviewComment' => 'Registered by ' . Auth::user()->staff->fullname,
                 'userID' => Auth::id(),
+                'reviewDate' => Carbon::now(),
                 'reviewStatus' => 'Active',                  
             ]);
 
@@ -432,6 +439,7 @@ class DocumentController extends Controller
                 'requestID' => $request->requestID,
                 'reviewComment' => 'Marked as Obsolete by ' . Auth::user()->staff->fullname,
                 'userID' => Auth::id(),
+                'reviewDate' => Carbon::now(),
                 'reviewStatus' => 'Active',                  
             ]);
 

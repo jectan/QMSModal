@@ -215,9 +215,9 @@
                     <!-- PDF Viewer -->
                     <div class="card-body text-center">
                         @if($document->requestFile)
-                        <object data="{{ asset('storage/' . $document->requestFile) }}" type="application/pdf" width="100%" height="700px">
-    <p>Your browser does not support PDF embedding. <a href="{{ asset('storage/' . $document->requestFile) }}">Download the PDF</a>.</p>
-</object>
+                        <iframe id="documentPreview" src="{{ asset('storage/' . $document->requestFile) }}"
+                                width="100%" height="700px" style="border: none;">
+                        </iframe>
                         @else
                             <p>No File Uploaded</p>
                         @endif
